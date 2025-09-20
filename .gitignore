@@ -6,6 +6,11 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
+
+# ------------------------
+# Logs
+# ------------------------
 logs
 *.log
 
@@ -22,6 +27,7 @@ logs
 # Build outputs
 # ------------------------
 dist/
+dist-ssr/
 build/
 coverage/
 
@@ -37,6 +43,11 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # ------------------------
 # Misc
