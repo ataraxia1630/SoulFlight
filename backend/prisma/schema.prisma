@@ -6,3 +6,19 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+enum UserStatus {
+  ACTIVE
+  UNVERIFIED
+  LOCKED
+}
+
+model User {
+  id       Int        @id @default(autoincrement())
+  username String     @unique
+  password String
+  email    String     @unique
+  phone    String?    @unique
+  status   UserStatus @default(UNVERIFIED)
+  createAt DateTime   @default(now())
+}
