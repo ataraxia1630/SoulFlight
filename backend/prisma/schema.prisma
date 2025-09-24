@@ -13,6 +13,12 @@ enum UserStatus {
   LOCKED
 }
 
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
 model User {
   id         Int        @id @default(autoincrement())
   username   String     @unique
@@ -23,10 +29,12 @@ model User {
   status     UserStatus @default(UNVERIFIED)
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
+  Provider   Provider[]
+  Traveler   Traveler[]
 }
 
 model Provider {
-  id             Int      @id @default(autoincrement())
+  id             Int      @id
   description    String?
   logo_url       String?
   website_link   String?
@@ -37,4 +45,16 @@ model Provider {
   establish_year Int
   created_at     DateTime @default(now())
   updated_at     DateTime @updatedAt
+  user           User     @relation(fields: [id], references: [id])
+}
+
+model Traveler {
+  id         Int       @id
+  gender     Gender?
+  dob        DateTime?
+  location   String?
+  avatar_url String?
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  user       User      @relation(fields: [id], references: [id])
 }
