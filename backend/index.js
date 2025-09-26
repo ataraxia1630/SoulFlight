@@ -1,5 +1,6 @@
 const express = require('express');
 const prisma = require('./src/configs/prisma');
+const redis = require('./src/configs/redis');
 const route = require('./src/routes/index');
 const app = express();
 
