@@ -34,18 +34,19 @@ model User {
 }
 
 model Provider {
-  id             Int      @id
+  id             Int       @id
   description    String?
   logo_url       String?
   website_link   String?
   address        String?
-  id_card        String   @unique
+  id_card        String    @unique
   province       String
   country        String
   establish_year Int
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
-  user           User     @relation(fields: [id], references: [id])
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+  user           User      @relation(fields: [id], references: [id])
+  Services       Service[]
 }
 
 model Traveler {
@@ -57,4 +58,45 @@ model Traveler {
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   user       User      @relation(fields: [id], references: [id])
+}
+
+model ServiceType {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  description String?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+  Services    Service[]
+}
+
+model Service {
+  id          Int            @id @default(autoincrement())
+  name        String
+  description String?
+  location    String?
+  rating      Float          @default(0)
+  type_id     Int
+  provider_id Int
+  created_at  DateTime       @default(now())
+  updated_at  DateTime       @updatedAt
+  Type        ServiceType    @relation(fields: [type_id], references: [id])
+  Provider    Provider       @relation(fields: [provider_id], references: [id])
+  Tags        ServiceOnTag[]
+}
+
+model ServiceTag {
+  id         Int            @id @default(autoincrement())
+  name       String         @unique
+  created_at DateTime       @default(now())
+  updated_at DateTime       @updatedAt
+  Services   ServiceOnTag[]
+}
+
+model ServiceOnTag {
+  serviceId Int
+  tagId     Int
+  Service   Service    @relation(fields: [serviceId], references: [id])
+  Tag       ServiceTag @relation(fields: [tagId], references: [id])
+
+  @@id([serviceId, tagId]) // composite primary key
 }
