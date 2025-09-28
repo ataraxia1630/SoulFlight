@@ -2,6 +2,7 @@ import { Button, Stack, Box, Divider } from "@mui/material";
 import GoogleIcon from "@/assets/google_icon";
 import FacebookIcon from "@/assets/facebook_icon";
 import XIcon from "@/assets/x_icon";
+import { useTranslation } from "react-i18next";
 
 const SocialLoginButtons = ({ onGoogleLogin, onFacebookLogin, onXLogin }) => {
   const socialButtons = [
@@ -19,6 +20,8 @@ const SocialLoginButtons = ({ onGoogleLogin, onFacebookLogin, onXLogin }) => {
     },
   ];
 
+  const { t } = useTranslation();
+
   return (
     <Box>
       <Divider
@@ -32,7 +35,7 @@ const SocialLoginButtons = ({ onGoogleLogin, onFacebookLogin, onXLogin }) => {
           fontSize: "13px",
         }}
       >
-        OR
+        {t("or")}
       </Divider>
 
       <Stack direction="row" spacing={2} justifyContent="center">

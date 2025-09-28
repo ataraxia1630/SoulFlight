@@ -7,8 +7,7 @@ import AuthLayout from "@/layouts/AuthLayout";
 
 import HomePage from "@/shared/pages/HomePage";
 import LoginPage from "@/shared/pages/LoginPage";
-import SignupBusinessPage from "@/features/business/pages/auth/SignupPage";
-import SignupTravelerPage from "@/features/traveler/pages/auth/SignupPage";
+import SignupPage from "@/shared/pages/SignupPage";
 
 // Role Pages
 import AdminHome from "@/features/admin/pages/Home";
@@ -33,8 +32,8 @@ const router = createBrowserRouter([
         element: <AuthLayout />,
         children: [
           { path: "login", element: <LoginPage /> },
-          { path: "signup/business", element: <SignupBusinessPage /> },
-          { path: "signup/traveler", element: <SignupTravelerPage /> },
+          { path: "signup/business", element: <SignupPage userType="business" /> },
+          { path: "signup/traveler", element: <SignupPage userType="traveler" /> },
         ],
       },
     ],

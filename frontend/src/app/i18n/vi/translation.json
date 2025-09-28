@@ -1,12 +1,21 @@
 {
-  "welcome": "Xin chào",
-  "login": "Đăng nhập",
-  "logout": "Đăng xuất",
+  "auth": {
+    "welcome": "Chào mừng trở lại!",
+    "email_username": "Email hoặc tên đăng nhập",
+    "password": "Mật khẩu",
+    "remember": "Ghi nhớ đăng nhập",
+    "forgot": "Quên mật khẩu",
+    "login": "Đăng nhập",
+    "logout": "Đăng xuất",
+    "don't have account": "Chưa có tài khoản?",
+    "signup": "Đăng ký"
+  },
   "header": {
     "home": "Trang chủ",
     "explore": "Khám phá",
     "trips": "Chuyến đi",
     "news": "Tin tức",
     "contact": "Liên hệ"
-  }
+  },
+  "or": "HOẶC"
 }

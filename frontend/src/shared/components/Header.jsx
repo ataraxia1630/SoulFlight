@@ -1,4 +1,15 @@
-import { AppBar, Toolbar, Typography, Box, Select, MenuItem, TextField, InputAdornment, Avatar, Button } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  Select,
+  MenuItem,
+  TextField,
+  InputAdornment,
+  Avatar,
+  Button,
+} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useTranslation } from "react-i18next";
@@ -7,8 +18,18 @@ const Header = () => {
   const { t, i18n } = useTranslation();
   const navItems = ["home", "explore", "trips", "news", "contact"];
 
-  const handleChange = (event) => {
-    i18n.changeLanguage(event.target.value);
+  const handleChange = (e) => {
+    i18n.changeLanguage(e.target.value);
+  };
+
+  const handleLogin = () => {
+    // Xử lý đăng nhập
+    console.log("Login clicked");
+  };
+
+  const handleSignUp = () => {
+    // Xử lý đăng ký
+    console.log("Sign up clicked");
   };
 
   return (
@@ -75,9 +96,56 @@ const Header = () => {
           />
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Avatar sx={{ width: 32, height: 32, bgcolor: "#4CAF50" }}>
-              <Typography sx={{ fontSize: "14px", color: "white" }}>U</Typography>
-            </Avatar>
+            {/* <Avatar sx={{ width: 32, height: 32, bgcolor: "#4CAF50" }}>
+              <Typography sx={{ fontSize: "14px", color: "white" }}>
+                U
+              </Typography>
+            </Avatar> */}
+
+            <Button
+              variant="outlined"
+              onClick={handleLogin}
+              sx={{
+                minWidth: "60px",
+                height: "32px",
+                borderRadius: "20px",
+                border: "1px solid #1E9BCD",
+                color: "#1E9BCD",
+                fontSize: "12px",
+                fontWeight: 500,
+                textTransform: "none",
+                px: 2,
+                "&:hover": {
+                  backgroundColor: "rgba(14, 165, 233, 0.08)",
+                  border: "1px solid #1E9BCD",
+                },
+              }}
+            >
+              {t("auth.login")}
+            </Button>
+
+            <Button
+              variant="contained"
+              onClick={handleSignUp}
+              sx={{
+                minWidth: "70px",
+                height: "32px",
+                borderRadius: "20px",
+                backgroundColor: "#1E9BCD",
+                color: "white",
+                fontSize: "12px",
+                fontWeight: 500,
+                textTransform: "none",
+                px: 2,
+                boxShadow: "none",
+                "&:hover": {
+                  backgroundColor: "#0284c7",
+                  boxShadow: "none",
+                },
+              }}
+            >
+              {t("auth.signup")}
+            </Button>
 
             <Select
               value={i18n.language}

@@ -5,16 +5,17 @@ import {
   Checkbox,
   FormControlLabel,
   Link,
-  Divider,
   Stack,
 } from "@mui/material";
 import SocialLoginButtons from "./SocialLoginButtons";
-import FormInput from "./FormInput";
-import { Form } from "react-router-dom";
-import PrimaryButton from "./PrimaryButton";
+import FormInput from "../FormInput";
+import PrimaryButton from "../PrimaryButton";
 import { Link as RouterLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const LoginForm = ({ onSubmit, loading = false }) => {
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -35,7 +36,7 @@ const LoginForm = ({ onSubmit, loading = false }) => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%", backgroundColor: "rgba(255,255,255,0.9)" }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
       <Typography
         variant="h4"
         component="h1"
@@ -43,24 +44,23 @@ const LoginForm = ({ onSubmit, loading = false }) => {
         sx={{
           mb: 4,
           fontWeight: 600,
-          color: "#1a1a1a",
+          color: "#black",
         }}
       >
-        Welcome back!
+        {t("auth.welcome")}
       </Typography>
 
       <Stack spacing={3}>
         <FormInput
           name="email"
-          label="Email or username"
-          type="email"
+          label={t("auth.email_username")}
           value={formData.email}
           onChange={handleChange}
         />
 
         <FormInput
           name="password"
-          label="Password"
+          label={t("auth.password")}
           type="password"
           value={formData.password}
           onChange={handleChange}
@@ -84,7 +84,7 @@ const LoginForm = ({ onSubmit, loading = false }) => {
             }
             label={
               <Typography variant="body2" color="#6b7280">
-                Remember me
+                {t("auth.remember")}
               </Typography>
             }
           />
@@ -101,7 +101,7 @@ const LoginForm = ({ onSubmit, loading = false }) => {
               },
             }}
           >
-            Forgot password?
+            {t("auth.forgot")}
           </Link>
         </Box>
 
@@ -111,7 +111,7 @@ const LoginForm = ({ onSubmit, loading = false }) => {
           loading={loading}
           loadingText="Logging in..."
         >
-          Login
+          {t("auth.login")}
         </PrimaryButton>
 
         <SocialLoginButtons />
@@ -121,19 +121,21 @@ const LoginForm = ({ onSubmit, loading = false }) => {
           align="center"
           sx={{ mt: 2, color: "#6b7280" }}
         >
-          Don't have an account?{" "}
+          {t("auth.don't have account")}{" "}
           <Link
-            href="#"
+            component={RouterLink}
+            to="/signup/traveler"
+            variant="body2"
             sx={{
               color: "#1E9BCD",
-              textDecoration: "none",
               fontWeight: 500,
+              textDecoration: "none",
               "&:hover": {
                 textDecoration: "underline",
               },
             }}
           >
-            Sign up
+            {t("auth.signup")}
           </Link>
         </Typography>
       </Stack>

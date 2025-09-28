@@ -20,6 +20,7 @@ const PrimaryButton = ({
         fontSize: "16px",
         fontWeight: 600,
         textTransform: "none",
+        color: "black",
         "&:hover": {
           backgroundColor: "#0284c7",
         },

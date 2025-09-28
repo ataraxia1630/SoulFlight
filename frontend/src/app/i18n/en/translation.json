@@ -1,12 +1,21 @@
 {
-  "welcome": "Welcome",
-  "login": "Login",
-  "logout": "Logout",
+  "auth": {
+    "welcome": "Welcome back!",
+    "email_username": "Email or username",
+    "password": "Password",
+    "remember": "Remember me",
+    "forgot": "Forgot password",
+    "login": "Login",
+    "logout": "Logout",
+    "don't have account": "Don't have account?",
+    "signup": "Sign up"
+  },
   "header": {
     "home": "Home",
     "explore": "Explore",
     "trips": "My Trips",
     "news": "News",
     "contact": "Contact"
-  }
+  },
+  "or": "OR"
 }
