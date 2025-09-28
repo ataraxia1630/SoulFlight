@@ -5,10 +5,9 @@ import App from "../App";
 import MainLayout from "@/layouts/MainLayout";
 import AuthLayout from "@/layouts/AuthLayout";
 
-// Auth Pages
-import LoginPage from "@/shared/components/LoginPage";
-import SignupBusinessPage from "@/features/business/pages/auth/SignupPage";
-import SignupTravelerPage from "@/features/traveler/pages/auth/SignupPage";
+import HomePage from "@/shared/pages/HomePage";
+import LoginPage from "@/shared/pages/LoginPage";
+import SignupPage from "@/shared/pages/SignupPage";
 
 // Role Pages
 import AdminHome from "@/features/admin/pages/Home";
@@ -23,6 +22,7 @@ const router = createBrowserRouter([
       {
         element: <MainLayout />,
         children: [
+          { path: "/", element: <HomePage /> },
           { path: "admin", element: <AdminHome /> },
           { path: "business", element: <BusinessHome /> },
           { path: "traveler", element: <TravelerHome /> },
@@ -32,8 +32,8 @@ const router = createBrowserRouter([
         element: <AuthLayout />,
         children: [
           { path: "login", element: <LoginPage /> },
-          { path: "signup/business", element: <SignupBusinessPage /> },
-          { path: "signup/traveler", element: <SignupTravelerPage /> },
+          { path: "signup/business", element: <SignupPage userType="business" /> },
+          { path: "signup/traveler", element: <SignupPage userType="traveler" /> },
         ],
       },
     ],

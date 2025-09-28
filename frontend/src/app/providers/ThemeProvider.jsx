@@ -15,6 +15,7 @@ const theme = createTheme({
     h5: { fontSize: "18px", fontWeight: 500 },
     body1: { fontSize: "16px", fontWeight: 400 },
     body2: { fontSize: "14px", fontWeight: 400 },
+    body3: { fontSize: "12px", fontWeight: 400 },
     button: {
       textTransform: "none",
       fontSize: "14px",
