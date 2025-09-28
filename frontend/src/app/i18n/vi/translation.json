@@ -1,5 +1,12 @@
 {
   "welcome": "Xin chào",
   "login": "Đăng nhập",
-  "logout": "Đăng xuất"
+  "logout": "Đăng xuất",
+  "header": {
+    "home": "Trang chủ",
+    "explore": "Khám phá",
+    "trips": "Chuyến đi",
+    "news": "Tin tức",
+    "contact": "Liên hệ"
+  }
 }

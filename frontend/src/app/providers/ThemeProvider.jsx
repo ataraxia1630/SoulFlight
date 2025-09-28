@@ -1,13 +1,13 @@
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
-import "@fontsource/poppins";
-import "@fontsource/poppins/500.css";
-import "@fontsource/poppins/600.css";
-import "@fontsource/poppins/700.css";
+import "@fontsource/manrope/400.css";
+import "@fontsource/manrope/500.css";
+import "@fontsource/manrope/600.css";
+import "@fontsource/manrope/700.css";
 
 const theme = createTheme({
   typography: {
-    fontFamily: "Poppins, Arial, sans-serif",
+    fontFamily: "Manrope, Arial, sans-serif",
     h1: { fontSize: "32px", fontWeight: 700 },
     h2: { fontSize: "28px", fontWeight: 600 },
     h3: { fontSize: "24px", fontWeight: 600 },
@@ -18,7 +18,7 @@ const theme = createTheme({
     button: {
       textTransform: "none",
       fontSize: "14px",
-      fontWeight: 500,
+      fontWeight: 600,
     },
   },
 });
