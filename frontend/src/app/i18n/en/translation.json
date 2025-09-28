@@ -1,0 +1,12 @@
+{
+  "welcome": "Welcome",
+  "login": "Login",
+  "logout": "Logout",
+  "header": {
+    "home": "Home",
+    "explore": "Explore",
+    "trips": "My Trips",
+    "news": "News",
+    "contact": "Contact"
+  }
+}

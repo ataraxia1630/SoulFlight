@@ -1,24 +1,24 @@
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
-import "@fontsource/poppins";
-import "@fontsource/poppins/500.css";
-import "@fontsource/poppins/600.css";
-import "@fontsource/poppins/700.css";
+import "@fontsource/manrope/400.css";
+import "@fontsource/manrope/500.css";
+import "@fontsource/manrope/600.css";
+import "@fontsource/manrope/700.css";
 
 const theme = createTheme({
   typography: {
-    fontFamily: "Poppins, Arial, sans-serif",
-    h1: { fontSize: "2rem", fontWeight: 700 },      // 32px
-    h2: { fontSize: "1.75rem", fontWeight: 600 },   // 28px
-    h3: { fontSize: "1.5rem", fontWeight: 600 },    // 24px
-    h4: { fontSize: "1.25rem", fontWeight: 500 },   // 20px
-    h5: { fontSize: "1.125rem", fontWeight: 500 },  // 18px
-    body1: { fontSize: "1rem", fontWeight: 400 },   // 16px
-    body2: { fontSize: "0.875rem", fontWeight: 400 }, // 14px
+    fontFamily: "Manrope, Arial, sans-serif",
+    h1: { fontSize: "32px", fontWeight: 700 },
+    h2: { fontSize: "28px", fontWeight: 600 },
+    h3: { fontSize: "24px", fontWeight: 600 },
+    h4: { fontSize: "20px", fontWeight: 500 },
+    h5: { fontSize: "18px", fontWeight: 500 },
+    body1: { fontSize: "16px", fontWeight: 400 },
+    body2: { fontSize: "14px", fontWeight: 400 },
     button: {
       textTransform: "none",
-      fontSize: "0.875rem",
-      fontWeight: 500,
+      fontSize: "14px",
+      fontWeight: 600,
     },
   },
 });
