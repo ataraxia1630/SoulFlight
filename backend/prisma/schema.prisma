@@ -19,6 +19,30 @@ enum Gender {
   OTHER
 }
 
+enum ServiceStatus {
+  AVAILABLE
+  UNAVAILABLE
+  NO_LONGER_PROVIDED
+}
+
+enum UnitType {
+  PORTION
+  SERVING
+  PIECE
+  SLICE
+  SET
+  BOX
+  TRAY
+  PACK
+  CUP
+  BOTTLE
+  CAN
+  DISH
+  BOWL
+  GLASS
+  JAR
+}
+
 model User {
   id         Int        @id @default(autoincrement())
   username   String     @unique
@@ -82,6 +106,7 @@ model Service {
   Type        ServiceType    @relation(fields: [type_id], references: [id])
   Provider    Provider       @relation(fields: [provider_id], references: [id])
   Tags        ServiceOnTag[]
+  Menus       Menu[]
 }
 
 model ServiceTag {
@@ -99,4 +124,30 @@ model ServiceOnTag {
   Tag       ServiceTag @relation(fields: [tagId], references: [id])
 
   @@id([serviceId, tagId]) // composite primary key
+}
+
+model Menu {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  cover_url   String?
+  service_id  Int
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  Service     Service    @relation(fields: [service_id], references: [id])
+  MenuItems   MenuItem[]
+}
+
+model MenuItem {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String?
+  image_url   String?
+  price       Float
+  unit        UnitType
+  status      ServiceStatus @default(AVAILABLE)
+  menu_id     Int
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+  Menu        Menu          @relation(fields: [menu_id], references: [id])
 }
