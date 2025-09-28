@@ -5,8 +5,8 @@ import App from "../App";
 import MainLayout from "@/layouts/MainLayout";
 import AuthLayout from "@/layouts/AuthLayout";
 
-// Auth Pages
-import LoginPage from "@/shared/components/LoginPage";
+import HomePage from "@/shared/pages/HomePage";
+import LoginPage from "@/shared/pages/LoginPage";
 import SignupBusinessPage from "@/features/business/pages/auth/SignupPage";
 import SignupTravelerPage from "@/features/traveler/pages/auth/SignupPage";
 
@@ -23,6 +23,7 @@ const router = createBrowserRouter([
       {
         element: <MainLayout />,
         children: [
+          { path: "/", element: <HomePage /> },
           { path: "admin", element: <AdminHome /> },
           { path: "business", element: <BusinessHome /> },
           { path: "traveler", element: <TravelerHome /> },
