@@ -156,7 +156,7 @@ const Header = () => {
 
             <Button
               component={RouterLink}
-              to="/signup/traveler"
+              to="/traveler/signup"
               variant="contained"
               sx={{
                 minWidth: { xs: 50, md: 60 },
