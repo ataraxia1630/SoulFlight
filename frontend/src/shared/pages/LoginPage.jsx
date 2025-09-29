@@ -1,33 +1,24 @@
-import React from "react";
+import { useState } from "react";
 import LoginForm from "@/shared/components/auth/LoginForm";
+import useSocialAuth from "@/shared/hooks/useSocialAuth";
 
 const LoginPage = () => {
+  const [loading, setLoading] = useState(false);
+
   const handleLogin = (formData) => {
     console.log("Login data:", formData);
-    // Xử lý logic login ở đây
   };
 
-  const handleGoogleLogin = () => {
-    console.log("Google login");
-    // Xử lý Google login
-  };
-
-  const handleFacebookLogin = () => {
-    console.log("Facebook login");
-    // Xử lý Facebook login
-  };
-
-  const handleTwitterLogin = () => {
-    console.log("Twitter login");
-    // Xử lý Twitter login
-  };
+  const { handleGoogleLogin, handleFacebookLogin, handleXLogin } =
+    useSocialAuth();
 
   return (
     <LoginForm
       onSubmit={handleLogin}
+      loading={loading}
       onGoogleLogin={handleGoogleLogin}
       onFacebookLogin={handleFacebookLogin}
-      onTwitterLogin={handleTwitterLogin}
+      onXLogin={handleXLogin}
     />
   );
 };

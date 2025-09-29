@@ -8,7 +8,22 @@
     "login": "Đăng nhập",
     "logout": "Đăng xuất",
     "don't have account": "Chưa có tài khoản?",
-    "signup": "Đăng ký"
+    "signup": "Đăng ký",
+    "back login": "Trở về trang đăng nhập",
+    "join": "Tham gia ngay",
+    "signup for traveler": "Đăng ký cho người dùng",
+    "signup for business": "Đăng ký cho doanh nghiệp",
+    "enter otp": "Vui lòng nhập OTP",
+    "sent otp": "Chúng tôi đã gửi OTP đến",
+    "your email": "email của bạn",
+    "didn't receive otp": "Chưa nhận được OTP?",
+    "resend": "Gửi lại",
+    "verifying": "Đang xác thực...",
+    "next": "Tiếp tục",
+    "create account": "Tạo tài khoản",
+    "username": "Tên người dùng",
+    "complete profile": "Hoàn tất hồ sơ",
+    "finish": "Hoàn thành"
   },
   "header": {
     "home": "Trang chủ",
@@ -17,5 +32,16 @@
     "news": "Tin tức",
     "contact": "Liên hệ"
   },
-  "or": "HOẶC"
+  "info": {
+    "phone": "Số điện thoại",
+    "gender": "Giới tính",
+    "dob": "Ngày sinh",
+    "address": "Địa chỉ",
+    "country": "Quốc gia",
+    "id card": "Căn cước công dân"
+  },
+  "or": "HOẶC",
+  "male": "Nam",
+  "female": "Nữ",
+  "other": "Khác"
 }

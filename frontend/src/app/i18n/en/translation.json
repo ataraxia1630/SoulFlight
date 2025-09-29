@@ -8,7 +8,22 @@
     "login": "Login",
     "logout": "Logout",
     "don't have account": "Don't have account?",
-    "signup": "Sign up"
+    "signup": "Sign up",
+    "back login": "Back to login",
+    "join": "Join us",
+    "signup for traveler": "Sign up for traveler",
+    "signup for business": "Sign up for business",
+    "enter otp": "Please enter your OTP",
+    "sent otp": "We've sent a OTP to",
+    "your email": "your email",
+    "didn't receive otp": "Didn't receive OTP?",
+    "resend": "Resend",
+    "verifying": "Verifying...",
+    "next": "Next",
+    "create account": "Create account",
+    "username": "Username",
+    "complete profile": "Complete your profile",
+    "finish": "Finish"
   },
   "header": {
     "home": "Home",
@@ -17,5 +32,16 @@
     "news": "News",
     "contact": "Contact"
   },
-  "or": "OR"
+  "info": {
+    "phone": "Phone",
+    "gender": "Gender",
+    "dob": "Date of birth",
+    "address": "Address",
+    "country": "Country",
+    "id card": "Identity Card"
+  },
+  "or": "OR",
+  "male": "Male",
+  "female": "Female",
+  "other": "Other"
 }

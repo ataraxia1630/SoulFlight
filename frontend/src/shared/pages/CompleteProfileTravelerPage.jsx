@@ -1,26 +1,23 @@
 import { useState } from "react";
-import SignupForm from "@/shared/components/auth/SignupForm";
 import useSocialAuth from "@/shared/hooks/useSocialAuth";
 import { useNavigate } from "react-router-dom";
+import CompleteProfileTravelerForm from "@/shared/components/auth/CompleteProfileTravelerForm";
 
-
-const SignupPage = ({ userType }) => {
+const CompleteProfileTravelerPage = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSignup = (formData) => {
-    console.log("Signup data:", formData);
+  const handleCompleteProfile = (formData) => {
+    console.log("Complete profile data:", formData);
     // logic here
-    navigate(`/${userType}/verify-otp`, { state: { email: formData.email } });
   };
 
   const { handleGoogleLogin, handleFacebookLogin, handleXLogin } =
     useSocialAuth();
 
   return (
-    <SignupForm
-      userType={userType}
-      onSubmit={handleSignup}
+    <CompleteProfileTravelerForm
+      onSubmit={handleCompleteProfile}
       loading={loading}
       onGoogleLogin={handleGoogleLogin}
       onFacebookLogin={handleFacebookLogin}
@@ -29,4 +26,4 @@ const SignupPage = ({ userType }) => {
   );
 };
 
-export default SignupPage;
+export default CompleteProfileTravelerPage;
