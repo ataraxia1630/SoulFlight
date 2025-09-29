@@ -38,7 +38,9 @@ const AuthLayout = () => {
         ctx.beginPath();
         ctx.moveTo(0, canvas.height / 2);
         for (let x = 0; x < canvas.width; x++) {
-          let y = Math.sin(x * layer.freq + t * layer.speed) * layer.amp + canvas.height / 2;
+          let y =
+            Math.sin(x * layer.freq + t * layer.speed) * layer.amp +
+            canvas.height / 2;
           ctx.lineTo(x, y);
         }
         ctx.lineTo(canvas.width, canvas.height);
@@ -71,16 +73,26 @@ const AuthLayout = () => {
           zIndex: 0,
         }}
       />
-      {/* Nội dung form */}
-      <Box sx={{ position: "relative", zIndex: 1 }}>
+
+      <Box sx={{ position: "relative", zIndex: 1, minHeight: "100vh", p: 2 }}>
         <Header />
         <Box
           display="flex"
           alignItems="center"
           justifyContent="center"
           minHeight="100vh"
+          sx={{ pt: { xs: 12, lg: 10 }, px: { xs: 2, lg: 2 } }}
         >
-          <Paper elevation={3} sx={{ p: 4, borderRadius: 3, width: "100%", maxWidth: 400 }}>
+          <Paper
+            elevation={3}
+            sx={{
+              p: { xs: 3, lg: 4 },
+              borderRadius: 3,
+              width: "100%",
+              maxWidth: 400,
+              overflow: "auto",
+            }}
+          >
             <Outlet />
           </Paper>
         </Box>

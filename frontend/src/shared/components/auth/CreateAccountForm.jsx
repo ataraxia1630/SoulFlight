@@ -3,11 +3,10 @@ import { Box, Typography, Stack, Link } from "@mui/material";
 import SocialLoginButtons from "./SocialLoginButtons";
 import FormInput from "../FormInput";
 import PrimaryButton from "../PrimaryButton";
-import { Link as RouterLink } from "react-router-dom";
 import BackLogin from "./BackLoginLink";
 import { useTranslation } from "react-i18next";
 
-const SignupForm = ({
+const CreateAccountForm = ({
   userType,
   onSubmit,
   loading = false,
@@ -18,7 +17,8 @@ const SignupForm = ({
   const { t } = useTranslation();
 
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
+    password: "",
   });
 
   const handleChange = (e) => {
@@ -46,15 +46,23 @@ const SignupForm = ({
           color: "#black",
         }}
       >
-        {t("auth.join")}
+        {t("auth.create account")}
       </Typography>
 
       <Stack spacing={3}>
         <FormInput
-          name="email"
-          label="Email"
-          type="email"
-          value={formData.email}
+          name="username"
+          label={t("auth.username")}
+          type="text"
+          value={formData.username}
+          onChange={handleChange}
+        />
+
+        <FormInput
+          name="password"
+          label={t("auth.password")}
+          type="password"
+          value={formData.password}
           onChange={handleChange}
         />
 
@@ -63,7 +71,7 @@ const SignupForm = ({
           loading={loading}
           // loadingText="Signing up..."
         >
-          {t("auth.signup")}
+          {t("auth.next")}
         </PrimaryButton>
 
         {userType === "traveler" && (
@@ -74,24 +82,10 @@ const SignupForm = ({
           />
         )}
 
-        <PrimaryButton
-          component={RouterLink}
-          to={userType === "traveler" ? "/business/signup" : "/traveler/signup"}
-          sx={{
-            backgroundColor: "#136687",
-            color: "white",
-            "&:hover": { backgroundColor: "#1d556bff" },
-          }}
-        >
-          {userType === "traveler"
-            ? t("auth.signup for business")
-            : t("auth.signup for traveler")}
-        </PrimaryButton>
-
         <BackLogin />
       </Stack>
     </Box>
   );
 };
 
-export default SignupForm;
+export default CreateAccountForm;

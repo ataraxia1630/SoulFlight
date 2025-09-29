@@ -1,26 +1,22 @@
 import { useState } from "react";
-import SignupForm from "@/shared/components/auth/SignupForm";
+import VerifyOTPForm from "@/shared/components/auth/VerifyOTPForm";
 import useSocialAuth from "@/shared/hooks/useSocialAuth";
-import { useNavigate } from "react-router-dom";
 
-
-const SignupPage = ({ userType }) => {
+const VerifyOTPPage = ({ userType }) => {
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
 
-  const handleSignup = (formData) => {
-    console.log("Signup data:", formData);
+  const handleVerifyOTP = async (formData) => {
+    console.log("OTP Verification data:", formData);
     // logic here
-    navigate(`/${userType}/verify-otp`, { state: { email: formData.email } });
   };
 
   const { handleGoogleLogin, handleFacebookLogin, handleXLogin } =
     useSocialAuth();
 
   return (
-    <SignupForm
+    <VerifyOTPForm
       userType={userType}
-      onSubmit={handleSignup}
+      onSubmit={handleVerifyOTP}
       loading={loading}
       onGoogleLogin={handleGoogleLogin}
       onFacebookLogin={handleFacebookLogin}
@@ -29,4 +25,4 @@ const SignupPage = ({ userType }) => {
   );
 };
 
-export default SignupPage;
+export default VerifyOTPPage;

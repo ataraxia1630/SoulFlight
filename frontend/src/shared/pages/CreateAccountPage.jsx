@@ -1,26 +1,24 @@
 import { useState } from "react";
-import SignupForm from "@/shared/components/auth/SignupForm";
 import useSocialAuth from "@/shared/hooks/useSocialAuth";
 import { useNavigate } from "react-router-dom";
+import CreateAccountForm from "@/shared/components/auth/CreateAccountForm";
 
-
-const SignupPage = ({ userType }) => {
+const CreateAccoutPage = ({ userType }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSignup = (formData) => {
-    console.log("Signup data:", formData);
+  const handleCreateAccount = (formData) => {
+    console.log("Create account data:", formData);
     // logic here
-    navigate(`/${userType}/verify-otp`, { state: { email: formData.email } });
   };
 
   const { handleGoogleLogin, handleFacebookLogin, handleXLogin } =
     useSocialAuth();
 
   return (
-    <SignupForm
+    <CreateAccountForm
       userType={userType}
-      onSubmit={handleSignup}
+      onSubmit={handleCreateAccount}
       loading={loading}
       onGoogleLogin={handleGoogleLogin}
       onFacebookLogin={handleFacebookLogin}
@@ -29,4 +27,4 @@ const SignupPage = ({ userType }) => {
   );
 };
 
-export default SignupPage;
+export default CreateAccoutPage;

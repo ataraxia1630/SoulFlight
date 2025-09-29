@@ -13,7 +13,13 @@ import PrimaryButton from "../PrimaryButton";
 import { Link as RouterLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-const LoginForm = ({ onSubmit, loading = false }) => {
+const LoginForm = ({
+  onSubmit,
+  loading = false,
+  onGoogleLogin,
+  onFacebookLogin,
+  onXLogin,
+}) => {
   const { t } = useTranslation();
 
   const [formData, setFormData] = useState({
@@ -94,7 +100,7 @@ const LoginForm = ({ onSubmit, loading = false }) => {
             variant="body2"
             underline="none"
             sx={{
-              color: "#6b7280",
+              color: "#3f4145ff",
               "&:hover": {
                 color: "#1E9BCD",
                 textDecoration: "underline",
@@ -107,14 +113,17 @@ const LoginForm = ({ onSubmit, loading = false }) => {
 
         <PrimaryButton
           type="submit"
-          fullWidth
           loading={loading}
-          loadingText="Logging in..."
+          // loadingText="Logging in..."
         >
           {t("auth.login")}
         </PrimaryButton>
 
-        <SocialLoginButtons />
+        <SocialLoginButtons
+          onGoogleLogin={onGoogleLogin}
+          onFacebookLogin={onFacebookLogin}
+          onXLogin={onXLogin}
+        />
 
         <Typography
           variant="body2"
@@ -124,7 +133,7 @@ const LoginForm = ({ onSubmit, loading = false }) => {
           {t("auth.don't have account")}{" "}
           <Link
             component={RouterLink}
-            to="/signup/traveler"
+            to="/traveler/signup"
             variant="body2"
             sx={{
               color: "#1E9BCD",

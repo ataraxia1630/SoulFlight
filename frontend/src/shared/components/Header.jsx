@@ -7,12 +7,12 @@ import {
   MenuItem,
   TextField,
   InputAdornment,
-  Avatar,
   Button,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useTranslation } from "react-i18next";
+import { Link as RouterLink } from "react-router-dom";
 
 const Header = () => {
   const { t, i18n } = useTranslation();
@@ -22,35 +22,55 @@ const Header = () => {
     i18n.changeLanguage(e.target.value);
   };
 
-  const handleLogin = () => {
-    // Xử lý đăng nhập
-    console.log("Login clicked");
-  };
-
-  const handleSignUp = () => {
-    // Xử lý đăng ký
-    console.log("Sign up clicked");
-  };
-
   return (
     <AppBar
-      position="static"
+      position="fixed"
       color="default"
       elevation={0}
       sx={{
+        minWidth: "600px",
         bgcolor: "white",
         borderBottom: "1px solid #e0e0e0",
       }}
     >
-      <Toolbar sx={{ justifyContent: "space-between", px: 3 }}>
-        <Typography variant="h6" sx={{ fontWeight: "bold", color: "black" }}>
+      <Toolbar
+        sx={{
+          justifyContent: "space-between",
+          px: { xs: 2, lg: 2 },
+          py: { xs: 1, lg: 1.5 },
+          flexWrap: "wrap",
+          minHeight: { xs: 64, lg: 72 },
+          "& > *": {
+            "&:nth-child(n+2)": {
+              marginLeft: "auto",
+            },
+          },
+        }}
+      >
+        <Typography
+          variant="h5"
+          sx={{
+            fontWeight: "bold",
+            color: "black",
+            flexShrink: 0,
+          }}
+        >
           LOGO
         </Typography>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: { xs: 1.5, md: 3, lg: 4 },
+            flexWrap: "wrap",
+          }}
+        >
           {navItems.map((item) => (
             <Button
               key={item}
+              component={RouterLink}
+              to={item === "home" ? "/" : `/${item}`}
               TouchRippleProps={{
                 style: { color: "rgba(30, 155, 205, 0.5)" },
               }}
@@ -66,12 +86,18 @@ const Header = () => {
           ))}
         </Box>
 
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: { xs: 1, md: 1.5, lg: 2 },
+            flexShrink: 0,
+          }}
+        >
           <TextField
             size="small"
-            placeholder=""
             sx={{
-              width: 220,
+              width: { xs: 150, md: 180, lg: 220 },
               "& .MuiOutlinedInput-root": {
                 borderRadius: "30px",
                 height: "35px",
@@ -95,7 +121,13 @@ const Header = () => {
             }}
           />
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: { xs: 1, lg: 1.5 },
+            }}
+          >
             {/* <Avatar sx={{ width: 32, height: 32, bgcolor: "#4CAF50" }}>
               <Typography sx={{ fontSize: "14px", color: "white" }}>
                 U
@@ -103,18 +135,16 @@ const Header = () => {
             </Avatar> */}
 
             <Button
+              component={RouterLink}
+              to="/login"
               variant="outlined"
-              onClick={handleLogin}
               sx={{
-                minWidth: "60px",
+                minWidth: { xs: 50, md: 60 },
                 height: "32px",
                 borderRadius: "20px",
                 border: "1px solid #1E9BCD",
                 color: "#1E9BCD",
-                fontSize: "12px",
-                fontWeight: 500,
-                textTransform: "none",
-                px: 2,
+                px: { xs: 1, md: 2 },
                 "&:hover": {
                   backgroundColor: "rgba(14, 165, 233, 0.08)",
                   border: "1px solid #1E9BCD",
@@ -125,18 +155,16 @@ const Header = () => {
             </Button>
 
             <Button
+              component={RouterLink}
+              to="/signup/traveler"
               variant="contained"
-              onClick={handleSignUp}
               sx={{
-                minWidth: "70px",
+                minWidth: { xs: 50, md: 60 },
                 height: "32px",
                 borderRadius: "20px",
                 backgroundColor: "#1E9BCD",
                 color: "white",
-                fontSize: "12px",
-                fontWeight: 500,
-                textTransform: "none",
-                px: 2,
+                px: { xs: 1, md: 2 },
                 boxShadow: "none",
                 "&:hover": {
                   backgroundColor: "#0284c7",
@@ -155,10 +183,9 @@ const Header = () => {
               disableUnderline
               IconComponent={KeyboardArrowDownIcon}
               sx={{
-                fontSize: "14px",
                 color: "black",
                 "& .MuiSelect-select": {
-                  padding: "4px 24px 4px 8px",
+                  padding: { xs: "4px 20px 4px 4px", md: "4px 24px 4px 8px" },
                 },
               }}
             >

@@ -6,7 +6,7 @@ const MainLayout = () => {
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "white" }}>
       <Header />
-      <Box sx={{ p: 2 }}>
+      <Box sx={{ pt: { xs: 12, lg: 10 }, px: { xs: 2, lg: 2 } }}>
         <Outlet />
       </Box>
     </Box>

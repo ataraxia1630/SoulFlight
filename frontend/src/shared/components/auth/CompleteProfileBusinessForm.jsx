@@ -3,22 +3,18 @@ import { Box, Typography, Stack, Link } from "@mui/material";
 import SocialLoginButtons from "./SocialLoginButtons";
 import FormInput from "../FormInput";
 import PrimaryButton from "../PrimaryButton";
-import { Link as RouterLink } from "react-router-dom";
 import BackLogin from "./BackLoginLink";
 import { useTranslation } from "react-i18next";
 
-const SignupForm = ({
-  userType,
-  onSubmit,
-  loading = false,
-  onGoogleLogin,
-  onFacebookLogin,
-  onXLogin,
-}) => {
+const CompleteProfileTravelerForm = ({ onSubmit, loading = false }) => {
   const { t } = useTranslation();
 
   const [formData, setFormData] = useState({
-    email: "",
+    website: "",
+    phone: "",
+    address: "",
+    country: "",
+    identityCard: "",
   });
 
   const handleChange = (e) => {
@@ -46,15 +42,51 @@ const SignupForm = ({
           color: "#black",
         }}
       >
-        {t("auth.join")}
+        {t("auth.complete profile")}
       </Typography>
 
       <Stack spacing={3}>
         <FormInput
-          name="email"
-          label="Email"
-          type="email"
-          value={formData.email}
+          name="website"
+          label="Website"
+          type="url"
+          value={formData.website}
+          onChange={handleChange}
+        />
+
+        <FormInput
+          name="phone"
+          label={t("info.phone")}
+          type="tel"
+          inputProps={{
+            inputMode: "numeric",
+            pattern: "[0-9]*",
+          }}
+          value={formData.phone}
+          onChange={handleChange}
+        />
+
+        <FormInput
+          name="address"
+          label={t("info.address")}
+          type="text"
+          value={formData.address}
+          onChange={handleChange}
+        />
+
+        <FormInput
+          name="country"
+          label={t("info.country")}
+          type="text"
+          value={formData.country}
+          onChange={handleChange}
+        />
+
+        <FormInput
+          name="identityCard"
+          label={t("info.id card")}
+          type="text"
+          value={formData.identityCard}
           onChange={handleChange}
         />
 
@@ -63,29 +95,7 @@ const SignupForm = ({
           loading={loading}
           // loadingText="Signing up..."
         >
-          {t("auth.signup")}
-        </PrimaryButton>
-
-        {userType === "traveler" && (
-          <SocialLoginButtons
-            onGoogleLogin={onGoogleLogin}
-            onFacebookLogin={onFacebookLogin}
-            onXLogin={onXLogin}
-          />
-        )}
-
-        <PrimaryButton
-          component={RouterLink}
-          to={userType === "traveler" ? "/business/signup" : "/traveler/signup"}
-          sx={{
-            backgroundColor: "#136687",
-            color: "white",
-            "&:hover": { backgroundColor: "#1d556bff" },
-          }}
-        >
-          {userType === "traveler"
-            ? t("auth.signup for business")
-            : t("auth.signup for traveler")}
+          {t("auth.finish")}
         </PrimaryButton>
 
         <BackLogin />
@@ -94,4 +104,4 @@ const SignupForm = ({
   );
 };
 
-export default SignupForm;
+export default CompleteProfileTravelerForm;
