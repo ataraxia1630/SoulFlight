@@ -45,6 +45,9 @@ const AuthService = {
   },
 
   sendOtp: async (email) => {
+    let existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) throw new Error('Email already registered');
+
     const otp = AuthService._generateOtp();
     const hashedOtp = await bcrypt.hash(otp, SALT_ROUNDS);
     await redis.set(`otp:${email}`, hashedOtp, 'EX', 60 * OTP_EXPIRE_MIN);
@@ -91,67 +94,76 @@ const AuthService = {
     return { verify_token };
   },
 
-  signup: async (data) => {
-    const { email, username, password, phone, role, verify_token } = data;
-    let decoded;
-    try {
-      decoded = jwt.verify(verify_token, process.env.JWT_SECRET);
-    } catch (err) {
-      throw new Error('Invalid or expired verification token');
-    }
-    if (decoded.email !== email) throw new Error('Invalid verification token');
-
+  createUser: async (data) => {
+    const { email, username, password, role } = data;
     let existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) throw new Error('Email already registered');
-
     existingUser = await prisma.user.findUnique({ where: { username } });
     if (existingUser) throw new Error('Username already registered');
 
-    if (phone) {
-      existingUser = await prisma.user.findUnique({ where: { phone } });
-      if (existingUser) throw new Error('Phone already registered');
-    }
-
     const password_hash = await bcrypt.hash(password, SALT_ROUNDS);
+    const user = await prisma.user.create({
+      data: {
+        email,
+        name: username,
+        username,
+        password: password_hash,
+        status: role === 'TRAVELER' ? 'ACTIVE' : 'UNVERIFIED',
+      },
+    });
+    return user;
+  },
 
-    if (role == 'TRAVELER') {
-      const { traveler } = data;
-      const user = await prisma.user.create({
-        data: {
-          email,
-          name: username,
-          username,
-          phone,
-          password: password_hash,
-          status: 'ACTIVE',
-          Traveler: {
-            create: { ...traveler },
-          },
-        },
-        include: { Traveler: true },
+  createTraveler: async (data) => {
+    const { email, phone, ...travelerData } = data;
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: {
+        Traveler: true,
+      },
+    });
+    if (!user) throw new Error('User not found');
+    if (phone) {
+      const existingUser = await prisma.user.findUnique({ where: { phone } });
+      if (existingUser) throw new Error('Phone already registered');
+      await prisma.user.update({
+        where: { email },
+        data: { phone },
       });
-      return user;
     }
 
-    if (role == 'PROVIDER') {
-      const { provider } = data;
-      const user = await prisma.user.create({
-        data: {
-          email,
-          name: username,
-          username,
-          phone,
-          password: password_hash,
-          status: 'UNVERIFIED',
-          Provider: {
-            create: { ...provider },
-          },
-        },
-        include: { Provider: true },
+    await prisma.traveler.create({
+      data: {
+        id: user.id,
+        ...travelerData,
+      },
+    });
+    return user;
+  },
+
+  createProvider: async (data) => {
+    const { email, phone, ...providerData } = data;
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: { Provider: true },
+    });
+    if (!user) throw new Error('User not found');
+    if (phone) {
+      const existingUser = await prisma.user.findUnique({ where: { phone } });
+      if (existingUser) throw new Error('Phone already registered');
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { phone },
       });
-      return user;
     }
-    throw new Error('Invalid role');
+
+    await prisma.provider.create({
+      data: {
+        id: user.id,
+        ...providerData,
+      },
+    });
+    return user;
   },
 
   login: async ({ username, password, remember = false }) => {
