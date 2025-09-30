@@ -1,83 +1,80 @@
+const catchAsync = require('../utils/catchAsync');
 const { AuthService } = require('../services/auth.service');
 
 const AuthController = {
-  sendOtp: async (req, res, next) => {
-    try {
-      if (!req.body.email) throw Error('Missing email');
-      await AuthService.sendOtp(req.body.email);
-      return res.status(201).json({ message: 'OPT sent' });
-    } catch (error) {
-      next(error);
-    }
-  },
+  sendOtp: catchAsync(async (req, res, next) => {
+    await AuthService.sendOtp(req.body.email);
+    res.status(200).json({
+      status: 'success',
+      message: 'OTP sent',
+    });
+  }),
 
-  resendOtp: async (req, res, next) => {
-    try {
-      await AuthService.resendOtp(req.body.email);
-      return res.status(201).json({ message: 'OPT resent' });
-    } catch (error) {
-      next(error);
-    }
-  },
+  resendOtp: catchAsync(async (req, res, next) => {
+    await AuthService.resendOtp(req.body.email);
+    res.status(200).json({
+      status: 'success',
+      message: 'OTP resent',
+    });
+  }),
 
-  verifyOtp: async (req, res, next) => {
-    try {
-      const verify_token = await AuthService.verifyOtp(
+  verifyOtp: catchAsync(async (req, res, next) => {
+    const verify_token = await AuthService.verifyOtp(
+      req.body.email,
+      req.body.otp
+    );
+    return res.status(200).json({ message: 'OTP verified', verify_token });
+  }),
+
+  createUser: catchAsync(async (req, res, next) => {
+    const user = await AuthService.createUser(req.body);
+    return res.status(201).json({ message: 'User created', user });
+  }),
+
+  createTraveler: catchAsync(async (req, res, next) => {
+    const traveler = await AuthService.createTraveler(req.body);
+    return res.status(201).json({ message: 'Traveler created', traveler });
+  }),
+
+  createProvider: catchAsync(async (req, res, next) => {
+    const provider = await AuthService.createProvider(req.body);
+    return res.status(201).json({ message: 'Provider created', provider });
+  }),
+
+  login: catchAsync(async (req, res, next) => {
+    const { access_token, refresh_token } = await AuthService.login(
+      req.body.username,
+      req.body.password
+    );
+    return res
+      .status(200)
+      .json({ message: 'Login successful', access_token, refresh_token });
+  }),
+
+  signupWithSocialMedia: catchAsync(async (req, res, next) => {
+    const { access_token, refresh_token } =
+      await AuthService.signupWithSocialMedia(
         req.body.email,
-        req.body.otp
+        req.body.username,
+        req.body.provider
       );
-      return res.status(200).json({ message: 'OTP verified', verify_token });
-    } catch (error) {
-      next(error);
-    }
-  },
+    return res
+      .status(200)
+      .json({ message: 'Signup successful', access_token, refresh_token });
+  }),
 
-  createUser: async (req, res, next) => {
-    try {
-      const user = await AuthService.createUser(req.body);
-      return res.status(201).json({ message: 'User created', user });
-    } catch (error) {
-      next(error);
-    }
-  },
+  loginWithSocialMedia: catchAsync(async (req, res, next) => {
+    const { access_token, refresh_token } =
+      await AuthService.loginWithSocialMedia(req.body.email, req.body.provider);
+    return res
+      .status(200)
+      .json({ message: 'Login successful', access_token, refresh_token });
+  }),
 
-  createTraveler: async (req, res, next) => {
-    try {
-      const traveler = await AuthService.createTraveler(req.body);
-      return res.status(201).json({ message: 'Traveler created', traveler });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  createProvider: async (req, res, next) => {
-    try {
-      const provider = await AuthService.createProvider(req.body);
-      return res.status(201).json({ message: 'Provider created', provider });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  login: async (req, res, next) => {
-    try {
-      await AuthService.login(req.body);
-      return res.status(200).json({ message: 'Login successful' });
-    } catch (error) {
-      next(error);
-    }
-  },
-
-  signupWithSocialMedia: async (req, res, next) => {},
-
-  loginWithSocialMedia: async (req, res, next) => {},
-
-  logout: async (req, res, next) => {
-    try {
-      await AuthService.logout({ userId: req.user.id });
-      return res.status(200).json({ message: 'Logged out' });
-    } catch (error) {}
-  },
+  logout: catchAsync(async (req, res, next) => {
+    await AuthService.logout(req.user.id);
+    return res.status(200).json({ message: 'Logout successful' });
+  }),
 };
 
 module.exports = { AuthController };
