@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const redis = require('../configs/redis');
 const prisma = require('../configs/prisma');
+const AppError = require('../utils/AppError');
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
@@ -45,6 +46,16 @@ const AuthService = {
   },
 
   sendOtp: async (email) => {
+    let existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) throw new AppError(400, 'Email already registered');
+
+    const existingOtp = await redis.get(`otp:${email}`);
+    if (existingOtp)
+      throw new AppError(
+        400,
+        'OTP already sent. Please wait and recheck your mailbox.'
+      );
+
     const otp = AuthService._generateOtp();
     const hashedOtp = await bcrypt.hash(otp, SALT_ROUNDS);
     await redis.set(`otp:${email}`, hashedOtp, 'EX', 60 * OTP_EXPIRE_MIN);
@@ -65,7 +76,8 @@ const AuthService = {
     const key = `otp_resend:${email}`;
     const current = await redis.get(key);
     if (current && Number(current) >= OTP_RESEND_LIMIT) {
-      throw new Error(
+      throw new AppError(
+        429,
         `Resend OTP limit reached (${OTP_RESEND_LIMIT} times). Try after ${OTP_RESEND_WINDOW_MIN} minutes.`
       );
     }
@@ -81,9 +93,9 @@ const AuthService = {
 
   verifyOtp: async (email, otp) => {
     const hashedOtp = await redis.get(`otp:${email}`);
-    if (!hashedOtp) throw new Error('OTP expired or not found');
+    if (!hashedOtp) throw new AppError(400, 'OTP expired or not found');
     const isValid = await bcrypt.compare(otp, hashedOtp);
-    if (!isValid) throw new Error('Invalid OTP');
+    if (!isValid) throw new AppError(400, 'Invalid OTP');
     await redis.del(`otp:${email}`);
     const verify_token = jwt.sign({ email }, process.env.JWT_SECRET, {
       expiresIn: '10m',
@@ -91,67 +103,78 @@ const AuthService = {
     return { verify_token };
   },
 
-  signup: async (data) => {
-    const { email, username, password, phone, role, verify_token } = data;
-    let decoded;
-    try {
-      decoded = jwt.verify(verify_token, process.env.JWT_SECRET);
-    } catch (err) {
-      throw new Error('Invalid or expired verification token');
-    }
-    if (decoded.email !== email) throw new Error('Invalid verification token');
-
+  createUser: async (data) => {
+    const { email, username, password, role } = data;
     let existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) throw new Error('Email already registered');
-
+    if (existingUser) throw new AppError(400, 'Email already registered');
     existingUser = await prisma.user.findUnique({ where: { username } });
-    if (existingUser) throw new Error('Username already registered');
-
-    if (phone) {
-      existingUser = await prisma.user.findUnique({ where: { phone } });
-      if (existingUser) throw new Error('Phone already registered');
-    }
+    if (existingUser) throw new AppError(400, 'Username already taken');
 
     const password_hash = await bcrypt.hash(password, SALT_ROUNDS);
+    const user = await prisma.user.create({
+      data: {
+        email,
+        name: username,
+        username,
+        password: password_hash,
+        status: role === 'TRAVELER' ? 'ACTIVE' : 'UNVERIFIED',
+      },
+    });
+    return user;
+  },
 
-    if (role == 'TRAVELER') {
-      const { traveler } = data;
-      const user = await prisma.user.create({
-        data: {
-          email,
-          name: username,
-          username,
-          phone,
-          password: password_hash,
-          status: 'ACTIVE',
-          Traveler: {
-            create: { ...traveler },
-          },
-        },
-        include: { Traveler: true },
+  createTraveler: async (data) => {
+    const { email, phone, ...travelerData } = data;
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: {
+        Traveler: true,
+      },
+    });
+    if (!user) throw new AppError(400, 'User not found');
+    if (phone) {
+      const existingUser = await prisma.user.findUnique({ where: { phone } });
+      if (existingUser)
+        throw new AppError(400, 'Phone number already registered');
+      await prisma.user.update({
+        where: { email },
+        data: { phone },
       });
-      return user;
     }
 
-    if (role == 'PROVIDER') {
-      const { provider } = data;
-      const user = await prisma.user.create({
-        data: {
-          email,
-          name: username,
-          username,
-          phone,
-          password: password_hash,
-          status: 'UNVERIFIED',
-          Provider: {
-            create: { ...provider },
-          },
-        },
-        include: { Provider: true },
+    await prisma.traveler.create({
+      data: {
+        id: user.id,
+        ...travelerData,
+      },
+    });
+    return user;
+  },
+
+  createProvider: async (data) => {
+    const { email, phone, ...providerData } = data;
+    const user = await prisma.user.findUnique({
+      where: { email },
+      include: { Provider: true },
+    });
+    if (!user) throw new AppError(400, 'User not found');
+    if (phone) {
+      const existingUser = await prisma.user.findUnique({ where: { phone } });
+      if (existingUser)
+        throw new AppError(400, 'Phone number already registered');
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { phone },
       });
-      return user;
     }
-    throw new Error('Invalid role');
+
+    await prisma.provider.create({
+      data: {
+        id: user.id,
+        ...providerData,
+      },
+    });
+    return user;
   },
 
   login: async ({ username, password, remember = false }) => {
@@ -163,15 +186,16 @@ const AuthService = {
         where: { username },
       });
     }
-    if (!existingUser) throw new Error('Wrong email / username');
+    if (!existingUser) throw new AppError(400, 'Wrong username or email');
 
-    if (existingUser.status === 'LOCKED') throw new Error('Account locked');
+    if (existingUser.status === 'LOCKED')
+      throw new AppError(403, 'Account locked');
 
     const is_valid_password = await bcrypt.compare(
       password,
       existingUser.password
     );
-    if (!is_valid_password) throw new Error('Wrong password');
+    if (!is_valid_password) throw new AppError(400, 'Wrong password');
 
     const accessExpires = remember ? '30d' : '10d';
     const refreshTtlSeconds = remember ? 60 * 60 * 24 * 60 : 60 * 60 * 24 * 30;
@@ -195,18 +219,18 @@ const AuthService = {
   },
 
   refreshToken: async ({ refresh_token }) => {
-    if (!refresh_token) throw new Error('Missing refresh token');
+    if (!refresh_token) throw new AppError(400, 'Missing refresh token');
     let payload;
     try {
       payload = jwt.verify(refresh_token, process.env.JWT_REFRESH_SECRET);
     } catch (err) {
-      throw new Error('Invalid or expired refresh token');
+      throw new AppError(401, 'Invalid or expired refresh token');
     }
 
     const userId = payload.id;
     const stored = await getStoredRefreshToken(userId);
     if (!stored || stored !== refresh_token) {
-      throw new Error('Refresh token revoked');
+      throw new AppError(401, 'Refresh token revoked or not found');
     }
 
     // issue new tokens (keep same remember policy by checking remaining TTL? simple approach: default durations)
@@ -224,19 +248,19 @@ const AuthService = {
   loginWithSocialMedia: async (req, res, next) => {},
 
   logout: async ({ userId }) => {
-    if (!userId) throw new Error('Missing user id');
+    if (!userId) throw new AppError(400, 'Missing userId');
     await revokeRefreshToken(userId);
     return { message: 'Logged out' };
   },
 
   // helper for middleware
   verifyAccessToken: async (token) => {
-    if (!token) throw new Error('Missing token');
+    if (!token) throw new AppError(401, 'Missing access token');
     try {
       const payload = jwt.verify(token, process.env.JWT_SECRET);
       return payload;
     } catch (err) {
-      throw new Error('Invalid or expired token');
+      throw new AppError(401, 'Invalid or expired access token');
     }
   },
 };
