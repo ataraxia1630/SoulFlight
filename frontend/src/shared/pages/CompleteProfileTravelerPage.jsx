@@ -10,6 +10,7 @@ const CompleteProfileTravelerPage = () => {
   const handleCompleteProfile = (formData) => {
     console.log("Complete profile data:", formData);
     // logic here
+    navigate("/");
   };
 
   const { handleGoogleLogin, handleFacebookLogin, handleXLogin } =
