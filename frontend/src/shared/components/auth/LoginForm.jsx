@@ -6,6 +6,8 @@ import {
   FormControlLabel,
   Link,
   Stack,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import SocialLoginButtons from "./SocialLoginButtons";
 import FormInput from "../FormInput";
@@ -15,6 +17,8 @@ import { useTranslation } from "react-i18next";
 
 const LoginForm = ({
   onSubmit,
+  alert,
+  severity,
   loading = false,
   onGoogleLogin,
   onFacebookLogin,
@@ -27,6 +31,7 @@ const LoginForm = ({
     password: "",
     rememberMe: false,
   });
+  const [alertOpen, setAlertOpen] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, checked, type } = e.target;
@@ -39,10 +44,21 @@ const LoginForm = ({
   const handleSubmit = (e) => {
     e.preventDefault();
     onSubmit?.(formData);
+    setAlertOpen(true);
   };
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
+      {alertOpen && (
+        <Alert
+          sx={{ mb: 3 }}
+          severity={severity}
+          onClose={() => setAlertOpen(false)}
+        >
+          {alert}
+        </Alert>
+      )}
+
       <Typography
         variant="h4"
         component="h1"
