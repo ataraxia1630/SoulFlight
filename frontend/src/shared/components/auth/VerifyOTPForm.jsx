@@ -1,11 +1,12 @@
-import { useState } from "react";
-import { Box, Typography, Stack, Link } from "@mui/material";
-import OTPInput from "./OTPInput";
-import SocialLoginButtons from "./SocialLoginButtons";
-import BackLogin from "./BackLoginLink";
-import PrimaryButton from "../PrimaryButton";
-import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
+import { useState } from 'react';
+import { Box, Typography, Stack, Link } from '@mui/material';
+import OTPInput from './OTPInput';
+import SocialLoginButtons from './SocialLoginButtons';
+import BackLogin from './BackLoginLink';
+import PrimaryButton from '../PrimaryButton';
+import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
+import SignupService from '@/shared/services/signup.service';
 
 const VerifyOTPForm = ({
   userType,
@@ -15,36 +16,46 @@ const VerifyOTPForm = ({
   onFacebookLogin,
   onXLogin,
 }) => {
-  const [otp, setOtp] = useState("");
-  const [error, setError] = useState("");
+  const [otp, setOtp] = useState('');
+  const [error, setError] = useState('');
   const { t } = useTranslation();
   const location = useLocation();
-  const email = location.state?.email || "";
+  const email = location.state?.email || '';
 
   const handleOTPComplete = (otpValue) => {
     setOtp(otpValue);
-    setError("");
+    setError('');
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (otp.length !== 5) {
-      setError("Please enter complete OTP");
+      setError('Please enter complete OTP');
       return;
     }
 
     onSubmit?.({ otp, email });
   };
 
-  const handleResendOTP = () => {
-    console.log("Resending OTP to:", email);
-    setOtp("");
-    setError("");
+  const handleResendOTP = async () => {
+    console.log('Resending OTP to:', email);
+    try {
+      await SignupService.sendOtp(email);
+      alert('OTP has been resent to your email.');
+    } catch (error) {
+      console.error('Error resending OTP:', error);
+      alert(
+        error.response?.data?.message ||
+          'Failed to resend OTP. Please try again.'
+      );
+    }
+    setOtp('');
+    setError('');
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
       <Typography
         variant="h4"
         component="h1"
@@ -52,10 +63,10 @@ const VerifyOTPForm = ({
         sx={{
           mb: 1,
           fontWeight: 600,
-          color: "text.primary",
+          color: 'text.primary',
         }}
       >
-        {t("auth.enter otp")}
+        {t('auth.enter otp')}
       </Typography>
 
       <Typography
@@ -63,10 +74,10 @@ const VerifyOTPForm = ({
         align="center"
         sx={{
           mb: 4,
-          color: "gray",
+          color: 'gray',
         }}
       >
-        {t("auth.sent otp")} {email || t("auth.your email")}
+        {t('auth.sent otp')} {email || t('auth.your email')}
       </Typography>
 
       <Stack spacing={3}>
@@ -88,9 +99,9 @@ const VerifyOTPForm = ({
           align="center"
           sx={{
             mt: 2,
-            color: "#6b7280",
-            display: "flex",
-            justifyContent: "center",
+            color: '#6b7280',
+            display: 'flex',
+            justifyContent: 'center',
             gap: 0.5,
           }}
         >
@@ -101,21 +112,21 @@ const VerifyOTPForm = ({
             onClick={handleResendOTP}
             variant="body2"
             sx={{
-              color: "#1E9BCD",
+              color: '#1E9BCD',
               fontWeight: 500,
-              textDecoration: "none",
-              "&:hover": { textDecoration: "underline" },
+              textDecoration: 'none',
+              '&:hover': { textDecoration: 'underline' },
             }}
           >
-            {t("auth.resend")}
+            {t('auth.resend')}
           </Link>
         </Typography>
 
         <PrimaryButton type="submit" disabled={loading || otp.length !== 5}>
-          {loading ? t("auth.verifying") : t("auth.next")}
+          {loading ? t('auth.verifying') : t('auth.next')}
         </PrimaryButton>
 
-        {userType === "traveler" && (
+        {userType === 'traveler' && (
           <SocialLoginButtons
             onGoogleLogin={onGoogleLogin}
             onFacebookLogin={onFacebookLogin}
