@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { Box, Paper } from "@mui/material";
 import { useEffect, useRef } from "react";
-import Header from "@/shared/components/Header";
+import Header from "./Header";
 
 const AuthLayout = () => {
   const canvasRef = useRef(null);

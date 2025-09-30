@@ -4,6 +4,7 @@ import useSocialAuth from '@/shared/hooks/useSocialAuth';
 import { useNavigate } from 'react-router-dom';
 import SignupService from '@/shared/services/signup.service';
 
+
 const VerifyOTPPage = ({ userType }) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();

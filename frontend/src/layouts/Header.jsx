@@ -94,33 +94,6 @@ const Header = () => {
             flexShrink: 0,
           }}
         >
-          <TextField
-            size="small"
-            sx={{
-              width: { xs: 150, md: 180, lg: 220 },
-              "& .MuiOutlinedInput-root": {
-                borderRadius: "30px",
-                height: "35px",
-                "& fieldset": {
-                  border: "1px solid #626262ff",
-                },
-                "&:hover fieldset": {
-                  border: "1.2px solid #3d3d3dff",
-                },
-                "&.Mui-focused fieldset": {
-                  border: "1px solid black",
-                },
-              },
-            }}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <SearchIcon sx={{ color: "gray", fontSize: "20px" }} />
-                </InputAdornment>
-              ),
-            }}
-          />
-
           <Box
             sx={{
               display: "flex",

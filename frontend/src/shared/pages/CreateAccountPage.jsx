@@ -10,6 +10,7 @@ const CreateAccoutPage = ({ userType }) => {
   const handleCreateAccount = (formData) => {
     console.log("Create account data:", formData);
     // logic here
+    navigate(`/${userType}/complete-profile`);
   };
 
   const { handleGoogleLogin, handleFacebookLogin, handleXLogin } =
