@@ -3,6 +3,15 @@ const prisma = require('./src/configs/prisma');
 const redis = require('./src/configs/redis');
 const route = require('./src/routes/index');
 const app = express();
+const cors = require('cors');
+
+// Cấu hình CORS
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  })
+);
 
 // Middleware
 app.use(express.json());
