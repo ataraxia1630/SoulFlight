@@ -38,7 +38,7 @@ const AuthService = {
     await axios
       .post(`${API_URL}/verify-otp`, { email, otp })
       .then((res) => {
-        const { verify_token } = res.data.verify_token;
+        const { verify_token } = res.data;
         console.log('Storing verify_token in localStorage:', verify_token);
         localStorage.setItem('verify_token', verify_token);
         return res.data;

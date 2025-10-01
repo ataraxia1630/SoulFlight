@@ -49,13 +49,6 @@ const AuthService = {
     let existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) throw new AppError(400, 'Email already registered');
 
-    const existingOtp = await redis.get(`otp:${email}`);
-    if (existingOtp)
-      throw new AppError(
-        400,
-        'OTP already sent. Please wait and recheck your mailbox.'
-      );
-
     const otp = AuthService._generateOtp();
     const hashedOtp = await bcrypt.hash(otp, SALT_ROUNDS);
     await redis.set(`otp:${email}`, hashedOtp, 'EX', 60 * OTP_EXPIRE_MIN);
@@ -100,7 +93,7 @@ const AuthService = {
     const verify_token = jwt.sign({ email }, process.env.JWT_SECRET, {
       expiresIn: '10m',
     });
-    return { verify_token };
+    return verify_token;
   },
 
   createUser: async (data) => {
