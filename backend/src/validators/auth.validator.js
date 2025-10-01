@@ -35,11 +35,11 @@ const createProviderSchema = Joi.object({
     .pattern(/^[0-9]{9,11}$/)
     .optional(),
   name: Joi.string().min(3).max(100).required(),
-  description: Joi.string().max(500).optional(),
-  province: Joi.string().min(10).max(200).required(),
+  description: Joi.string().min(0).max(500).optional(),
+  province: Joi.string().min(1).max(200).required(),
   country: Joi.string().min(2).max(100).required(),
   address: Joi.string().min(10).max(200).required(),
-  website_link: Joi.string().uri().optional(),
+  website_link: Joi.string().uri().min(0).optional(),
   id_card: Joi.string().min(6).max(20).required(),
   establish_year: Joi.number()
     .integer()

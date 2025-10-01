@@ -126,56 +126,71 @@ const AuthService = {
 
   createTraveler: async (data) => {
     const { email, phone, ...travelerData } = data;
-    const user = await prisma.user.findUnique({
-      where: { email },
-      include: {
-        Traveler: true,
-      },
-    });
-    if (!user) throw new AppError(400, 'User not found');
-    if (phone) {
-      const existingUser = await prisma.user.findUnique({ where: { phone } });
-      if (existingUser)
-        throw new AppError(400, 'Phone number already registered');
-      await prisma.user.update({
-        where: { email },
-        data: { phone },
-      });
-    }
 
-    await prisma.traveler.create({
-      data: {
-        id: user.id,
-        ...travelerData,
-      },
+    return await prisma.$transaction(async (tx) => {
+      const user = await tx.user.findUnique({
+        where: { email },
+        include: {
+          Traveler: true,
+        },
+      });
+      if (!user) throw new AppError(400, 'User not found');
+
+      if (phone) {
+        const existingUser = await tx.user.findUnique({ where: { phone } });
+        if (existingUser)
+          throw new AppError(400, 'Phone number already registered');
+        await tx.user.update({
+          where: { email },
+          data: { phone },
+        });
+      }
+
+      await tx.traveler.create({
+        data: {
+          id: user.id,
+          ...travelerData,
+        },
+      });
+      return user;
     });
-    return user;
   },
 
   createProvider: async (data) => {
-    const { email, phone, ...providerData } = data;
-    const user = await prisma.user.findUnique({
-      where: { email },
-      include: { Provider: true },
-    });
-    if (!user) throw new AppError(400, 'User not found');
-    if (phone) {
-      const existingUser = await prisma.user.findUnique({ where: { phone } });
-      if (existingUser)
-        throw new AppError(400, 'Phone number already registered');
-      await prisma.user.update({
-        where: { id: user.id },
-        data: { phone },
-      });
-    }
+    const { email, phone, name, ...providerData } = data;
 
-    await prisma.provider.create({
-      data: {
-        id: user.id,
-        ...providerData,
-      },
+    return await prisma.$transaction(async (tx) => {
+      const user = await tx.user.findUnique({
+        where: { email },
+        include: { Provider: true },
+      });
+      if (!user) throw new AppError(400, 'User not found');
+
+      if (phone) {
+        const existingUser = await tx.user.findUnique({ where: { phone } });
+        if (existingUser)
+          throw new AppError(400, 'Phone number already registered');
+        await tx.user.update({
+          where: { id: user.id },
+          data: { phone },
+        });
+      }
+
+      if (name) {
+        await tx.user.update({
+          where: { id: user.id },
+          data: { name },
+        });
+      }
+
+      await tx.provider.create({
+        data: {
+          id: user.id,
+          ...providerData,
+        },
+      });
+      return user;
     });
-    return user;
   },
 
   login: async (username, password, remember = false) => {

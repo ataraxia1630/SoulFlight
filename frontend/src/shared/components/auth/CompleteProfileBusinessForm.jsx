@@ -1,20 +1,25 @@
-import { useState } from "react";
-import { Box, Typography, Stack, Link } from "@mui/material";
-import SocialLoginButtons from "./SocialLoginButtons";
-import FormInput from "../FormInput";
-import PrimaryButton from "../PrimaryButton";
-import BackLogin from "./BackLoginLink";
-import { useTranslation } from "react-i18next";
+import { useState } from 'react';
+import { Box, Typography, Stack, Link } from '@mui/material';
+import SocialLoginButtons from './SocialLoginButtons';
+import FormInput from '../FormInput';
+import PrimaryButton from '../PrimaryButton';
+import BackLogin from './BackLoginLink';
+import { useTranslation } from 'react-i18next';
+import { Form } from 'react-router-dom';
 
 const CompleteProfileTravelerForm = ({ onSubmit, loading = false }) => {
   const { t } = useTranslation();
 
   const [formData, setFormData] = useState({
-    website: "",
-    phone: "",
-    address: "",
-    country: "",
-    identityCard: "",
+    name: '',
+    description: '',
+    website_link: '',
+    phone: '',
+    address: '',
+    country: '',
+    province: '',
+    id_card: '',
+    establish_year: '',
   });
 
   const handleChange = (e) => {
@@ -31,7 +36,7 @@ const CompleteProfileTravelerForm = ({ onSubmit, loading = false }) => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
       <Typography
         variant="h4"
         component="h1"
@@ -39,28 +44,46 @@ const CompleteProfileTravelerForm = ({ onSubmit, loading = false }) => {
         sx={{
           mb: 4,
           fontWeight: 600,
-          color: "#black",
+          color: '#black',
         }}
       >
-        {t("auth.complete profile")}
+        {t('auth.complete profile')}
       </Typography>
 
       <Stack spacing={3}>
         <FormInput
-          name="website"
+          name="name"
+          label={t('info.company_name')}
+          type="text"
+          value={formData.name}
+          onChange={handleChange}
+        />
+
+        <FormInput
+          name="description"
+          label={t('info.description')}
+          type="text"
+          multiline
+          rows={4}
+          value={formData.description}
+          onChange={handleChange}
+        />
+
+        <FormInput
+          name="website_link"
           label="Website"
           type="url"
-          value={formData.website}
+          value={formData.website_link}
           onChange={handleChange}
         />
 
         <FormInput
           name="phone"
-          label={t("info.phone")}
+          label={t('info.phone')}
           type="tel"
           inputProps={{
-            inputMode: "numeric",
-            pattern: "[0-9]*",
+            inputMode: 'numeric',
+            pattern: '[0-9]*',
           }}
           value={formData.phone}
           onChange={handleChange}
@@ -68,7 +91,7 @@ const CompleteProfileTravelerForm = ({ onSubmit, loading = false }) => {
 
         <FormInput
           name="address"
-          label={t("info.address")}
+          label={t('info.address')}
           type="text"
           value={formData.address}
           onChange={handleChange}
@@ -76,17 +99,39 @@ const CompleteProfileTravelerForm = ({ onSubmit, loading = false }) => {
 
         <FormInput
           name="country"
-          label={t("info.country")}
+          label={t('info.country')}
           type="text"
           value={formData.country}
           onChange={handleChange}
         />
 
         <FormInput
-          name="identityCard"
-          label={t("info.id card")}
+          name="province"
+          label={t('info.province')}
           type="text"
-          value={formData.identityCard}
+          value={formData.province}
+          onChange={handleChange}
+        />
+
+        <FormInput
+          name="id_card"
+          label={t('info.id_card')}
+          type="text"
+          value={formData.id_card}
+          onChange={handleChange}
+        />
+
+        <FormInput
+          name="establish_year"
+          label={t('info.establish_year')}
+          type="number"
+          inputProps={{
+            inputMode: 'numeric',
+            pattern: '[0-9]*',
+            min: 1900,
+            max: new Date().getFullYear(),
+          }}
+          value={formData.establish_year}
           onChange={handleChange}
         />
 
@@ -95,7 +140,7 @@ const CompleteProfileTravelerForm = ({ onSubmit, loading = false }) => {
           loading={loading}
           // loadingText="Signing up..."
         >
-          {t("auth.finish")}
+          {t('auth.finish')}
         </PrimaryButton>
 
         <BackLogin />
