@@ -17,6 +17,7 @@ const createUserSchema = Joi.object({
     .pattern(/^[0-9]{9,11}$/)
     .optional(),
   role: Joi.string().valid('TRAVELER', 'PROVIDER').required(),
+  verify_token: Joi.string().required(),
 });
 
 const createTravelerSchema = Joi.object({

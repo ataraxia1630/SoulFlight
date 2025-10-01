@@ -2,7 +2,7 @@ import { useState } from 'react';
 import SignupForm from '@/shared/components/auth/SignupForm';
 import useSocialAuth from '@/shared/hooks/useSocialAuth';
 import { useNavigate } from 'react-router-dom';
-import SignupService from '@/shared/services/signup.service';
+import AuthService from '@/shared/services/auth.service';
 
 const SignupPage = ({ userType }) => {
   const [loading, setLoading] = useState(false);
@@ -13,7 +13,7 @@ const SignupPage = ({ userType }) => {
     setLoading(true);
 
     try {
-      await SignupService.sendOtp(formData.email);
+      await AuthService.sendOtp(formData.email);
       navigate(`/${userType}/verify-otp`, { state: { email: formData.email } });
     } catch (error) {
       alert(

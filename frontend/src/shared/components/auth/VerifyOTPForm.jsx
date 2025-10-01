@@ -6,7 +6,7 @@ import BackLogin from './BackLoginLink';
 import PrimaryButton from '../PrimaryButton';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
-import SignupService from '@/shared/services/signup.service';
+import AuthService from '@/shared/services/auth.service';
 
 const VerifyOTPForm = ({
   userType,
@@ -41,7 +41,7 @@ const VerifyOTPForm = ({
   const handleResendOTP = async () => {
     console.log('Resending OTP to:', email);
     try {
-      await SignupService.sendOtp(email);
+      await AuthService.sendOtp(email);
       alert('OTP has been resent to your email.');
     } catch (error) {
       console.error('Error resending OTP:', error);
