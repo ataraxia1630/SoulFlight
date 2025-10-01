@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Typography, Stack, Link } from '@mui/material';
+import { Box, Typography, Stack, Link, Alert } from '@mui/material';
 import OTPInput from './OTPInput';
 import SocialLoginButtons from './SocialLoginButtons';
 import BackLogin from './BackLoginLink';
@@ -15,12 +15,14 @@ const VerifyOTPForm = ({
   onGoogleLogin,
   onFacebookLogin,
   onXLogin,
+  alert,
 }) => {
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
   const { t } = useTranslation();
   const location = useLocation();
   const email = location.state?.email || '';
+  const [alertOpen, setAlertOpen] = useState(false);
 
   const handleOTPComplete = (otpValue) => {
     setOtp(otpValue);
@@ -36,6 +38,7 @@ const VerifyOTPForm = ({
     }
 
     onSubmit?.({ otp, email });
+    setAlertOpen(true);
   };
 
   const handleResendOTP = async () => {
@@ -56,6 +59,16 @@ const VerifyOTPForm = ({
 
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
+      {alertOpen && (
+        <Alert
+          sx={{ mb: 3 }}
+          severity={alert.severity}
+          onClose={() => setAlertOpen(false)}
+        >
+          {alert.message}
+        </Alert>
+      )}
+
       <Typography
         variant="h4"
         component="h1"

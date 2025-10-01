@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { Box, Typography, Stack, MenuItem } from "@mui/material";
-import SocialLoginButtons from "./SocialLoginButtons";
-import FormInput from "../FormInput";
-import PrimaryButton from "../PrimaryButton";
-import BackLogin from "./BackLoginLink";
-import { useTranslation } from "react-i18next";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { useState } from 'react';
+import { Box, Typography, Stack, MenuItem } from '@mui/material';
+import SocialLoginButtons from './SocialLoginButtons';
+import FormInput from '../FormInput';
+import PrimaryButton from '../PrimaryButton';
+import BackLogin from './BackLoginLink';
+import { useTranslation } from 'react-i18next';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 const CompleteProfileTravelerForm = ({
   onSubmit,
@@ -17,9 +17,9 @@ const CompleteProfileTravelerForm = ({
   const { t } = useTranslation();
 
   const [formData, setFormData] = useState({
-    phone: "",
-    gender: "",
-    dateOfBirth: "",
+    phone: '',
+    gender: '',
+    dob: '',
   });
 
   const handleChange = (e) => {
@@ -36,7 +36,7 @@ const CompleteProfileTravelerForm = ({
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
       <Typography
         variant="h4"
         component="h1"
@@ -44,20 +44,20 @@ const CompleteProfileTravelerForm = ({
         sx={{
           mb: 4,
           fontWeight: 600,
-          color: "#black",
+          color: '#black',
         }}
       >
-        {t("auth.complete profile")}
+        {t('auth.complete profile')}
       </Typography>
 
       <Stack spacing={3}>
         <FormInput
           name="phone"
-          label={t("info.phone")}
+          label={t('info.phone')}
           type="tel"
           inputProps={{
-            inputMode: "numeric",
-            pattern: "[0-9]*",
+            inputMode: 'numeric',
+            pattern: '[0-9]*',
           }}
           value={formData.phone}
           onChange={handleChange}
@@ -66,20 +66,20 @@ const CompleteProfileTravelerForm = ({
         <FormInput
           select
           name="gender"
-          label={t("info.gender")}
+          label={t('info.gender')}
           value={formData.gender}
           onChange={handleChange}
         >
-          <MenuItem value="male">{t("male")}</MenuItem>
-          <MenuItem value="female">{t("female")}</MenuItem>
-          <MenuItem value="other">{t("other")}</MenuItem>
+          <MenuItem value="MALE">{t('male')}</MenuItem>
+          <MenuItem value="FEMALE">{t('female')}</MenuItem>
+          <MenuItem value="OTHER">{t('other')}</MenuItem>
         </FormInput>
 
         <FormInput
-          name="dateOfBirth"
-          label={t("info.dob")}
+          name="dob"
+          label={t('info.dob')}
           type="date"
-          value={formData.dateOfBirth}
+          value={formData.dob}
           onChange={handleChange}
           InputLabelProps={{ shrink: true }}
         />
@@ -89,7 +89,7 @@ const CompleteProfileTravelerForm = ({
           loading={loading}
           // loadingText="Signing up..."
         >
-          {t("auth.finish")}
+          {t('auth.finish')}
         </PrimaryButton>
 
         <SocialLoginButtons
