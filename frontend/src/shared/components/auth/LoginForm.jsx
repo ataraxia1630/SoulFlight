@@ -18,7 +18,6 @@ import { useTranslation } from "react-i18next";
 const LoginForm = ({
   onSubmit,
   alert,
-  severity,
   loading = false,
   onGoogleLogin,
   onFacebookLogin,
@@ -52,10 +51,10 @@ const LoginForm = ({
       {alertOpen && (
         <Alert
           sx={{ mb: 3 }}
-          severity={severity}
+          severity={alert.severity}
           onClose={() => setAlertOpen(false)}
         >
-          {alert}
+          {alert.message}
         </Alert>
       )}
 
