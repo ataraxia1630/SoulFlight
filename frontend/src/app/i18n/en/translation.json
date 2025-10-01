@@ -33,12 +33,16 @@
     "contact": "Contact"
   },
   "info": {
+    "company_name": "Provider Name",
+    "description": "Description",
     "phone": "Phone",
     "gender": "Gender",
     "dob": "Date of birth",
     "address": "Address",
     "country": "Country",
-    "id card": "Identity Card"
+    "province": "Province/City",
+    "establish_year": "Establish Year",
+    "id_card": "Identity Card"
   },
   "or": "OR",
   "male": "Male",

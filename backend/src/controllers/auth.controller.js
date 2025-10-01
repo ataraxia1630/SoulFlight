@@ -44,7 +44,8 @@ const AuthController = {
   login: catchAsync(async (req, res, next) => {
     const { access_token, refresh_token } = await AuthService.login(
       req.body.username,
-      req.body.password
+      req.body.password,
+      req.body.rememberMe
     );
     return res
       .status(200)

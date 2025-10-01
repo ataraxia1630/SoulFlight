@@ -6,6 +6,7 @@ import AuthService from '@/shared/services/auth.service';
 
 const VerifyOTPPage = ({ userType }) => {
   const [loading, setLoading] = useState(false);
+  const [alert, setAlert] = useState({ message: '', severity: 'success' });
   const navigate = useNavigate();
 
   const handleVerifyOTP = async (formData) => {
@@ -18,13 +19,18 @@ const VerifyOTPPage = ({ userType }) => {
         state: { email: formData.email },
       });
     } catch (error) {
-      console.error('Error verifying OTP:', error);
-      alert(
+      showAlert(
         error.response?.data?.message ||
-          'Failed to verify OTP. Please try again.'
+          'OTP verification failed. Please try again.',
+        'error'
       );
+      console.error('Error verifying OTP:', error);
     }
     setLoading(false);
+  };
+
+  const showAlert = (message, severity = 'success') => {
+    setAlert({ message, severity });
   };
 
   const { handleGoogleLogin, handleFacebookLogin, handleXLogin } =
@@ -38,6 +44,7 @@ const VerifyOTPPage = ({ userType }) => {
       onGoogleLogin={handleGoogleLogin}
       onFacebookLogin={handleFacebookLogin}
       onXLogin={handleXLogin}
+      alert={alert}
     />
   );
 };

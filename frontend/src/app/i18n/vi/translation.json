@@ -33,12 +33,16 @@
     "contact": "Liên hệ"
   },
   "info": {
+    "company_name": "Tên nhà cung cấp",
+    "description": "Mô tả",
     "phone": "Số điện thoại",
     "gender": "Giới tính",
     "dob": "Ngày sinh",
     "address": "Địa chỉ",
     "country": "Quốc gia",
-    "id card": "Căn cước công dân"
+    "province": "Tỉnh/Thành phố",
+    "establish_year": "Năm thành lập",
+    "id_card": "Căn cước công dân"
   },
   "or": "HOẶC",
   "male": "Nam",
