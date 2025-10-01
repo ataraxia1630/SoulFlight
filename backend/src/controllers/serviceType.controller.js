@@ -1,58 +1,35 @@
 const { ServiceTypeService } = require('../services/serviceType.service');
+const catchAsync = require('../utils/catchAsync');
 
 const ServiceTypeController = {
-  getAll: async (req, res) => {
-    try {
-      const serviceTypes = await ServiceTypeService.getAll();
-      res.status(200).json(serviceTypes);
-    } catch (error) {
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  },
+  getAll: catchAsync(async (req, res) => {
+    const serviceTypes = await ServiceTypeService.getAll();
+    res.status(200).json({ serviceTypes });
+  }),
 
-  getById: async (req, res) => {
+  getById: catchAsync(async (req, res) => {
     const { id } = req.params;
-    try {
-      const serviceType = await ServiceTypeService.getById(id);
-      if (!serviceType) {
-        return res.status(404).json({ error: 'Service Type not found' });
-      }
-      res.status(200).json(serviceType);
-    } catch (error) {
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  },
+    const serviceType = await ServiceTypeService.getById(id);
+    res.status(200).json({ serviceType });
+  }),
 
-  create: async (req, res) => {
-    const data = req.body;
-    try {
-      const newServiceType = await ServiceTypeService.create(data);
-      res.status(201).json(newServiceType);
-    } catch (error) {
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  },
+  create: catchAsync(async (req, res) => {
+    const newServiceType = await ServiceTypeService.create(req.body);
+    res.status(201).json({ newServiceType });
+  }),
 
-  update: async (req, res) => {
+  update: catchAsync(async (req, res) => {
     const { id } = req.params;
     const data = req.body;
-    try {
-      const updatedServiceType = await ServiceTypeService.update(id, data);
-      res.status(200).json(updatedServiceType);
-    } catch (error) {
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  },
+    const updatedServiceType = await ServiceTypeService.update(id, data);
+    res.status(200).json({ updatedServiceType });
+  }),
 
-  delete: async (req, res) => {
+  delete: catchAsync(async (req, res) => {
     const { id } = req.params;
-    try {
-      await ServiceTypeService.delete(id);
-      res.status(204).send();
-    } catch (error) {
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  },
+    await ServiceTypeService.delete(id);
+    res.status(204).json();
+  }),
 };
 
 module.exports = { ServiceTypeController };
