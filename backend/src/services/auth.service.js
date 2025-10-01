@@ -178,7 +178,7 @@ const AuthService = {
     return user;
   },
 
-  login: async ({ username, password, remember = false }) => {
+  login: async (username, password, remember = false) => {
     let existingUser = await prisma.user.findUnique({
       where: { email: username },
     });

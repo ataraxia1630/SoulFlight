@@ -88,9 +88,9 @@ const AuthService = {
     return response;
   },
 
-  login: async (username, password) => {
+  login: async (username, password, rememberMe) => {
     const response = await axios
-      .post(`${API_URL}/login`, { username, password })
+      .post(`${API_URL}/login`, { username, password, rememberMe })
       .then((res) => {
         return res.data;
       })
