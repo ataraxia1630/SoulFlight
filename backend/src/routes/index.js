@@ -1,5 +1,5 @@
 const AppError = require('../utils/AppError');
-const errorHandler = require('../middlewares/errorHandler');
+const errorHandler = require('../middlewares/errorHandler.middleware');
 const authRoutes = require('./auth.routes');
 const serviceTypeRoutes = require('./serviceType.routes');
 const serviceTagRoutes = require('./serviceTag.routes');
@@ -10,9 +10,7 @@ function route(app) {
   app.use('/api/service-tag', serviceTagRoutes);
 
   // luôn để sau cùng
-  app.all('*', (req, res, next) => {
-    next(new AppError(404, `Route ${req.originalUrl} not found`));
-  });
+
   app.use(errorHandler);
 }
 

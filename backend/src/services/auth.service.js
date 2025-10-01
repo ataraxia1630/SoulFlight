@@ -104,7 +104,15 @@ const AuthService = {
   },
 
   createUser: async (data) => {
-    const { email, username, password, role } = data;
+    const { email, username, password, role, verify_token } = data;
+    let decoded;
+    try {
+      decoded = jwt.verify(verify_token, process.env.JWT_SECRET);
+    } catch (err) {
+      throw new Error('Invalid or expired verification token');
+    }
+    if (decoded.email !== email) throw new AppError(400, 'Email mismatch');
+
     let existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) throw new AppError(400, 'Email already registered');
     existingUser = await prisma.user.findUnique({ where: { username } });
