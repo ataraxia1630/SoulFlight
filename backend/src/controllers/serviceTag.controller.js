@@ -1,4 +1,3 @@
-const { get } = require('../routes/serviceTag.routes');
 const { ServiceTagService } = require('../services/serviceTag.service');
 const catchAsync = require('../utils/catchAsync');
 
