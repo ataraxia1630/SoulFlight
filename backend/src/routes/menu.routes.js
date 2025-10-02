@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { MenuController } = require('../controllers/menu.controller');
 const { createSchema, updateSchema } = require('../validators/menu.validator');
-const validate = require('../middlewares/validate');
+const validate = require('../middlewares/validate.middleware');
 
 const router = Router();
 
