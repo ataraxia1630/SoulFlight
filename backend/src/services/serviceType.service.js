@@ -1,5 +1,5 @@
 const prisma = require('../configs/prisma');
-const AppError = require('../utils/appError');
+const AppError = require('../utils/AppError');
 
 const ServiceTypeService = {
   getAll: async () => {
