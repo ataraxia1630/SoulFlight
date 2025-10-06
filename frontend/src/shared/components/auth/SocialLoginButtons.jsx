@@ -1,10 +1,13 @@
-import { Button, Stack, Box, Divider } from "@mui/material";
+import { Button, Stack, Box, Divider, useTheme } from "@mui/material";
 import GoogleIcon from "@/assets/google_icon";
 import FacebookIcon from "@/assets/facebook_icon";
 import XIcon from "@/assets/x_icon";
 import { useTranslation } from "react-i18next";
 
 const SocialLoginButtons = ({ onGoogleLogin, onFacebookLogin, onXLogin }) => {
+  const { t } = useTranslation();
+  const theme = useTheme();
+
   const socialButtons = [
     {
       icon: <GoogleIcon />,
@@ -20,18 +23,16 @@ const SocialLoginButtons = ({ onGoogleLogin, onFacebookLogin, onXLogin }) => {
     },
   ];
 
-  const { t } = useTranslation();
-
   return (
     <Box>
       <Divider
         sx={{
           "&::before, &::after": {
             borderTopWidth: "1.2px",
-            borderColor: "#6b7280",
+            borderColor: theme.palette.text.secondary,
           },
           mb: 2,
-          color: "#6b7280",
+          color: theme.palette.text.secondary,
           fontSize: "13px",
         }}
       >
@@ -49,11 +50,11 @@ const SocialLoginButtons = ({ onGoogleLogin, onFacebookLogin, onXLogin }) => {
               width: "100px",
               height: "43px",
               borderRadius: "30px",
-              border: "1px solid #d1d6dbff",
-              backgroundColor: "white",
+              border: `1px solid ${theme.palette.border.main}`,
+              backgroundColor: theme.palette.background.default,
               "&:hover": {
                 color: "white",
-                border: "1px solid #8b9094ff",
+                border: `1px solid ${theme.palette.border.dark}`,
               },
             }}
           >

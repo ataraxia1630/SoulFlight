@@ -1,9 +1,10 @@
-import { Link } from "@mui/material";
+import { Link, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
 
 const BackLogin = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   return (
     <Link
@@ -11,7 +12,7 @@ const BackLogin = () => {
       align="center"
       sx={{
         mt: 2,
-        color: "#6b7280",
+        color: theme.palette.text.secondary,
         textDecoration: "none",
         "&:hover": { fontWeight: 600 },
       }}

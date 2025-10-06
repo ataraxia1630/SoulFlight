@@ -4,7 +4,7 @@ import Header from "./Header";
 
 const MainLayout = () => {
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "white" }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
       <Header />
       <Box sx={{ pt: { xs: 12, lg: 10 }, px: { xs: 2, lg: 2 } }}>
         <Outlet />

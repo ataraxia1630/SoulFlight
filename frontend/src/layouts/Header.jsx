@@ -5,9 +5,8 @@ import {
   Box,
   Select,
   MenuItem,
-  TextField,
-  InputAdornment,
   Button,
+  useTheme,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -16,6 +15,7 @@ import { Link as RouterLink } from "react-router-dom";
 
 const Header = () => {
   const { t, i18n } = useTranslation();
+  const theme = useTheme();
   const navItems = ["home", "explore", "trips", "news", "contact"];
 
   const handleChange = (e) => {
@@ -29,8 +29,8 @@ const Header = () => {
       elevation={0}
       sx={{
         minWidth: "600px",
-        bgcolor: "white",
-        borderBottom: "1px solid #e0e0e0",
+        bgcolor: theme.palette.background.default,
+        borderBottom: `1px solid ${theme.palette.border.divider}`,
       }}
     >
       <Toolbar
@@ -51,7 +51,7 @@ const Header = () => {
           variant="h5"
           sx={{
             fontWeight: "bold",
-            color: "black",
+            color: theme.palette.text.primary,
             flexShrink: 0,
           }}
         >
@@ -72,12 +72,12 @@ const Header = () => {
               component={RouterLink}
               to={item === "home" ? "/" : `/${item}`}
               TouchRippleProps={{
-                style: { color: "rgba(30, 155, 205, 0.5)" },
+                style: { color: `${theme.palette.primary.light}80` },
               }}
               sx={{
-                color: "black",
+                color: theme.palette.text.primary,
                 "&:active": {
-                  backgroundColor: "rgba(30, 155, 205, 0.2)",
+                  backgroundColor: `${theme.palette.primary.main}33`,
                 },
               }}
             >
@@ -101,12 +101,6 @@ const Header = () => {
               gap: { xs: 1, lg: 1.5 },
             }}
           >
-            {/* <Avatar sx={{ width: 32, height: 32, bgcolor: "#4CAF50" }}>
-              <Typography sx={{ fontSize: "14px", color: "white" }}>
-                U
-              </Typography>
-            </Avatar> */}
-
             <Button
               component={RouterLink}
               to="/login"
@@ -115,12 +109,12 @@ const Header = () => {
                 minWidth: { xs: 50, md: 60 },
                 height: "32px",
                 borderRadius: "20px",
-                border: "1px solid #1E9BCD",
-                color: "#1E9BCD",
+                border: `1px solid ${theme.palette.primary.main}`,
+                color: theme.palette.primary.main,
                 px: { xs: 1, md: 2 },
                 "&:hover": {
-                  backgroundColor: "rgba(14, 165, 233, 0.08)",
-                  border: "1px solid #1E9BCD",
+                  backgroundColor: `${theme.palette.primary.main}14`,
+                  border: `1px solid ${theme.palette.primary.main}`,
                 },
               }}
             >
@@ -135,12 +129,12 @@ const Header = () => {
                 minWidth: { xs: 50, md: 60 },
                 height: "32px",
                 borderRadius: "20px",
-                backgroundColor: "#1E9BCD",
+                backgroundColor: theme.palette.primary.main,
                 color: "white",
                 px: { xs: 1, md: 2 },
                 boxShadow: "none",
                 "&:hover": {
-                  backgroundColor: "#0284c7",
+                  backgroundColor: theme.palette.primary.dark,
                   boxShadow: "none",
                 },
               }}
@@ -156,7 +150,7 @@ const Header = () => {
               disableUnderline
               IconComponent={KeyboardArrowDownIcon}
               sx={{
-                color: "black",
+                color: theme.palette.text.primary,
                 "& .MuiSelect-select": {
                   padding: { xs: "4px 20px 4px 4px", md: "4px 24px 4px 8px" },
                 },

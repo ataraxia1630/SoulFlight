@@ -1,10 +1,11 @@
 import { Outlet } from "react-router-dom";
-import { Box, Paper } from "@mui/material";
+import { Box, Paper, useTheme } from "@mui/material";
 import { useEffect, useRef } from "react";
 import Header from "./Header";
 
 const AuthLayout = () => {
   const canvasRef = useRef(null);
+  const theme = useTheme();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -28,8 +29,8 @@ const AuthLayout = () => {
 
       // Gradient nền biển sáng
       const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-      grad.addColorStop(0, "#a0e1ff");
-      grad.addColorStop(1, "#0074a3");
+      grad.addColorStop(0, theme.palette.background.ocean.light);
+      grad.addColorStop(1, theme.palette.background.ocean.dark);
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
