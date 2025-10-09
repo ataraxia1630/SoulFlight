@@ -1,5 +1,4 @@
-import React from "react";
-import { Button, CircularProgress } from "@mui/material";
+import { Button, useTheme } from "@mui/material";
 
 const PrimaryButton = ({
   children,
@@ -9,6 +8,8 @@ const PrimaryButton = ({
   sx,
   ...props
 }) => {
+  const theme = useTheme();
+
   return (
     <Button
       variant={variant}
@@ -16,16 +17,16 @@ const PrimaryButton = ({
       sx={{
         py: 1.5,
         borderRadius: "30px",
-        backgroundColor: "#1E9BCD",
+        backgroundColor: theme.palette.primary.main,
         fontSize: "16px",
         fontWeight: 600,
         textTransform: "none",
-        color: "black",
+        color: theme.palette.text.primary,
         "&:hover": {
-          backgroundColor: "#0284c7",
+          backgroundColor: theme.palette.primary.dark,
         },
         "&:disabled": {
-          backgroundColor: "#94a3b8",
+          backgroundColor: theme.palette.disabled.main,
         },
         ...sx,
       }}

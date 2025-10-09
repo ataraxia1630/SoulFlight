@@ -1,11 +1,11 @@
+import { Box, Stack, Typography, useTheme } from "@mui/material";
 import { useState } from "react";
-import { Box, Typography, Stack, Link } from "@mui/material";
-import SocialLoginButtons from "./SocialLoginButtons";
+import { useTranslation } from "react-i18next";
+import { Link as RouterLink } from "react-router-dom";
 import FormInput from "../FormInput";
 import PrimaryButton from "../PrimaryButton";
-import { Link as RouterLink } from "react-router-dom";
 import BackLogin from "./BackLoginLink";
-import { useTranslation } from "react-i18next";
+import SocialLoginButtons from "./SocialLoginButtons";
 
 const SignupForm = ({
   userType,
@@ -16,6 +16,7 @@ const SignupForm = ({
   onXLogin,
 }) => {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -43,7 +44,7 @@ const SignupForm = ({
         sx={{
           mb: 4,
           fontWeight: 600,
-          color: "#black",
+          color: theme.palette.text.primary,
         }}
       >
         {t("auth.join")}
@@ -58,11 +59,7 @@ const SignupForm = ({
           onChange={handleChange}
         />
 
-        <PrimaryButton
-          type="submit"
-          loading={loading}
-          // loadingText="Signing up..."
-        >
+        <PrimaryButton type="submit" loading={loading}>
           {t("auth.signup")}
         </PrimaryButton>
 
@@ -78,14 +75,12 @@ const SignupForm = ({
           component={RouterLink}
           to={userType === "traveler" ? "/business/signup" : "/traveler/signup"}
           sx={{
-            backgroundColor: "#136687",
-            color: "white",
-            "&:hover": { backgroundColor: "#1d556bff" },
+            backgroundColor: theme.palette.primary.darker,
+            color: theme.palette.text.contrast,
+            "&:hover": { backgroundColor: theme.palette.primary.darkest },
           }}
         >
-          {userType === "traveler"
-            ? t("auth.signup for business")
-            : t("auth.signup for traveler")}
+          {userType === "traveler" ? t("auth.signup for business") : t("auth.signup for traveler")}
         </PrimaryButton>
 
         <BackLogin />

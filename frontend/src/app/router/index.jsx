@@ -1,53 +1,35 @@
-import {
-  createBrowserRouter,
-  createRoutesFromElements,
-  Route,
-} from "react-router-dom";
-import App from "../App";
-
+import { createBrowserRouter, createRoutesFromElements, Route } from "react-router-dom";
+import AdminHome from "@/features/admin/pages/Home";
+import BusinessHome from "@/features/business/pages/Home";
+import TravelerHome from "@/features/traveler/pages/Home";
+import AuthLayout from "@/layouts/AuthLayout";
 // Layouts
 import MainLayout from "@/layouts/MainLayout";
-import AuthLayout from "@/layouts/AuthLayout";
-
+import CompleteProfileBusinessPage from "@/shared/pages/CompleteProfileBusinessPage";
+import CompleteProfileTravelerPage from "@/shared/pages/CompleteProfileTravelerPage";
+import CreateAccountPage from "@/shared/pages/CreateAccountPage";
+// Role Pages
+import HomePage from "@/shared/pages/HomePage";
 // Auth Pages
 import LoginPage from "@/shared/pages/LoginPage";
 import SignupPage from "@/shared/pages/SignupPage";
 import VerifyOTPPage from "@/shared/pages/VerifyOTPPage";
-import CreateAccountPage from "@/shared/pages/CreateAccountPage";
-import CompleteProfileTravelerPage from "@/shared/pages/CompleteProfileTravelerPage";
-import CompleteProfileBusinessPage from "@/shared/pages/CompleteProfileBusinessPage";
-
-// Role Pages
-import HomePage from "@/shared/pages/HomePage";
-import AdminHome from "@/features/admin/pages/Home";
-import BusinessHome from "@/features/business/pages/Home";
-import TravelerHome from "@/features/traveler/pages/Home";
+import App from "../App";
 
 // Auth flow routes configuration
 const createAuthRoutes = (userType) => {
   const CompleteProfilePage =
-    userType === "traveler"
-      ? CompleteProfileTravelerPage
-      : CompleteProfileBusinessPage;
+    userType === "traveler" ? CompleteProfileTravelerPage : CompleteProfileBusinessPage;
 
   return (
     <>
-      <Route
-        path={`${userType}/signup`}
-        element={<SignupPage userType={userType} />}
-      />
-      <Route
-        path={`${userType}/verify-otp`}
-        element={<VerifyOTPPage userType={userType} />}
-      />
+      <Route path={`${userType}/signup`} element={<SignupPage userType={userType} />} />
+      <Route path={`${userType}/verify-otp`} element={<VerifyOTPPage userType={userType} />} />
       <Route
         path={`${userType}/create-account`}
         element={<CreateAccountPage userType={userType} />}
       />
-      <Route
-        path={`${userType}/complete-profile`}
-        element={<CompleteProfilePage />}
-      />
+      <Route path={`${userType}/complete-profile`} element={<CompleteProfilePage />} />
     </>
   );
 };
@@ -67,8 +49,8 @@ const router = createBrowserRouter(
         {createAuthRoutes("traveler")}
         {createAuthRoutes("business")}
       </Route>
-    </Route>
-  )
+    </Route>,
+  ),
 );
 
 export default router;

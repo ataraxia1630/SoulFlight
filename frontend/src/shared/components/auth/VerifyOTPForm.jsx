@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { Box, Typography, Stack, Link, Alert } from '@mui/material';
-import OTPInput from './OTPInput';
-import SocialLoginButtons from './SocialLoginButtons';
-import BackLogin from './BackLoginLink';
-import PrimaryButton from '../PrimaryButton';
-import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
-import AuthService from '@/shared/services/auth.service';
+import { Alert, Box, Link, Stack, Typography, useTheme } from "@mui/material";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useLocation } from "react-router-dom";
+import AuthService from "@/shared/services/auth.service";
+import PrimaryButton from "../PrimaryButton";
+import BackLogin from "./BackLoginLink";
+import OTPInput from "./OTPInput";
+import SocialLoginButtons from "./SocialLoginButtons";
 
 const VerifyOTPForm = ({
   userType,
@@ -17,23 +17,24 @@ const VerifyOTPForm = ({
   onXLogin,
   alert,
 }) => {
-  const [otp, setOtp] = useState('');
-  const [error, setError] = useState('');
+  const [otp, setOtp] = useState("");
+  const [error, setError] = useState("");
   const { t } = useTranslation();
+  const theme = useTheme();
   const location = useLocation();
-  const email = location.state?.email || '';
+  const email = location.state?.email || "";
   const [alertOpen, setAlertOpen] = useState(false);
 
   const handleOTPComplete = (otpValue) => {
     setOtp(otpValue);
-    setError('');
+    setError("");
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (otp.length !== 5) {
-      setError('Please enter complete OTP');
+      setError("Please enter complete OTP");
       return;
     }
 
@@ -42,29 +43,22 @@ const VerifyOTPForm = ({
   };
 
   const handleResendOTP = async () => {
-    console.log('Resending OTP to:', email);
+    console.log("Resending OTP to:", email);
     try {
       await AuthService.sendOtp(email);
-      alert('OTP has been resent to your email.');
+      alert("OTP has been resent to your email.");
     } catch (error) {
-      console.error('Error resending OTP:', error);
-      alert(
-        error.response?.data?.message ||
-          'Failed to resend OTP. Please try again.'
-      );
+      console.error("Error resending OTP:", error);
+      alert(error.response?.data?.message || "Failed to resend OTP. Please try again.");
     }
-    setOtp('');
-    setError('');
+    setOtp("");
+    setError("");
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
       {alertOpen && (
-        <Alert
-          sx={{ mb: 3 }}
-          severity={alert.severity}
-          onClose={() => setAlertOpen(false)}
-        >
+        <Alert sx={{ mb: 3 }} severity={alert.severity} onClose={() => setAlertOpen(false)}>
           {alert.message}
         </Alert>
       )}
@@ -76,10 +70,10 @@ const VerifyOTPForm = ({
         sx={{
           mb: 1,
           fontWeight: 600,
-          color: 'text.primary',
+          color: theme.palette.text.primary,
         }}
       >
-        {t('auth.enter otp')}
+        {t("auth.enter otp")}
       </Typography>
 
       <Typography
@@ -87,22 +81,17 @@ const VerifyOTPForm = ({
         align="center"
         sx={{
           mb: 4,
-          color: 'gray',
+          color: theme.palette.text.secondary,
         }}
       >
-        {t('auth.sent otp')} {email || t('auth.your email')}
+        {t("auth.sent otp")} {email || t("auth.your email")}
       </Typography>
 
       <Stack spacing={3}>
         <OTPInput length={5} onComplete={handleOTPComplete} error={!!error} />
 
         {error && (
-          <Typography
-            variant="body2"
-            color="error"
-            align="center"
-            sx={{ mt: -1 }}
-          >
+          <Typography variant="body2" color="error" align="center" sx={{ mt: -1 }}>
             {error}
           </Typography>
         )}
@@ -112,9 +101,9 @@ const VerifyOTPForm = ({
           align="center"
           sx={{
             mt: 2,
-            color: '#6b7280',
-            display: 'flex',
-            justifyContent: 'center',
+            color: theme.palette.text.secondary,
+            display: "flex",
+            justifyContent: "center",
             gap: 0.5,
           }}
         >
@@ -125,21 +114,21 @@ const VerifyOTPForm = ({
             onClick={handleResendOTP}
             variant="body2"
             sx={{
-              color: '#1E9BCD',
+              color: theme.palette.primary.main,
               fontWeight: 500,
-              textDecoration: 'none',
-              '&:hover': { textDecoration: 'underline' },
+              textDecoration: "none",
+              "&:hover": { textDecoration: "underline" },
             }}
           >
-            {t('auth.resend')}
+            {t("auth.resend")}
           </Link>
         </Typography>
 
         <PrimaryButton type="submit" disabled={loading || otp.length !== 5}>
-          {loading ? t('auth.verifying') : t('auth.next')}
+          {loading ? t("auth.verifying") : t("auth.next")}
         </PrimaryButton>
 
-        {userType === 'traveler' && (
+        {userType === "traveler" && (
           <SocialLoginButtons
             onGoogleLogin={onGoogleLogin}
             onFacebookLogin={onFacebookLogin}

@@ -1,19 +1,19 @@
-import { useState } from "react";
 import {
+  Alert,
   Box,
-  Typography,
   Checkbox,
   FormControlLabel,
   Link,
   Stack,
-  Alert,
-  Snackbar,
+  Typography,
+  useTheme,
 } from "@mui/material";
-import SocialLoginButtons from "./SocialLoginButtons";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link as RouterLink } from "react-router-dom";
 import FormInput from "../FormInput";
 import PrimaryButton from "../PrimaryButton";
-import { Link as RouterLink } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import SocialLoginButtons from "./SocialLoginButtons";
 
 const LoginForm = ({
   onSubmit,
@@ -24,6 +24,7 @@ const LoginForm = ({
   onXLogin,
 }) => {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -49,11 +50,7 @@ const LoginForm = ({
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
       {alertOpen && (
-        <Alert
-          sx={{ mb: 3 }}
-          severity={alert.severity}
-          onClose={() => setAlertOpen(false)}
-        >
+        <Alert sx={{ mb: 3 }} severity={alert.severity} onClose={() => setAlertOpen(false)}>
           {alert.message}
         </Alert>
       )}
@@ -65,7 +62,7 @@ const LoginForm = ({
         sx={{
           mb: 4,
           fontWeight: 600,
-          color: "#black",
+          color: theme.palette.text.primary,
         }}
       >
         {t("auth.welcome")}
@@ -96,15 +93,15 @@ const LoginForm = ({
                 onChange={handleChange}
                 size="small"
                 sx={{
-                  color: "#6b7280",
+                  color: theme.palette.text.secondary,
                   "&.Mui-checked": {
-                    color: "#1E9BCD",
+                    color: theme.palette.primary.main,
                   },
                 }}
               />
             }
             label={
-              <Typography variant="body2" color="#6b7280">
+              <Typography variant="body2" color={theme.palette.text.secondary}>
                 {t("auth.remember")}
               </Typography>
             }
@@ -115,9 +112,9 @@ const LoginForm = ({
             variant="body2"
             underline="none"
             sx={{
-              color: "#3f4145ff",
+              color: theme.palette.text.tertiary,
               "&:hover": {
-                color: "#1E9BCD",
+                color: theme.palette.primary.main,
                 textDecoration: "underline",
               },
             }}
@@ -126,11 +123,7 @@ const LoginForm = ({
           </Link>
         </Box>
 
-        <PrimaryButton
-          type="submit"
-          loading={loading}
-          // loadingText="Logging in..."
-        >
+        <PrimaryButton type="submit" loading={loading}>
           {t("auth.login")}
         </PrimaryButton>
 
@@ -143,7 +136,7 @@ const LoginForm = ({
         <Typography
           variant="body2"
           align="center"
-          sx={{ mt: 2, color: "#6b7280" }}
+          sx={{ mt: 2, color: theme.palette.text.secondary }}
         >
           {t("auth.don't have account")}{" "}
           <Link
@@ -151,7 +144,7 @@ const LoginForm = ({
             to="/traveler/signup"
             variant="body2"
             sx={{
-              color: "#1E9BCD",
+              color: theme.palette.primary.main,
               fontWeight: 500,
               textDecoration: "none",
               "&:hover": {

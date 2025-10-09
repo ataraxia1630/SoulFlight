@@ -1,22 +1,22 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = import.meta.env.VITE_BASE_URL + '/api/auth';
+const API_URL = `${import.meta.env.VITE_BASE_URL}/api/auth`;
 
 const AuthService = {
   sendOtp: async (email) => {
-    console.log('API_URL = ', API_URL);
+    console.log("API_URL = ", API_URL);
 
     const response = await axios
       .post(`${API_URL}/send-otp`, { email })
       .then((res) => {
-        localStorage.setItem('email', email);
+        localStorage.setItem("email", email);
         return res;
       })
       .catch((error) => {
-        console.error('Error sending OTP:', error);
+        console.error("Error sending OTP:", error);
         throw error;
       });
-    console.log('OTP sent successfully:', response.data);
+    console.log("OTP sent successfully:", response.data);
     return response.data;
   },
 
@@ -27,10 +27,10 @@ const AuthService = {
         return res;
       })
       .catch((error) => {
-        console.error('Error resending OTP:', error);
+        console.error("Error resending OTP:", error);
         throw error;
       });
-    console.log('OTP resent successfully:', response.data);
+    console.log("OTP resent successfully:", response.data);
     return response.data;
   },
 
@@ -39,12 +39,12 @@ const AuthService = {
       .post(`${API_URL}/verify-otp`, { email, otp })
       .then((res) => {
         const { verify_token } = res.data;
-        console.log('Storing verify_token in localStorage:', verify_token);
-        localStorage.setItem('verify_token', verify_token);
+        console.log("Storing verify_token in localStorage:", verify_token);
+        localStorage.setItem("verify_token", verify_token);
         return res.data;
       })
       .catch((error) => {
-        console.error('Error verifying OTP:', error);
+        console.error("Error verifying OTP:", error);
         throw error;
       });
   },
@@ -56,7 +56,7 @@ const AuthService = {
         return res;
       })
       .catch((error) => {
-        console.error('Error creating user:', error);
+        console.error("Error creating user:", error);
         throw error;
       });
     return response;
@@ -69,7 +69,7 @@ const AuthService = {
         return res;
       })
       .catch((error) => {
-        console.error('Error creating traveler:', error);
+        console.error("Error creating traveler:", error);
         throw error;
       });
     return response;
@@ -82,7 +82,7 @@ const AuthService = {
         return res;
       })
       .catch((error) => {
-        console.error('Error creating provider:', error);
+        console.error("Error creating provider:", error);
         throw error;
       });
     return response;
@@ -95,7 +95,7 @@ const AuthService = {
         return res.data;
       })
       .catch((error) => {
-        console.error('Error logging in:', error);
+        console.error("Error logging in:", error);
         throw error;
       });
     return response;
@@ -103,12 +103,12 @@ const AuthService = {
 
   logout: async () => {
     await axios.post(`${API_URL}/logout`).catch((error) => {
-      console.error('Error logging out:', error);
+      console.error("Error logging out:", error);
       throw error;
     });
   },
 };
 
-console.log('API_URL = ', API_URL);
+console.log("API_URL = ", API_URL);
 
 export default AuthService;

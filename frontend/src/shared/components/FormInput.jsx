@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material";
+import { TextField, useTheme } from "@mui/material";
 
 const FormInput = ({
   name,
@@ -12,6 +12,8 @@ const FormInput = ({
   sx,
   ...props
 }) => {
+  const theme = useTheme();
+
   return (
     <TextField
       fullWidth
@@ -26,18 +28,18 @@ const FormInput = ({
       variant="outlined"
       sx={{
         "& .MuiOutlinedInput-root": {
-          backgroundColor: "#f8f9fa",
+          backgroundColor: theme.palette.background.input,
           "& fieldset": {
-            border: "1px solid #e1e5e9",
+            border: `1px solid ${theme.palette.border.light}`,
           },
           "&:hover fieldset": {
-            borderColor: "#2f9ecaff",
+            borderColor: theme.palette.primary.light,
           },
           "&.Mui-focused fieldset": {
-            borderColor: "#1E9BCD",
+            borderColor: theme.palette.primary.main,
           },
           "&.Mui-error fieldset": {
-            borderColor: "#ef4444",
+            borderColor: theme.palette.error.main,
           },
         },
         ...sx,
