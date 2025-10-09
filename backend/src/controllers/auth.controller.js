@@ -1,21 +1,17 @@
 const catchAsync = require('../utils/catchAsync');
 const { AuthService } = require('../services/auth.service');
+const ApiResponse = require('../utils/ApiResponse');
+const { UserDTO } = require('../dtos/user.dto');
 
 const AuthController = {
   sendOtp: catchAsync(async (req, res, next) => {
     await AuthService.sendOtp(req.body.email);
-    res.status(200).json({
-      status: 'success',
-      message: 'OTP sent',
-    });
+    res.status(200).json(ApiResponse.success());
   }),
 
   resendOtp: catchAsync(async (req, res, next) => {
     await AuthService.resendOtp(req.body.email);
-    res.status(200).json({
-      status: 'success',
-      message: 'OTP resent',
-    });
+    res.status(200).json(ApiResponse.success());
   }),
 
   verifyOtp: catchAsync(async (req, res, next) => {
@@ -23,22 +19,22 @@ const AuthController = {
       req.body.email,
       req.body.otp
     );
-    return res.status(200).json({ message: 'OTP verified', verify_token });
+    return res.status(200).json(ApiResponse.success({ verify_token }));
   }),
 
   createUser: catchAsync(async (req, res, next) => {
     const user = await AuthService.createUser(req.body);
-    return res.status(201).json({ message: 'User created', user });
+    return res.status(201).json(ApiResponse.success(UserDTO.fromModel(user)));
   }),
 
   createTraveler: catchAsync(async (req, res, next) => {
     const traveler = await AuthService.createTraveler(req.body);
-    return res.status(201).json({ message: 'Traveler created', traveler });
+    return res.status(201).json(ApiResponse.success({ traveler }));
   }),
 
   createProvider: catchAsync(async (req, res, next) => {
     const provider = await AuthService.createProvider(req.body);
-    return res.status(201).json({ message: 'Provider created', provider });
+    return res.status(201).json(ApiResponse.success({ provider }));
   }),
 
   login: catchAsync(async (req, res, next) => {
@@ -49,7 +45,7 @@ const AuthController = {
     );
     return res
       .status(200)
-      .json({ message: 'Login successful', access_token, refresh_token });
+      .json(ApiResponse.success({ access_token, refresh_token }));
   }),
 
   signupWithSocialMedia: catchAsync(async (req, res, next) => {
@@ -61,7 +57,7 @@ const AuthController = {
       );
     return res
       .status(200)
-      .json({ message: 'Signup successful', access_token, refresh_token });
+      .json(ApiResponse.success({ access_token, refresh_token }));
   }),
 
   loginWithSocialMedia: catchAsync(async (req, res, next) => {
@@ -69,12 +65,12 @@ const AuthController = {
       await AuthService.loginWithSocialMedia(req.body.email, req.body.provider);
     return res
       .status(200)
-      .json({ message: 'Login successful', access_token, refresh_token });
+      .json(ApiResponse.success({ access_token, refresh_token }));
   }),
 
   logout: catchAsync(async (req, res, next) => {
     await AuthService.logout(req.user.id);
-    return res.status(200).json({ message: 'Logout successful' });
+    return res.status(200).json(ApiResponse.success());
   }),
 };
 

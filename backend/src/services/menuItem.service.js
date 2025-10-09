@@ -1,5 +1,6 @@
 const prisma = require('../configs/prisma');
 const AppError = require('../utils/AppError');
+const { ERROR_CODES } = require('../constants/errorCode');
 
 const MenuItemService = {
   getAll: async () => {
@@ -11,7 +12,11 @@ const MenuItemService = {
       where: { id },
     });
     if (!item) {
-      return new AppError(404, 'Menu Item not found');
+      return new AppError(
+        ERROR_CODES.MENU_ITEM_NOT_FOUND.statusCode,
+        ERROR_CODES.MENU_ITEM_NOT_FOUND.message,
+        ERROR_CODES.MENU_ITEM_NOT_FOUND.code
+      );
     }
     return item;
   },
@@ -29,7 +34,11 @@ const MenuItemService = {
       data,
     });
     if (!updated) {
-      return new AppError(404, 'Menu Item not found');
+      return new AppError(
+        ERROR_CODES.MENU_ITEM_NOT_FOUND.statusCode,
+        ERROR_CODES.MENU_ITEM_NOT_FOUND.message,
+        ERROR_CODES.MENU_ITEM_NOT_FOUND.code
+      );
     }
     return updated;
   },
@@ -39,7 +48,11 @@ const MenuItemService = {
       where: { id },
     });
     if (!deleted) {
-      return new AppError(404, 'Menu Item not found');
+      return new AppError(
+        ERROR_CODES.MENU_ITEM_NOT_FOUND.statusCode,
+        ERROR_CODES.MENU_ITEM_NOT_FOUND.message,
+        ERROR_CODES.MENU_ITEM_NOT_FOUND.code
+      );
     }
     return deleted;
   },
