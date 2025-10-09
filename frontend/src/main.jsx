@@ -1,8 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
-import router from "./app/router";
 import CustomThemeProvider from "./app/providers/ThemeProvider";
+import router from "./app/router";
 import "./app/i18n/index";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
@@ -10,5 +10,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <CustomThemeProvider>
       <RouterProvider router={router} />
     </CustomThemeProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

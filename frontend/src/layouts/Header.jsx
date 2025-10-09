@@ -1,15 +1,14 @@
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import {
   AppBar,
+  Box,
+  Button,
+  MenuItem,
+  Select,
   Toolbar,
   Typography,
-  Box,
-  Select,
-  MenuItem,
-  Button,
   useTheme,
 } from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
 

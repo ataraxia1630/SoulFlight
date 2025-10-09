@@ -1,4 +1,4 @@
-import { Typography, Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 
 const TravelerHome = () => (

@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
 import { Stack } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
 import FormInput from "../FormInput";
 
 const OTPInput = ({ length = 5, onComplete, error }) => {
@@ -13,7 +13,7 @@ const OTPInput = ({ length = 5, onComplete, error }) => {
   }, []);
 
   const handleChange = (index, value) => {
-    if (isNaN(value)) return;
+    if (Number.isNaN(value)) return;
 
     const newOtp = [...otp];
     newOtp[index] = value.substring(value.length - 1);
@@ -60,8 +60,10 @@ const OTPInput = ({ length = 5, onComplete, error }) => {
     <Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 3 }}>
       {otp.map((digit, index) => (
         <FormInput
-          key={index}
-          inputRef={(ref) => (inputRefs.current[index] = ref)}
+          key={`otp-${index}-${digit}`}
+          inputRef={(ref) => {
+            inputRefs.current[index] = ref;
+          }}
           type="text"
           inputMode="numeric"
           inputProps={{

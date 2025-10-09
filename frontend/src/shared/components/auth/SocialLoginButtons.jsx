@@ -1,26 +1,17 @@
-import { Button, Stack, Box, Divider, useTheme } from "@mui/material";
-import GoogleIcon from "@/assets/google_icon";
-import FacebookIcon from "@/assets/facebook_icon";
-import XIcon from "@/assets/x_icon";
+import { Box, Button, Divider, Stack, useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import FacebookIcon from "@/assets/facebook_icon";
+import GoogleIcon from "@/assets/google_icon";
+import XIcon from "@/assets/x_icon";
 
 const SocialLoginButtons = ({ onGoogleLogin, onFacebookLogin, onXLogin }) => {
   const { t } = useTranslation();
   const theme = useTheme();
 
   const socialButtons = [
-    {
-      icon: <GoogleIcon />,
-      onClick: onGoogleLogin,
-    },
-    {
-      icon: <FacebookIcon />,
-      onClick: onFacebookLogin,
-    },
-    {
-      icon: <XIcon />,
-      onClick: onXLogin,
-    },
+    { name: "google", icon: <GoogleIcon />, onClick: onGoogleLogin },
+    { name: "facebook", icon: <FacebookIcon />, onClick: onFacebookLogin },
+    { name: "x", icon: <XIcon />, onClick: onXLogin },
   ];
 
   return (
@@ -40,9 +31,9 @@ const SocialLoginButtons = ({ onGoogleLogin, onFacebookLogin, onXLogin }) => {
       </Divider>
 
       <Stack direction="row" spacing={2} justifyContent="center">
-        {socialButtons.map((button, index) => (
+        {socialButtons.map((button) => (
           <Button
-            key={index}
+            key={button.name}
             variant="outlined"
             onClick={button.onClick}
             disableRipple

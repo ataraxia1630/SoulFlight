@@ -1,19 +1,19 @@
-import { useState } from "react";
 import {
+  Alert,
   Box,
-  Typography,
   Checkbox,
   FormControlLabel,
   Link,
   Stack,
-  Alert,
+  Typography,
   useTheme,
 } from "@mui/material";
-import SocialLoginButtons from "./SocialLoginButtons";
+import { useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Link as RouterLink } from "react-router-dom";
 import FormInput from "../FormInput";
 import PrimaryButton from "../PrimaryButton";
-import { Link as RouterLink } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import SocialLoginButtons from "./SocialLoginButtons";
 
 const LoginForm = ({
   onSubmit,
@@ -50,11 +50,7 @@ const LoginForm = ({
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
       {alertOpen && (
-        <Alert
-          sx={{ mb: 3 }}
-          severity={alert.severity}
-          onClose={() => setAlertOpen(false)}
-        >
+        <Alert sx={{ mb: 3 }} severity={alert.severity} onClose={() => setAlertOpen(false)}>
           {alert.message}
         </Alert>
       )}

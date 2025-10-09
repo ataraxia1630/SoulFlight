@@ -1,5 +1,5 @@
-import { Outlet } from "react-router-dom";
 import { Box } from "@mui/material";
+import { Outlet } from "react-router-dom";
 import Header from "./Header";
 
 const MainLayout = () => {

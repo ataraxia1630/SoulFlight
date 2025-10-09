@@ -1,16 +1,16 @@
-import { useState } from 'react';
-import VerifyOTPForm from '@/shared/components/auth/VerifyOTPForm';
-import useSocialAuth from '@/shared/hooks/useSocialAuth';
-import { useNavigate } from 'react-router-dom';
-import AuthService from '@/shared/services/auth.service';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import VerifyOTPForm from "@/shared/components/auth/VerifyOTPForm";
+import useSocialAuth from "@/shared/hooks/useSocialAuth";
+import AuthService from "@/shared/services/auth.service";
 
 const VerifyOTPPage = ({ userType }) => {
   const [loading, setLoading] = useState(false);
-  const [alert, setAlert] = useState({ message: '', severity: 'success' });
+  const [alert, setAlert] = useState({ message: "", severity: "success" });
   const navigate = useNavigate();
 
   const handleVerifyOTP = async (formData) => {
-    console.log('OTP Verification data:', formData);
+    console.log("OTP Verification data:", formData);
     setLoading(true);
     try {
       await AuthService.verifyOtp(formData.email, formData.otp);
@@ -20,21 +20,19 @@ const VerifyOTPPage = ({ userType }) => {
       });
     } catch (error) {
       showAlert(
-        error.response?.data?.message ||
-          'OTP verification failed. Please try again.',
-        'error'
+        error.response?.data?.message || "OTP verification failed. Please try again.",
+        "error",
       );
-      console.error('Error verifying OTP:', error);
+      console.error("Error verifying OTP:", error);
     }
     setLoading(false);
   };
 
-  const showAlert = (message, severity = 'success') => {
+  const showAlert = (message, severity = "success") => {
     setAlert({ message, severity });
   };
 
-  const { handleGoogleLogin, handleFacebookLogin, handleXLogin } =
-    useSocialAuth();
+  const { handleGoogleLogin, handleFacebookLogin, handleXLogin } = useSocialAuth();
 
   return (
     <VerifyOTPForm

@@ -1,11 +1,11 @@
+import { Box, Stack, Typography, useTheme } from "@mui/material";
 import { useState } from "react";
-import { Box, Typography, Stack, useTheme } from "@mui/material";
-import SocialLoginButtons from "./SocialLoginButtons";
+import { useTranslation } from "react-i18next";
+import { Link as RouterLink } from "react-router-dom";
 import FormInput from "../FormInput";
 import PrimaryButton from "../PrimaryButton";
-import { Link as RouterLink } from "react-router-dom";
 import BackLogin from "./BackLoginLink";
-import { useTranslation } from "react-i18next";
+import SocialLoginButtons from "./SocialLoginButtons";
 
 const SignupForm = ({
   userType,
@@ -80,9 +80,7 @@ const SignupForm = ({
             "&:hover": { backgroundColor: theme.palette.primary.darkest },
           }}
         >
-          {userType === "traveler"
-            ? t("auth.signup for business")
-            : t("auth.signup for traveler")}
+          {userType === "traveler" ? t("auth.signup for business") : t("auth.signup for traveler")}
         </PrimaryButton>
 
         <BackLogin />

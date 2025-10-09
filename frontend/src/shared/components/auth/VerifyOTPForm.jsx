@@ -1,12 +1,12 @@
+import { Alert, Box, Link, Stack, Typography, useTheme } from "@mui/material";
 import { useState } from "react";
-import { Box, Typography, Stack, Link, Alert, useTheme } from "@mui/material";
-import OTPInput from "./OTPInput";
-import SocialLoginButtons from "./SocialLoginButtons";
-import BackLogin from "./BackLoginLink";
-import PrimaryButton from "../PrimaryButton";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import AuthService from "@/shared/services/auth.service";
+import PrimaryButton from "../PrimaryButton";
+import BackLogin from "./BackLoginLink";
+import OTPInput from "./OTPInput";
+import SocialLoginButtons from "./SocialLoginButtons";
 
 const VerifyOTPForm = ({
   userType,
@@ -49,10 +49,7 @@ const VerifyOTPForm = ({
       alert("OTP has been resent to your email.");
     } catch (error) {
       console.error("Error resending OTP:", error);
-      alert(
-        error.response?.data?.message ||
-          "Failed to resend OTP. Please try again."
-      );
+      alert(error.response?.data?.message || "Failed to resend OTP. Please try again.");
     }
     setOtp("");
     setError("");
@@ -61,11 +58,7 @@ const VerifyOTPForm = ({
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
       {alertOpen && (
-        <Alert
-          sx={{ mb: 3 }}
-          severity={alert.severity}
-          onClose={() => setAlertOpen(false)}
-        >
+        <Alert sx={{ mb: 3 }} severity={alert.severity} onClose={() => setAlertOpen(false)}>
           {alert.message}
         </Alert>
       )}
@@ -98,12 +91,7 @@ const VerifyOTPForm = ({
         <OTPInput length={5} onComplete={handleOTPComplete} error={!!error} />
 
         {error && (
-          <Typography
-            variant="body2"
-            color="error"
-            align="center"
-            sx={{ mt: -1 }}
-          >
+          <Typography variant="body2" color="error" align="center" sx={{ mt: -1 }}>
             {error}
           </Typography>
         )}
