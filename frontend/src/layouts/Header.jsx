@@ -55,7 +55,7 @@ const Header = () => {
             flexShrink: 0,
           }}
         >
-          LOGO
+          SOULFLIGHT
         </Typography>
 
         <Box

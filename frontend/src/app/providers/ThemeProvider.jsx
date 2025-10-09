@@ -1,9 +1,9 @@
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CssBaseline } from "@mui/material";
-import "@fontsource/manrope/400.css";
-import "@fontsource/manrope/500.css";
-import "@fontsource/manrope/600.css";
-import "@fontsource/manrope/700.css";
+import "@fontsource/be-vietnam-pro/400.css";
+import "@fontsource/be-vietnam-pro/500.css";
+import "@fontsource/be-vietnam-pro/600.css";
+import "@fontsource/be-vietnam-pro/700.css";
 
 const theme = createTheme({
   palette: {
@@ -52,7 +52,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: "Manrope, Arial, sans-serif",
+    fontFamily: "Be Vietnam Pro, sans-serif",
     h1: { fontSize: "32px", fontWeight: 700 },
     h2: { fontSize: "28px", fontWeight: 600 },
     h3: { fontSize: "24px", fontWeight: 600 },
