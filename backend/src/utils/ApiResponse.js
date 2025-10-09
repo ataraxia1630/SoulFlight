@@ -1,4 +1,4 @@
-export class ApiResponse {
+class ApiResponse {
   static success(data, message = 'success', code = 'SUCCESS', params = {}) {
     return {
       success: true,
@@ -21,3 +21,5 @@ export class ApiResponse {
     };
   }
 }
+
+module.exports = ApiResponse;
