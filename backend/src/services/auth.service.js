@@ -4,6 +4,7 @@ const nodemailer = require('nodemailer');
 const redis = require('../configs/redis');
 const prisma = require('../configs/prisma');
 const AppError = require('../utils/AppError');
+const { ERROR_CODES } = require('../constants/errorCode');
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
@@ -47,7 +48,12 @@ const AuthService = {
 
   sendOtp: async (email) => {
     let existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) throw new AppError(400, 'Email already registered');
+    if (existingUser)
+      throw new AppError(
+        ERROR_CODES.EMAIL_REGISTERED.statusCode,
+        ERROR_CODES.EMAIL_REGISTERED.message,
+        ERROR_CODES.EMAIL_REGISTERED.code
+      );
 
     const otp = AuthService._generateOtp();
     const hashedOtp = await bcrypt.hash(otp, SALT_ROUNDS);
@@ -70,8 +76,10 @@ const AuthService = {
     const current = await redis.get(key);
     if (current && Number(current) >= OTP_RESEND_LIMIT) {
       throw new AppError(
-        429,
-        `Resend OTP limit reached (${OTP_RESEND_LIMIT} times). Try after ${OTP_RESEND_WINDOW_MIN} minutes.`
+        ERROR_CODES.OTP_LIMIT_EXCEEDED.statusCode,
+        ERROR_CODES.OTP_LIMIT_EXCEEDED.message,
+        ERROR_CODES.OTP_LIMIT_EXCEEDED.code,
+        { limit: OTP_RESEND_LIMIT, resend_after: OTP_RESEND_WINDOW_MIN }
       );
     }
 
@@ -86,9 +94,19 @@ const AuthService = {
 
   verifyOtp: async (email, otp) => {
     const hashedOtp = await redis.get(`otp:${email}`);
-    if (!hashedOtp) throw new AppError(400, 'OTP expired or not found');
+    if (!hashedOtp)
+      throw new AppError(
+        ERROR_CODES.OTP_EXPIRED.statusCode,
+        ERROR_CODES.OTP_EXPIRED.message,
+        ERROR_CODES.OTP_EXPIRED.code
+      );
     const isValid = await bcrypt.compare(otp, hashedOtp);
-    if (!isValid) throw new AppError(400, 'Invalid OTP');
+    if (!isValid)
+      throw new AppError(
+        ERROR_CODES.OTP_INVALID.statusCode,
+        ERROR_CODES.OTP_INVALID.message,
+        ERROR_CODES.OTP_INVALID.code
+      );
     await redis.del(`otp:${email}`);
     const verify_token = jwt.sign({ email }, process.env.JWT_SECRET, {
       expiresIn: '10m',
@@ -102,14 +120,33 @@ const AuthService = {
     try {
       decoded = jwt.verify(verify_token, process.env.JWT_SECRET);
     } catch (err) {
-      throw new Error('Invalid or expired verification token');
+      throw new AppError(
+        ERROR_CODES.INVALID_VERIFICATION_TOKEN.statusCode,
+        ERROR_CODES.INVALID_VERIFICATION_TOKEN.message,
+        ERROR_CODES.INVALID_VERIFICATION_TOKEN.code
+      );
     }
-    if (decoded.email !== email) throw new AppError(400, 'Email mismatch');
+    if (decoded.email !== email)
+      throw new AppError(
+        ERROR_CODES.EMAIL_MISMATCH.statusCode,
+        ERROR_CODES.EMAIL_MISMATCH.message,
+        ERROR_CODES.EMAIL_MISMATCH.code
+      );
 
     let existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) throw new AppError(400, 'Email already registered');
+    if (existingUser)
+      throw new AppError(
+        ERROR_CODES.EMAIL_REGISTERED.statusCode,
+        ERROR_CODES.EMAIL_REGISTERED.message,
+        ERROR_CODES.EMAIL_REGISTERED.code
+      );
     existingUser = await prisma.user.findUnique({ where: { username } });
-    if (existingUser) throw new AppError(400, 'Username already taken');
+    if (existingUser)
+      throw new AppError(
+        ERROR_CODES.USERNAME_TAKEN.statusCode,
+        ERROR_CODES.USERNAME_TAKEN.message,
+        ERROR_CODES.USERNAME_TAKEN.code
+      );
 
     const password_hash = await bcrypt.hash(password, SALT_ROUNDS);
     const user = await prisma.user.create({
@@ -134,12 +171,33 @@ const AuthService = {
           Traveler: true,
         },
       });
-      if (!user) throw new AppError(400, 'User not found');
+      if (!user)
+        throw new AppError(
+          ERROR_CODES.USER_NOT_FOUND.statusCode,
+          ERROR_CODES.USER_NOT_FOUND.message,
+          ERROR_CODES.USER_NOT_FOUND.code
+        );
+      if (user.Traveler)
+        throw new AppError(
+          ERROR_CODES.PROFILE_ALREADY_EXISTS.statusCode,
+          ERROR_CODES.PROFILE_ALREADY_EXISTS.message,
+          ERROR_CODES.PROFILE_ALREADY_EXISTS.code
+        );
+      if (user.Provider)
+        throw new AppError(
+          ERROR_CODES.PROFILE_ALREADY_EXISTS.statusCode,
+          'User is already registered as a provider',
+          ERROR_CODES.PROFILE_ALREADY_EXISTS.code
+        );
 
       if (phone) {
         const existingUser = await tx.user.findUnique({ where: { phone } });
         if (existingUser)
-          throw new AppError(400, 'Phone number already registered');
+          throw new AppError(
+            ERROR_CODES.PHONE_REGISTERED.statusCode,
+            ERROR_CODES.PHONE_REGISTERED.message,
+            ERROR_CODES.PHONE_REGISTERED.code
+          );
         await tx.user.update({
           where: { email },
           data: { phone },
@@ -164,12 +222,33 @@ const AuthService = {
         where: { email },
         include: { Provider: true },
       });
-      if (!user) throw new AppError(400, 'User not found');
+      if (!user)
+        throw new AppError(
+          ERROR_CODES.USER_NOT_FOUND.statusCode,
+          ERROR_CODES.USER_NOT_FOUND.message,
+          ERROR_CODES.USER_NOT_FOUND.code
+        );
+      if (user.Provider)
+        throw new AppError(
+          ERROR_CODES.PROFILE_ALREADY_EXISTS.statusCode,
+          ERROR_CODES.PROFILE_ALREADY_EXISTS.message,
+          ERROR_CODES.PROFILE_ALREADY_EXISTS.code
+        );
+      if (user.Traveler)
+        throw new AppError(
+          ERROR_CODES.PROFILE_ALREADY_EXISTS.statusCode,
+          'User is already registered as a traveler',
+          ERROR_CODES.PROFILE_ALREADY_EXISTS.code
+        );
 
       if (phone) {
         const existingUser = await tx.user.findUnique({ where: { phone } });
         if (existingUser)
-          throw new AppError(400, 'Phone number already registered');
+          throw new AppError(
+            ERROR_CODES.PHONE_REGISTERED.statusCode,
+            ERROR_CODES.PHONE_REGISTERED.message,
+            ERROR_CODES.PHONE_REGISTERED.code
+          );
         await tx.user.update({
           where: { id: user.id },
           data: { phone },
@@ -202,16 +281,30 @@ const AuthService = {
         where: { username },
       });
     }
-    if (!existingUser) throw new AppError(400, 'Wrong username or email');
+    if (!existingUser)
+      throw new AppError(
+        ERROR_CODES.WRONG_CREDENTIALS.statusCode,
+        ERROR_CODES.WRONG_CREDENTIALS.message,
+        ERROR_CODES.WRONG_CREDENTIALS.code
+      );
 
     if (existingUser.status === 'LOCKED')
-      throw new AppError(403, 'Account locked');
+      throw new AppError(
+        ERROR_CODES.ACCOUNT_LOCKED.statusCode,
+        ERROR_CODES.ACCOUNT_LOCKED.message,
+        ERROR_CODES.ACCOUNT_LOCKED.code
+      );
 
     const is_valid_password = await bcrypt.compare(
       password,
       existingUser.password
     );
-    if (!is_valid_password) throw new AppError(400, 'Wrong password');
+    if (!is_valid_password)
+      throw new AppError(
+        ERROR_CODES.WRONG_CREDENTIALS.statusCode,
+        ERROR_CODES.WRONG_CREDENTIALS.message,
+        ERROR_CODES.WRONG_CREDENTIALS.code
+      );
 
     const accessExpires = remember ? '30d' : '10d';
     const refreshTtlSeconds = remember ? 60 * 60 * 24 * 60 : 60 * 60 * 24 * 30;
@@ -235,18 +328,31 @@ const AuthService = {
   },
 
   refreshToken: async ({ refresh_token }) => {
-    if (!refresh_token) throw new AppError(400, 'Missing refresh token');
+    if (!refresh_token)
+      throw new AppError(
+        ERROR_CODES.MISSING_FIELDS.statusCode,
+        'Missing refresh_token',
+        ERROR_CODES.MISSING_FIELDS.code
+      );
     let payload;
     try {
       payload = jwt.verify(refresh_token, process.env.JWT_REFRESH_SECRET);
     } catch (err) {
-      throw new AppError(401, 'Invalid or expired refresh token');
+      throw new AppError(
+        ERROR_CODES.INVALID_REFRESH_TOKEN.statusCode,
+        ERROR_CODES.INVALID_REFRESH_TOKEN.message,
+        ERROR_CODES.INVALID_REFRESH_TOKEN.code
+      );
     }
 
     const userId = payload.id;
     const stored = await getStoredRefreshToken(userId);
     if (!stored || stored !== refresh_token) {
-      throw new AppError(401, 'Refresh token revoked or not found');
+      throw new AppError(
+        ERROR_CODES.REVOKED_REFRESH_TOKEN.statusCode,
+        ERROR_CODES.REVOKED_REFRESH_TOKEN.message,
+        ERROR_CODES.REVOKED_REFRESH_TOKEN.code
+      );
     }
 
     // issue new tokens (keep same remember policy by checking remaining TTL? simple approach: default durations)
@@ -264,19 +370,33 @@ const AuthService = {
   loginWithSocialMedia: async (req, res, next) => {},
 
   logout: async ({ userId }) => {
-    if (!userId) throw new AppError(400, 'Missing userId');
+    if (!userId)
+      throw new AppError(
+        ERROR_CODES.MISSING_FIELDS.statusCode,
+        'Missing userId',
+        ERROR_CODES.MISSING_FIELDS.code
+      );
     await revokeRefreshToken(userId);
     return { message: 'Logged out' };
   },
 
   // helper for middleware
   verifyAccessToken: async (token) => {
-    if (!token) throw new AppError(401, 'Missing access token');
+    if (!token)
+      throw new AppError(
+        ERROR_CODES.MISSING_FIELDS.statusCode,
+        'Missing access token',
+        ERROR_CODES.MISSING_FIELDS.code
+      );
     try {
       const payload = jwt.verify(token, process.env.JWT_SECRET);
       return payload;
     } catch (err) {
-      throw new AppError(401, 'Invalid or expired access token');
+      throw new AppError(
+        ERROR_CODES.INVALID_ACCESS_TOKEN.statusCode,
+        ERROR_CODES.INVALID_ACCESS_TOKEN.message,
+        ERROR_CODES.INVALID_ACCESS_TOKEN.code
+      );
     }
   },
 };
