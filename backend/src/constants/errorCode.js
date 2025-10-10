@@ -141,6 +141,13 @@ const ERROR_CODES = {
     statusCode: 404,
     code: 'SERVICE_TYPE_NOT_FOUND',
   },
+
+  //service
+  NOT_FOUND: {
+    message: 'Service not found',
+    statusCode: 404,
+    code: 'NOT_FOUND',
+  },
 };
 
 module.exports = { ERROR_CODES };
