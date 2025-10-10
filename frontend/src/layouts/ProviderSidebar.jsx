@@ -19,6 +19,8 @@ import {
   ListItemIcon,
   ListItemText,
   Tooltip,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -30,6 +32,8 @@ export const ProviderSidebar = ({ open, onToggle }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const menuItems = [
     {
@@ -52,11 +56,7 @@ export const ProviderSidebar = ({ open, onToggle }) => {
       icon: <RestaurantIcon />,
       path: "/dishes",
     },
-    {
-      text: t("provider_sidebar.staff"),
-      icon: <GroupIcon />,
-      path: "/staff",
-    },
+    { text: t("provider_sidebar.staff"), icon: <GroupIcon />, path: "/staff" },
     {
       text: t("provider_sidebar.payment"),
       icon: <PaymentIcon />,
@@ -75,91 +75,92 @@ export const ProviderSidebar = ({ open, onToggle }) => {
   ];
 
   return (
-    <Drawer
-      variant="permanent"
-      sx={{
-        width: open ? DRAWER_WIDTH : DRAWER_WIDTH_COLLAPSED,
-        flexShrink: 0,
-        transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-        "& .MuiDrawer-paper": {
+    <Box>
+      <Drawer
+        variant={isSmallScreen ? "temporary" : "permanent"}
+        open={open}
+        onClose={onToggle}
+        ModalProps={{ keepMounted: true }}
+        sx={{
           width: open ? DRAWER_WIDTH : DRAWER_WIDTH_COLLAPSED,
-          bgcolor: "background.paper",
-        },
-      }}
-    >
-      <Box>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: open ? "flex-end" : "center",
-            px: open ? 2 : 0,
-            minHeight: { xs: 64, lg: 72 },
-          }}
-        >
-          <IconButton
-            onClick={onToggle}
+          flexShrink: 0,
+          transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          "& .MuiDrawer-paper": {
+            width: open ? DRAWER_WIDTH : DRAWER_WIDTH_COLLAPSED,
+            bgcolor: "background.paper",
+            boxSizing: "border-box",
+          },
+        }}
+      >
+        <Box>
+          <Box
             sx={{
-              borderRadius: 30,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: open ? "flex-end" : "center",
+              px: open ? 2 : 0,
+              minHeight: { xs: 64, lg: 72 },
             }}
           >
-            {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
-        </Box>
+            <IconButton onClick={onToggle} sx={{ borderRadius: 30 }}>
+              {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            </IconButton>
+          </Box>
 
-        <Divider />
+          <Divider />
 
-        <List sx={{ px: 1.5, pt: 2, pb: 2 }}>
-          {menuItems.map((item) => (
-            <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
-              <Tooltip title={!open ? item.text : ""} placement="right" arrow>
-                <ListItemButton
-                  onClick={() => navigate(item.path)}
-                  selected={location.pathname === item.path}
-                  sx={{
-                    minHeight: 48,
-                    borderRadius: 2,
-                    justifyContent: open ? "initial" : "center",
-                    px: open ? 2.5 : 0,
-                    "&.Mui-selected": {
-                      bgcolor: "primary.main",
-                      color: "primary.contrastText",
-                      "& .MuiListItemIcon-root": {
+          <List sx={{ px: 1.5, pt: 2, pb: 2 }}>
+            {menuItems.map((item) => (
+              <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
+                <Tooltip title={!open ? item.text : ""} placement="right" arrow>
+                  <ListItemButton
+                    onClick={() => {
+                      navigate(item.path);
+                      if (isSmallScreen) onToggle();
+                    }}
+                    selected={location.pathname === item.path}
+                    sx={{
+                      minHeight: 48,
+                      borderRadius: 2,
+                      justifyContent: open ? "initial" : "center",
+                      px: open ? 2.5 : 0,
+                      "&.Mui-selected": {
+                        bgcolor: "primary.main",
                         color: "primary.contrastText",
+                        "& .MuiListItemIcon-root": {
+                          color: "primary.contrastText",
+                        },
+                        "&:hover": { bgcolor: "primary.dark" },
                       },
                       "&:hover": {
-                        bgcolor: "primary.dark",
+                        bgcolor: location.pathname === item.path ? "primary.dark" : "action.hover",
                       },
-                    },
-                    "&:hover": {
-                      bgcolor: location.pathname === item.path ? "primary.dark" : "action.hover",
-                    },
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : 0,
-                      color: "inherit",
                     }}
                   >
-                    {item.icon}
-                  </ListItemIcon>
-                  {open && (
-                    <ListItemText
-                      primary={item.text}
-                      primaryTypographyProps={{
-                        variant: "body1",
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : 0,
+                        color: "inherit",
+                        justifyContent: "center",
                       }}
-                    />
-                  )}
-                </ListItemButton>
-              </Tooltip>
-            </ListItem>
-          ))}
-        </List>
-      </Box>
-    </Drawer>
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    {open && (
+                      <ListItemText
+                        primary={item.text}
+                        primaryTypographyProps={{ variant: "body1" }}
+                      />
+                    )}
+                  </ListItemButton>
+                </Tooltip>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
+    </Box>
   );
 };
 

@@ -7,10 +7,7 @@ import ProviderSidebar, { DRAWER_WIDTH_CLOSE, DRAWER_WIDTH_OPEN } from "./Provid
 
 const MainLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  const handleSidebarToggle = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
   const drawerWidth = sidebarOpen ? DRAWER_WIDTH_OPEN : DRAWER_WIDTH_CLOSE;
 
@@ -22,7 +19,7 @@ const MainLayout = () => {
         bgcolor: "background.default",
       }}
     >
-      <ProviderSidebar open={sidebarOpen} onToggle={handleSidebarToggle} />
+      <ProviderSidebar open={sidebarOpen} onToggle={toggleSidebar} />
 
       <Box
         sx={{
@@ -32,14 +29,14 @@ const MainLayout = () => {
           minHeight: "100vh",
         }}
       >
-        <Header drawerWidth={drawerWidth} />
+        <Header drawerWidth={drawerWidth} onToggleSidebar={toggleSidebar} />
 
         <Box
           component="main"
           sx={{
             flex: 1,
             pt: { xs: 10, lg: 12 },
-            px: { xs: 1, sm: 6, md: 19 },
+            px: { md: 19 },
             overflowY: "auto",
             overflowX: "hidden",
             wordWrap: "break-word",

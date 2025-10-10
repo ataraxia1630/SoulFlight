@@ -1,3 +1,4 @@
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -45,6 +46,7 @@ const AuthButton = ({ to, label, variant, sx, onClick, t }) => (
     sx={{
       height: 40,
       borderRadius: "8px",
+      flexShrink: 0,
       ...sx,
     }}
   >
@@ -107,7 +109,7 @@ const AuthButtons = ({ isDrawer = false, toggleDrawer, t }) => (
   </Box>
 );
 
-const Header = ({ drawerWidth }) => {
+const Header = ({ drawerWidth = 0, onToggleSidebar }) => {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -130,9 +132,7 @@ const Header = ({ drawerWidth }) => {
         sx={{
           bgcolor: theme.palette.background.paper,
           borderBottom: `1px solid ${theme.palette.divider}`,
-          width: `calc(100% - ${drawerWidth}px)`,
-          transition:
-            "left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+          width: { lg: `calc(100% - ${drawerWidth}px)`, xs: "100%" },
         }}
       >
         <Toolbar
@@ -140,11 +140,25 @@ const Header = ({ drawerWidth }) => {
             justifyContent: "space-between",
             gap: 2,
             minHeight: { xs: 64, lg: 72 },
+            px: { xs: 1.5, sm: 3, lg: 4 },
           }}
         >
-          <Typography variant="h4" sx={{ fontWeight: 600, letterSpacing: "-0.5px" }}>
-            SOULFLIGHT
-          </Typography>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <IconButton
+              onClick={onToggleSidebar}
+              sx={{
+                display: { xs: "flex", lg: "none" },
+                mr: 1.5,
+                borderRadius: "30px",
+              }}
+            >
+              <ChevronRightIcon />
+            </IconButton>
+
+            <Typography variant="h5" sx={{ fontWeight: 600, letterSpacing: "-0.5px" }}>
+              SOULFLIGHT
+            </Typography>
+          </Box>
 
           <DesktopNav navItems={navItems} t={t} theme={theme} />
 
@@ -157,6 +171,7 @@ const Header = ({ drawerWidth }) => {
               IconComponent={KeyboardArrowDownIcon}
               sx={{
                 height: 40,
+                flexShrink: 0,
                 borderRadius: "8px",
                 "&:hover .MuiOutlinedInput-notchedOutline": {
                   borderColor: theme.palette.primary.main,
@@ -170,6 +185,7 @@ const Header = ({ drawerWidth }) => {
               <MenuItem value="vi">VI</MenuItem>
             </Select>
 
+            {/* Drawer mở bên phải (menu mobile) */}
             <IconButton onClick={toggleDrawer} sx={{ display: { lg: "none" } }}>
               <MenuIcon />
             </IconButton>
