@@ -1,9 +1,11 @@
 import { Box, Link, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <Box
@@ -11,13 +13,11 @@ const Footer = () => {
       sx={{
         p: 2,
         textAlign: "center",
-        borderTop: 1,
-        borderColor: "divider",
-        mt: 7,
+        mt: 5,
       }}
     >
       <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-        © {currentYear} SoulFlight. Nền tảng du lịch cộng đồng toàn cầu.
+        {t("footer.copyright", { currentYear })}
       </Typography>
 
       <Box
@@ -35,7 +35,7 @@ const Footer = () => {
           color="text.secondary"
           variant="body2"
         >
-          Điều khoản
+          {t("footer.terms")}
         </Link>
 
         <Link
@@ -45,7 +45,7 @@ const Footer = () => {
           color="text.secondary"
           variant="body2"
         >
-          Quyền riêng tư
+          {t("privacy")}
         </Link>
 
         <Link
@@ -54,7 +54,7 @@ const Footer = () => {
           color="text.secondary"
           variant="body2"
         >
-          Liên hệ
+          {t("header.contact")}
         </Link>
       </Box>
     </Box>
