@@ -109,7 +109,7 @@ const AuthButtons = ({ isDrawer = false, toggleDrawer, t }) => (
   </Box>
 );
 
-const Header = ({ drawerWidth = 0, onToggleSidebar }) => {
+const Header = ({ drawerWidth = 0, onToggleSidebar, showMenuIcon = true }) => {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -144,18 +144,23 @@ const Header = ({ drawerWidth = 0, onToggleSidebar }) => {
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center" }}>
-            <IconButton
-              onClick={onToggleSidebar}
-              sx={{
-                display: { xs: "flex", lg: "none" },
-                mr: 1.5,
-                borderRadius: "30px",
-              }}
-            >
-              <ChevronRightIcon />
-            </IconButton>
+            {showMenuIcon && (
+              <IconButton
+                onClick={onToggleSidebar}
+                sx={{
+                  display: { xs: "flex", lg: "none" },
+                  mr: 1.5,
+                  borderRadius: "30px",
+                }}
+              >
+                <ChevronRightIcon />
+              </IconButton>
+            )}
 
-            <Typography variant="h5" sx={{ fontWeight: 600, letterSpacing: "-0.5px" }}>
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: 600, letterSpacing: "-0.5px" }}
+            >
               SOULFLIGHT
             </Typography>
           </Box>
@@ -185,7 +190,6 @@ const Header = ({ drawerWidth = 0, onToggleSidebar }) => {
               <MenuItem value="vi">VI</MenuItem>
             </Select>
 
-            {/* Drawer mở bên phải (menu mobile) */}
             <IconButton onClick={toggleDrawer} sx={{ display: { lg: "none" } }}>
               <MenuIcon />
             </IconButton>
