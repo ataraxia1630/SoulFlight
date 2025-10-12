@@ -39,7 +39,9 @@ const AuthLayout = () => {
         ctx.beginPath();
         ctx.moveTo(0, canvas.height / 2);
         for (let x = 0; x < canvas.width; x++) {
-          const y = Math.sin(x * layer.freq + t * layer.speed) * layer.amp + canvas.height / 2;
+          const y =
+            Math.sin(x * layer.freq + t * layer.speed) * layer.amp +
+            canvas.height / 2;
           ctx.lineTo(x, y);
         }
         ctx.lineTo(canvas.width, canvas.height);
@@ -56,7 +58,10 @@ const AuthLayout = () => {
     draw();
     window.addEventListener("resize", resize);
     return () => window.removeEventListener("resize", resize);
-  }, [theme.palette.background.ocean.light, theme.palette.background.ocean.dark]);
+  }, [
+    theme.palette.background.ocean.light,
+    theme.palette.background.ocean.dark,
+  ]);
 
   return (
     <Box sx={{ position: "relative", minHeight: "100vh" }}>
@@ -74,7 +79,7 @@ const AuthLayout = () => {
       />
 
       <Box sx={{ position: "relative", zIndex: 1, minHeight: "100vh", p: 2 }}>
-        <Header />
+        <Header showMenuIcon={false} />
         <Box
           display="flex"
           alignItems="center"

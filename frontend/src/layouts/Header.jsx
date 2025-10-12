@@ -1,167 +1,230 @@
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import MenuIcon from "@mui/icons-material/Menu";
 import {
   AppBar,
   Box,
   Button,
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
   MenuItem,
   Select,
   Toolbar,
   Typography,
   useTheme,
 } from "@mui/material";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
 
-const Header = () => {
+const NavButton = ({ item, onClick, theme, t }) => (
+  <Button
+    component={RouterLink}
+    to={item === "home" ? "/" : `/${item}`}
+    onClick={onClick}
+    sx={{
+      color: theme.palette.text.primary,
+      fontWeight: 500,
+      textTransform: "capitalize",
+      "&:hover": { backgroundColor: theme.palette.action.hover },
+    }}
+  >
+    {t(`header.${item}`)}
+  </Button>
+);
+
+const AuthButton = ({ to, label, variant, sx, onClick, t }) => (
+  <Button
+    component={RouterLink}
+    to={to}
+    variant={variant}
+    onClick={onClick}
+    sx={{
+      height: 40,
+      borderRadius: "8px",
+      flexShrink: 0,
+      ...sx,
+    }}
+  >
+    {t(label)}
+  </Button>
+);
+
+const DesktopNav = ({ navItems, t, theme }) => (
+  <Box sx={{ display: { xs: "none", lg: "flex" }, gap: 2 }}>
+    {navItems.map((item) => (
+      <NavButton key={item} item={item} theme={theme} t={t} />
+    ))}
+  </Box>
+);
+
+const DrawerNav = ({ navItems, toggleDrawer, t }) => (
+  <List>
+    {navItems.map((item) => (
+      <ListItem key={item} disablePadding>
+        <ListItemButton
+          component={RouterLink}
+          to={item === "home" ? "/" : `/${item}`}
+          onClick={toggleDrawer}
+          sx={{ py: 1.5, px: 3 }}
+        >
+          <Typography textTransform="capitalize" fontWeight={500}>
+            {t(`header.${item}`)}
+          </Typography>
+        </ListItemButton>
+      </ListItem>
+    ))}
+  </List>
+);
+
+const AuthButtons = ({ isDrawer = false, toggleDrawer, t }) => (
+  <Box
+    sx={{
+      display: isDrawer ? "flex" : { xs: "none", sm: "flex" },
+      flexDirection: isDrawer ? "column" : "row",
+      gap: 1.5,
+      ...(isDrawer && { px: 3, mt: 2 }),
+    }}
+  >
+    <AuthButton
+      to="/login"
+      label="auth.login"
+      variant="outlined"
+      t={t}
+      sx={{ border: "1.5px solid" }}
+      onClick={isDrawer ? toggleDrawer : undefined}
+    />
+    <AuthButton
+      to="/traveler/signup"
+      label="auth.signup"
+      variant="contained"
+      t={t}
+      sx={{ boxShadow: "none", "&:hover": { boxShadow: "none" } }}
+      onClick={isDrawer ? toggleDrawer : undefined}
+    />
+  </Box>
+);
+
+const Header = ({ drawerWidth = 0, onToggleSidebar, showMenuIcon = true }) => {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const navItems = ["home", "explore", "trips", "news", "contact"];
 
-  const handleChange = (e) => {
+  const handleLanguageChange = (e) => {
     i18n.changeLanguage(e.target.value);
   };
 
+  const toggleDrawer = () => {
+    setIsDrawerOpen((prev) => !prev);
+  };
+
   return (
-    <AppBar
-      position="fixed"
-      color="default"
-      elevation={0}
-      sx={{
-        minWidth: "600px",
-        bgcolor: theme.palette.background.default,
-        borderBottom: `1px solid ${theme.palette.border.divider}`,
-      }}
-    >
-      <Toolbar
+    <>
+      <AppBar
+        position="fixed"
+        color="default"
+        elevation={0}
         sx={{
-          justifyContent: "space-between",
-          px: { xs: 2, lg: 2 },
-          py: { xs: 1, lg: 1.5 },
-          flexWrap: "wrap",
-          minHeight: { xs: 64, lg: 72 },
-          "& > *": {
-            "&:nth-child(n+2)": {
-              marginLeft: "auto",
-            },
-          },
+          bgcolor: theme.palette.background.paper,
+          borderBottom: `1px solid ${theme.palette.divider}`,
+          width: { lg: `calc(100% - ${drawerWidth}px)`, xs: "100%" },
         }}
       >
-        <Typography
-          variant="h5"
+        <Toolbar
           sx={{
-            fontWeight: "bold",
-            color: theme.palette.text.primary,
-            flexShrink: 0,
+            justifyContent: "space-between",
+            gap: 2,
+            minHeight: { xs: 64, lg: 72 },
+            px: { xs: 1.5, sm: 3, lg: 4 },
           }}
         >
-          SOULFLIGHT
-        </Typography>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            {showMenuIcon && (
+              <IconButton
+                onClick={onToggleSidebar}
+                sx={{
+                  display: { xs: "flex", lg: "none" },
+                  mr: 1.5,
+                  borderRadius: "30px",
+                }}
+              >
+                <ChevronRightIcon />
+              </IconButton>
+            )}
 
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: { xs: 1.5, md: 3, lg: 4 },
-            flexWrap: "wrap",
-          }}
-        >
-          {navItems.map((item) => (
-            <Button
-              key={item}
-              component={RouterLink}
-              to={item === "home" ? "/" : `/${item}`}
-              TouchRippleProps={{
-                style: { color: `${theme.palette.primary.light}80` },
-              }}
-              sx={{
-                color: theme.palette.text.primary,
-                "&:active": {
-                  backgroundColor: `${theme.palette.primary.main}33`,
-                },
-              }}
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: 600, letterSpacing: "-0.5px" }}
             >
-              {t(`header.${item}`)}
-            </Button>
-          ))}
-        </Box>
+              SOULFLIGHT
+            </Typography>
+          </Box>
 
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: { xs: 1, md: 1.5, lg: 2 },
-            flexShrink: 0,
-          }}
-        >
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: { xs: 1, lg: 1.5 },
-            }}
-          >
-            <Button
-              component={RouterLink}
-              to="/login"
-              variant="outlined"
-              sx={{
-                minWidth: { xs: 50, md: 60 },
-                height: "32px",
-                borderRadius: "20px",
-                border: `1px solid ${theme.palette.primary.main}`,
-                color: theme.palette.primary.main,
-                px: { xs: 1, md: 2 },
-                "&:hover": {
-                  backgroundColor: `${theme.palette.primary.main}14`,
-                  border: `1px solid ${theme.palette.primary.main}`,
-                },
-              }}
-            >
-              {t("auth.login")}
-            </Button>
+          <DesktopNav navItems={navItems} t={t} theme={theme} />
 
-            <Button
-              component={RouterLink}
-              to="/traveler/signup"
-              variant="contained"
-              sx={{
-                minWidth: { xs: 50, md: 60 },
-                height: "32px",
-                borderRadius: "20px",
-                backgroundColor: theme.palette.primary.main,
-                color: "white",
-                px: { xs: 1, md: 2 },
-                boxShadow: "none",
-                "&:hover": {
-                  backgroundColor: theme.palette.primary.dark,
-                  boxShadow: "none",
-                },
-              }}
-            >
-              {t("auth.signup")}
-            </Button>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            <AuthButtons t={t} toggleDrawer={toggleDrawer} />
 
             <Select
               value={i18n.language}
-              onChange={handleChange}
-              size="small"
-              variant="standard"
-              disableUnderline
+              onChange={handleLanguageChange}
               IconComponent={KeyboardArrowDownIcon}
               sx={{
-                color: theme.palette.text.primary,
-                "& .MuiSelect-select": {
-                  padding: { xs: "4px 20px 4px 4px", md: "4px 24px 4px 8px" },
+                height: 40,
+                flexShrink: 0,
+                borderRadius: "8px",
+                "&:hover .MuiOutlinedInput-notchedOutline": {
+                  borderColor: theme.palette.primary.main,
+                },
+                "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                  borderWidth: "1px",
                 },
               }}
             >
               <MenuItem value="en">EN</MenuItem>
               <MenuItem value="vi">VI</MenuItem>
             </Select>
+
+            <IconButton onClick={toggleDrawer} sx={{ display: { lg: "none" } }}>
+              <MenuIcon />
+            </IconButton>
           </Box>
+        </Toolbar>
+      </AppBar>
+
+      <Drawer
+        anchor="right"
+        open={isDrawerOpen}
+        onClose={toggleDrawer}
+        sx={{
+          display: { xs: "block", lg: "none" },
+          "& .MuiDrawer-paper": { width: 280, pt: 2 },
+        }}
+      >
+        <Box
+          sx={{
+            px: 2,
+            mb: 2,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Typography variant="h3">Menu</Typography>
+          <IconButton onClick={toggleDrawer}>
+            <CloseIcon />
+          </IconButton>
         </Box>
-      </Toolbar>
-    </AppBar>
+
+        <DrawerNav navItems={navItems} toggleDrawer={toggleDrawer} t={t} />
+        <AuthButtons isDrawer toggleDrawer={toggleDrawer} t={t} />
+      </Drawer>
+    </>
   );
 };
 

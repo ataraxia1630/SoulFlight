@@ -25,6 +25,7 @@
     "complete profile": "Hoàn tất hồ sơ",
     "finish": "Hoàn thành"
   },
+
   "header": {
     "home": "Trang chủ",
     "explore": "Khám phá",
@@ -32,6 +33,12 @@
     "news": "Tin tức",
     "contact": "Liên hệ"
   },
+
+  "footer": {
+    "copyright": "© {{currentYear}} SoulFlight. Nền tảng du lịch cộng đồng toàn cầu.",
+    "terms": "Điều khoản"
+  },
+
   "info": {
     "company_name": "Tên nhà cung cấp",
     "description": "Mô tả",
@@ -44,8 +51,21 @@
     "establish_year": "Năm thành lập",
     "id_card": "Căn cước công dân"
   },
+
+  "provider_sidebar": {
+    "dashboard": "Bảng điều khiển",
+    "service": "Dịch vụ",
+    "voucher": "Mã khuyến mãi",
+    "dishes": "Món ăn",
+    "staff": "Nhân viên",
+    "payment": "Thanh toán",
+    "assessment": "Đánh giá",
+    "report": "Báo cáo"
+  },
+
   "or": "HOẶC",
   "male": "Nam",
   "female": "Nữ",
-  "other": "Khác"
+  "other": "Khác",
+  "privacy": "Quyền riêng tư"
 }
