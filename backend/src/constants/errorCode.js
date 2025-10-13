@@ -141,6 +141,53 @@ const ERROR_CODES = {
     statusCode: 404,
     code: 'SERVICE_TYPE_NOT_FOUND',
   },
+
+  //cloudinary
+  CLOUDINARY_UPLOAD_FAILED: {
+    message: 'Failed to upload image',
+    statusCode: 400,
+    code: 'CLOUDINARY_UPLOAD_FAILED',
+  },
+  CLOUDINARY_DELETE_FAILED: {
+    message: 'Failed to delete image',
+    statusCode: 400,
+    code: 'CLOUDINARY_DELETE_FAILED',
+  },
+  PUBLIC_ID_REQUIRED: {
+    message: 'Public ID is required',
+    statusCode: 400,
+    code: 'PUBLIC_ID_REQUIRED',
+  },
+  PUBLIC_IDS_REQUIRED: {
+    message: 'At least one public ID is required',
+    statusCode: 400,
+    code: 'PUBLIC_IDS_REQUIRED',
+  },
+  IMAGE_NOT_FOUND: {
+    message: 'Image not found or already deleted',
+    statusCode: 404,
+    code: 'IMAGE_NOT_FOUND',
+  },
+  IMAGE_REQUIRED: {
+    message: 'Image file is required',
+    statusCode: 400,
+    code: 'IMAGE_REQUIRED',
+  },
+  IMAGES_REQUIRED: {
+    message: 'At least one image is required',
+    statusCode: 400,
+    code: 'IMAGES_REQUIRED',
+  },
+  TOO_MANY_IMAGES: {
+    message: 'Maximum 10 images allowed',
+    statusCode: 400,
+    code: 'TOO_MANY_IMAGES',
+  },
+  INVALID_FOLDER_FORMAT: {
+    message: 'Invalid folder format',
+    statusCode: 400,
+    code: 'INVALID_FOLDER_FORMAT',
+  },
 };
 
 module.exports = { ERROR_CODES };
