@@ -5,7 +5,7 @@ import FormInput from "../FormInput";
 import PrimaryButton from "../PrimaryButton";
 import BackLogin from "./BackLoginLink";
 
-const CompleteProfileTravelerForm = ({ onSubmit, loading = false }) => {
+const CompleteProfileBusinessForm = ({ onSubmit, loading = false }) => {
   const { t } = useTranslation();
 
   const [formData, setFormData] = useState({
@@ -147,4 +147,4 @@ const CompleteProfileTravelerForm = ({ onSubmit, loading = false }) => {
   );
 };
 
-export default CompleteProfileTravelerForm;
+export default CompleteProfileBusinessForm;

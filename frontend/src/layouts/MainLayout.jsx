@@ -3,10 +3,7 @@ import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Footer from "./Footer";
 import Header from "./Header";
-import ProviderSidebar, {
-  DRAWER_WIDTH_CLOSE,
-  DRAWER_WIDTH_OPEN,
-} from "./ProviderSidebar";
+import ProviderSidebar, { DRAWER_WIDTH_CLOSE, DRAWER_WIDTH_OPEN } from "./ProviderSidebar";
 
 const MainLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -32,11 +29,7 @@ const MainLayout = () => {
           minHeight: "100vh",
         }}
       >
-        <Header
-          drawerWidth={drawerWidth}
-          onToggleSidebar={toggleSidebar}
-          showMenuButton
-        />
+        <Header drawerWidth={drawerWidth} onToggleSidebar={toggleSidebar} showMenuButton />
 
         <Box
           component="main"

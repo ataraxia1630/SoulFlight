@@ -1,4 +1,4 @@
-import { Box, MenuItem, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import FormInput from "../FormInput";
@@ -26,6 +26,13 @@ const CompleteProfileTravelerForm = ({
     setFormData((prev) => ({
       ...prev,
       [name]: value,
+    }));
+  };
+
+  const handleDateChange = (date) => {
+    setFormData((prev) => ({
+      ...prev,
+      dob: date,
     }));
   };
 
@@ -63,24 +70,24 @@ const CompleteProfileTravelerForm = ({
         />
 
         <FormInput
-          select
+          type="select"
           name="gender"
           label={t("info.gender")}
           value={formData.gender}
           onChange={handleChange}
-        >
-          <MenuItem value="MALE">{t("male")}</MenuItem>
-          <MenuItem value="FEMALE">{t("female")}</MenuItem>
-          <MenuItem value="OTHER">{t("other")}</MenuItem>
-        </FormInput>
+          options={[
+            { label: t("male"), value: "MALE" },
+            { label: t("female"), value: "FEMALE" },
+            { label: t("other"), value: "OTHER" },
+          ]}
+        />
 
         <FormInput
           name="dob"
           label={t("info.dob")}
           type="date"
           value={formData.dob}
-          onChange={handleChange}
-          InputLabelProps={{ shrink: true }}
+          onChange={handleDateChange}
         />
 
         <PrimaryButton

@@ -157,10 +157,7 @@ const Header = ({ drawerWidth = 0, onToggleSidebar, showMenuIcon = true }) => {
               </IconButton>
             )}
 
-            <Typography
-              variant="h5"
-              sx={{ fontWeight: 600, letterSpacing: "-0.5px" }}
-            >
+            <Typography variant="h5" sx={{ fontWeight: 600, letterSpacing: "-0.5px" }}>
               SOULFLIGHT
             </Typography>
           </Box>
