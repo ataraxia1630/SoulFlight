@@ -1,10 +1,19 @@
-import { TextField, useTheme } from "@mui/material";
+import { useTheme } from "@mui/material";
+import DateInput from "./input/DateInput";
+import SelectInput from "./input/SelectInput";
+import TextInput from "./input/TextInput";
+
+const inputComponents = {
+  text: TextInput,
+  date: DateInput,
+  select: SelectInput,
+};
 
 const FormInput = ({
+  type = "text",
   name,
   placeholder,
   label,
-  type = "text",
   value,
   onChange,
   error,
@@ -14,18 +23,18 @@ const FormInput = ({
 }) => {
   const theme = useTheme();
 
+  const InputComponent = inputComponents[type] || TextInput;
+
   return (
-    <TextField
-      fullWidth
-      name={name}
+    <InputComponent
       type={type}
+      name={name}
       placeholder={placeholder}
       label={label || placeholder}
       value={value}
       onChange={onChange}
       error={error}
       helperText={helperText}
-      variant="outlined"
       sx={{
         "& .MuiOutlinedInput-root": {
           backgroundColor: theme.palette.background.input,
