@@ -156,7 +156,16 @@ frontend/
   - Custom hooks (e.g., `useAuth`) go in `src/shared/hooks/`.
 
 - **Assets** (`src/assets/`):
+
   - Store images, icons, and fonts here. Import in components as needed.
+
+- **FormInput Component** :
+
+  - Located at: `src/shared/components/FormInput.jsx`
+  - A wrapper providing a unified UI for multiple input types:
+    - `text` → `TextInput`
+    - `select` → `SelectInput`
+    - `date` → `DateInput` (uses `@mui/x-date-pickers` + `AdapterDateFns`)
 
 ### Notes and Best Practices
 
