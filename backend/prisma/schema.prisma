@@ -154,53 +154,54 @@ model MenuItem {
 }
 
 model Tour {
-  id          Int           @id @default(autoincrement())
-  name        String
-  description String?
-  total_price Float
-  duration    Float // in hours
-  status      ServiceStatus @default(AVAILABLE)
-  service_id  Int
-  created_at  DateTime      @default(now())
-  updated_at  DateTime      @updatedAt
-  Service     Service       @relation(fields: [service_id], references: [id])
-  TourPlace   TourPlace[]
+  id            Int           @id @default(autoincrement())
+  name          String
+  description   String?
+  service_price Float
+  total_price   Float
+  duration      Float // in hours
+  status        ServiceStatus @default(AVAILABLE)
+  service_id    Int
+  tourguide_id  Int?
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+  Service       Service       @relation(fields: [service_id], references: [id])
+  TourPlace     TourPlace[]
+  TourGuide     TourGuide?    @relation(fields: [tourguide_id], references: [id])
 }
 
 model Place {
-  id           Int         @id @default(autoincrement())
-  name         String
-  description  String?
-  image_url    String?
-  address      String?
-  opening_hour DateTime?
-  closing_hour DateTime?
-  created_at   DateTime    @default(now())
-  updated_at   DateTime    @updatedAt
-  TourPlace    TourPlace[]
+  id            Int         @id @default(autoincrement())
+  name          String
+  description   String?
+  image_url     String?
+  address       String?
+  opening_hours Json?
+  entry_fee     Float?
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+  TourPlace     TourPlace[]
 }
 
 model TourPlace {
-  tourId       Int
-  placeId      Int
-  description  String?
-  start_time   DateTime?
-  end_time     DateTime?
-  tourguide_id Int?
-  Tour         Tour       @relation(fields: [tourId], references: [id])
-  Place        Place      @relation(fields: [placeId], references: [id])
-  TourGuide    TourGuide? @relation(fields: [tourguide_id], references: [id])
+  tour_id     Int
+  place_id    Int
+  description String?
+  start_time  DateTime?
+  end_time    DateTime?
+  Tour        Tour      @relation(fields: [tour_id], references: [id])
+  Place       Place     @relation(fields: [place_id], references: [id])
 
-  @@id([tourId, placeId])
+  @@id([tour_id, place_id])
 }
 
 model TourGuide {
-  id          Int         @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   name        String
   phone       String
   description String?
   image_url   String?
-  created_at  DateTime    @default(now())
-  updated_at  DateTime    @updatedAt
-  TourPlace   TourPlace[]
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  Tour        Tour[]
 }
