@@ -160,6 +160,11 @@ model Tour {
   service_price Float
   total_price   Float
   duration      Float // in hours
+  is_recurring  Boolean       @default(false)
+  repeat_rule   String? // 'daily' | 'weekly' | 'monthly'
+  repeat_days   String[] // ['monday', 'friday'] nếu weekly
+  start_date    DateTime? // chỉ cần nếu là tour 1 lần
+  end_date      DateTime? // nếu tour kéo dài nhiều ngày
   status        ServiceStatus @default(AVAILABLE)
   service_id    Int
   tourguide_id  Int?
@@ -187,10 +192,10 @@ model TourPlace {
   tour_id     Int
   place_id    Int
   description String?
-  start_time  DateTime?
-  end_time    DateTime?
-  Tour        Tour      @relation(fields: [tour_id], references: [id])
-  Place       Place     @relation(fields: [place_id], references: [id])
+  start_time  String?
+  end_time    String?
+  Tour        Tour    @relation(fields: [tour_id], references: [id])
+  Place       Place   @relation(fields: [place_id], references: [id])
 
   @@id([tour_id, place_id])
 }
