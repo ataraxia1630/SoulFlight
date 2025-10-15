@@ -1,6 +1,6 @@
 const catchAsync = require('../utils/catchAsync');
 const ApiResponse = require('../utils/ApiResponse');
-const { PlaceService } = require('../services');
+const { PlaceService } = require('../services/place.service');
 const { PlaceDTO } = require('../dtos/place.dto');
 
 const PlaceController = {
