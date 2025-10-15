@@ -107,6 +107,7 @@ model Service {
   Provider    Provider       @relation(fields: [provider_id], references: [id])
   Tags        ServiceOnTag[]
   Menus       Menu[]
+  Tour        Tour[]
 }
 
 model ServiceTag {
@@ -150,4 +151,56 @@ model MenuItem {
   created_at  DateTime      @default(now())
   updated_at  DateTime      @updatedAt
   Menu        Menu          @relation(fields: [menu_id], references: [id])
+}
+
+model Tour {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String?
+  total_price Float
+  duration    Float // in hours
+  status      ServiceStatus @default(AVAILABLE)
+  service_id  Int
+  created_at  DateTime      @default(now())
+  updated_at  DateTime      @updatedAt
+  Service     Service       @relation(fields: [service_id], references: [id])
+  TourPlace   TourPlace[]
+}
+
+model Place {
+  id           Int         @id @default(autoincrement())
+  name         String
+  description  String?
+  image_url    String?
+  address      String?
+  opening_hour DateTime?
+  closing_hour DateTime?
+  created_at   DateTime    @default(now())
+  updated_at   DateTime    @updatedAt
+  TourPlace    TourPlace[]
+}
+
+model TourPlace {
+  tourId       Int
+  placeId      Int
+  description  String?
+  start_time   DateTime?
+  end_time     DateTime?
+  tourguide_id Int?
+  Tour         Tour       @relation(fields: [tourId], references: [id])
+  Place        Place      @relation(fields: [placeId], references: [id])
+  TourGuide    TourGuide? @relation(fields: [tourguide_id], references: [id])
+
+  @@id([tourId, placeId])
+}
+
+model TourGuide {
+  id          Int         @id @default(autoincrement())
+  name        String
+  phone       String
+  description String?
+  image_url   String?
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @updatedAt
+  TourPlace   TourPlace[]
 }
