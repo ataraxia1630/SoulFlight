@@ -195,6 +195,13 @@ const ERROR_CODES = {
     statusCode: 404,
     code: 'PLACE_NOT_FOUND',
   },
+
+  //tour
+  TOUR_NOT_FOUND: {
+    message: 'Tour not found',
+    statusCode: 404,
+    code: 'TOUR_NOT_FOUND',
+  },
 };
 
 module.exports = { ERROR_CODES };
