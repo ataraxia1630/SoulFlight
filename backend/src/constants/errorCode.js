@@ -26,7 +26,7 @@ const ERROR_CODES = {
     code: 'REVOKED_REFRESH_TOKEN',
   },
 
-  // signup
+  //signup
   INVALID_CREDENTIALS: {
     message: 'Invalid email or password',
     statusCode: 401,
@@ -38,7 +38,7 @@ const ERROR_CODES = {
     code: 'EMAIL_REGISTERED',
   },
 
-  // otp
+  //otp
   OTP_EXPIRED: {
     message: 'OTP has expired or not found',
     statusCode: 400,
@@ -55,7 +55,7 @@ const ERROR_CODES = {
     code: 'OTP_LIMIT_EXCEEDED',
   },
 
-  // create user
+  //create user
   INVALID_VERIFICATION_TOKEN: {
     message: 'Invalid or expired verification token',
     statusCode: 400,
@@ -187,6 +187,13 @@ const ERROR_CODES = {
     message: 'Invalid folder format',
     statusCode: 400,
     code: 'INVALID_FOLDER_FORMAT',
+  },
+
+  //place
+  PLACE_NOT_FOUND: {
+    message: 'Place not found',
+    statusCode: 404,
+    code: 'PLACE_NOT_FOUND',
   },
 };
 
