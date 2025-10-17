@@ -210,3 +210,14 @@ model TourGuide {
   updated_at  DateTime @updatedAt
   Tour        Tour[]
 }
+
+model Image {
+  id           Int      @id @default(autoincrement())
+  url          String
+  position     Int      @default(0) // for ordering images
+  is_main      Boolean  @default(false) // main image flag
+  related_id   Int // ID of the related entity
+  related_type String // e.g. 'Service', 'Menu', 'Place', etc.
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+}
