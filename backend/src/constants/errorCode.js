@@ -142,6 +142,13 @@ const ERROR_CODES = {
     code: 'SERVICE_TYPE_NOT_FOUND',
   },
 
+  //service
+  NOT_FOUND: {
+    message: 'Service not found',
+    statusCode: 404,
+    code: 'NOT_FOUND',
+  },
+  
   //cloudinary
   CLOUDINARY_UPLOAD_FAILED: {
     message: 'Failed to upload image',
