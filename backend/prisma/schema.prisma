@@ -107,6 +107,7 @@ model Service {
   Provider    Provider       @relation(fields: [provider_id], references: [id])
   Tags        ServiceOnTag[]
   Menus       Menu[]
+  Tour        Tour[]
 }
 
 model ServiceTag {
@@ -150,4 +151,73 @@ model MenuItem {
   created_at  DateTime      @default(now())
   updated_at  DateTime      @updatedAt
   Menu        Menu          @relation(fields: [menu_id], references: [id])
+}
+
+model Tour {
+  id            Int           @id @default(autoincrement())
+  name          String
+  description   String?
+  service_price Float
+  total_price   Float
+  duration      Float // in hours
+  is_recurring  Boolean       @default(false)
+  repeat_rule   String? // 'daily' | 'weekly' | 'monthly'
+  repeat_days   String[] // ['monday', 'friday'] nếu weekly
+  start_date    DateTime? // chỉ cần nếu là tour 1 lần
+  end_date      DateTime? // nếu tour kéo dài nhiều ngày
+  status        ServiceStatus @default(AVAILABLE)
+  service_id    Int
+  tourguide_id  Int?
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+  Service       Service       @relation(fields: [service_id], references: [id])
+  TourPlace     TourPlace[]
+  TourGuide     TourGuide?    @relation(fields: [tourguide_id], references: [id])
+}
+
+model Place {
+  id            Int         @id @default(autoincrement())
+  name          String
+  description   String?
+  image_url     String?
+  address       String?
+  opening_hours Json?
+  entry_fee     Float?
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+  TourPlace     TourPlace[]
+}
+
+model TourPlace {
+  tour_id     Int
+  place_id    Int
+  description String?
+  start_time  String?
+  end_time    String?
+  Tour        Tour    @relation(fields: [tour_id], references: [id])
+  Place       Place   @relation(fields: [place_id], references: [id])
+
+  @@id([tour_id, place_id])
+}
+
+model TourGuide {
+  id          Int      @id @default(autoincrement())
+  name        String
+  phone       String
+  description String?
+  image_url   String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  Tour        Tour[]
+}
+
+model Image {
+  id           Int      @id @default(autoincrement())
+  url          String
+  position     Int      @default(0) // for ordering images
+  is_main      Boolean  @default(false) // main image flag
+  related_id   Int // ID of the related entity
+  related_type String // e.g. 'Service', 'Menu', 'Place', etc.
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
 }

@@ -74,7 +74,7 @@ const AuthLayout = () => {
       />
 
       <Box sx={{ position: "relative", zIndex: 1, minHeight: "100vh", p: 2 }}>
-        <Header />
+        <Header showMenuIcon={false} />
         <Box
           display="flex"
           alignItems="center"
