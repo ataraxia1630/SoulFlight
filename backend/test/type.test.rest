@@ -1,0 +1,44 @@
+@baseUrl = http://localhost:1601/api/service-type
+
+### Get all service types
+GET {{baseUrl}}
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+###
+
+### Get a single service type by ID
+GET {{baseUrl}}/1
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+###
+
+### Create a new service type
+POST {{baseUrl}}
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+{
+  "name": "Tour",
+  "description": "Travel and sightseeing services"
+}
+
+###
+
+### Update a service type
+PUT {{baseUrl}}/1
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+{
+  "name": "Luxury Tour",
+  "description": "High-end travel and sightseeing packages"
+}
+
+###
+
+### Delete a service type
+DELETE {{baseUrl}}/1
+Content-Type: application/json
+# Authorization: Bearer {{token}}
