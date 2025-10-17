@@ -108,6 +108,7 @@ model Service {
   Tags        ServiceOnTag[]
   Menus       Menu[]
   Tour        Tour[]
+  Rooms       Room[]
 }
 
 model ServiceTag {
@@ -220,4 +221,42 @@ model Image {
   related_type String // e.g. 'Service', 'Menu', 'Place', etc.
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
+}
+
+model Facility {
+  id         Int              @id @default(autoincrement())
+  name       String
+  icon_url   String?
+  rooms      RoomFacility[]
+  created_at DateTime         @default(now())
+  updated_at DateTime         @updatedAt
+}
+
+model Room {
+  id                  Int              @id @default(autoincrement())
+  serviceId           Int
+  name                String
+  description         String?
+  price_per_night     Decimal          @db.Decimal(10, 2)
+  max_children_number Int?
+  max_adult_number    Int?
+  pet_allowed         Boolean          @default(false)
+  bed_number          Int
+  service             Service          @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  facilities          RoomFacility[]
+  created_at          DateTime         @default(now())
+  updated_at          DateTime         @updatedAt
+
+  @@index([serviceId])
+}
+
+model RoomFacility {
+  roomId     Int
+  facilityId Int
+  room       Room       @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  facility   Facility   @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+
+  @@id([roomId, facilityId])
+  @@index([roomId])
+  @@index([facilityId])
 }
