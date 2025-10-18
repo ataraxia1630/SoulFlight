@@ -26,8 +26,7 @@ Content-Type: application/json
 {
   "name": "Seafood Buffet",
   "description": "All-you-can-eat seafood menu with local specialties",
-  "cover_url": "https://example.com/images/seafood.jpg",
-  "service_id": 1
+  "service_id": 3
 }
 
 ###

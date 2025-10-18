@@ -1,0 +1,47 @@
+@baseUrl = http://localhost:1601/api/menu-item
+
+### Get all 
+GET {{baseUrl}}
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+###
+
+### Get by ID
+GET {{baseUrl}}/1
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+###
+
+### Create
+POST {{baseUrl}}
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+{
+  "name": "VIP room",
+  "description": "Travel and sightseeing services",
+  "menu_id": 3,
+  "price": 3.99,
+  "unit": "PORTION"
+}
+
+###
+
+### Update 
+PUT {{baseUrl}}/1
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+{
+  "name": "Pasta",
+  "description": "Soft, sweet and spicy"
+}
+
+###
+
+### Delete 
+DELETE {{baseUrl}}/5
+Content-Type: application/json
+# Authorization: Bearer {{token}}
