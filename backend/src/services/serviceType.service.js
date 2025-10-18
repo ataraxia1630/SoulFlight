@@ -12,7 +12,7 @@ const ServiceTypeService = {
       where: { id },
     });
     if (!type) {
-      return new AppError(
+      throw new AppError(
         ERROR_CODES.SERVICE_TYPE_NOT_FOUND.statusCode,
         ERROR_CODES.SERVICE_TYPE_NOT_FOUND.message,
         ERROR_CODES.SERVICE_TYPE_NOT_FOUND.code
@@ -29,31 +29,19 @@ const ServiceTypeService = {
   },
 
   update: async (id, data) => {
+    await ServiceTypeService.getById(id); // Ensure it exists
     const updated = await prisma.serviceType.update({
       where: { id },
       data,
     });
-    if (!updated) {
-      return new AppError(
-        ERROR_CODES.SERVICE_TYPE_NOT_FOUND.statusCode,
-        ERROR_CODES.SERVICE_TYPE_NOT_FOUND.message,
-        ERROR_CODES.SERVICE_TYPE_NOT_FOUND.code
-      );
-    }
     return updated;
   },
 
   delete: async (id) => {
-    const deleted = await prisma.serviceType.delete({
+    await ServiceTypeService.getById(id); // Ensure it exists
+    await prisma.serviceType.delete({
       where: { id },
     });
-    if (!deleted) {
-      return new AppError(
-        ERROR_CODES.SERVICE_TYPE_NOT_FOUND.statusCode,
-        ERROR_CODES.SERVICE_TYPE_NOT_FOUND.message,
-        ERROR_CODES.SERVICE_TYPE_NOT_FOUND.code
-      );
-    }
   },
 };
 

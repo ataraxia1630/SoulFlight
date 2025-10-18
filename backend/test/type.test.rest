@@ -8,7 +8,7 @@ Content-Type: application/json
 ###
 
 ### Get a single service type by ID
-GET {{baseUrl}}/1
+GET {{baseUrl}}/5
 Content-Type: application/json
 # Authorization: Bearer {{token}}
 
@@ -20,25 +20,25 @@ Content-Type: application/json
 # Authorization: Bearer {{token}}
 
 {
-  "name": "Tour",
-  "description": "Travel and sightseeing services"
+  "name": "Street Food",
+  "description": "yummy yummy"
 }
 
 ###
 
 ### Update a service type
-PUT {{baseUrl}}/1
+PUT {{baseUrl}}/2
 Content-Type: application/json
 # Authorization: Bearer {{token}}
 
 {
-  "name": "Luxury Tour",
-  "description": "High-end travel and sightseeing packages"
+  "name": "Street food",
+  "description": "Yummy yummy yummy"
 }
 
 ###
 
 ### Delete a service type
-DELETE {{baseUrl}}/1
+DELETE {{baseUrl}}/5
 Content-Type: application/json
 # Authorization: Bearer {{token}}
