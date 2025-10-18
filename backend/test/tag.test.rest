@@ -20,7 +20,7 @@ Content-Type: application/json
 # Authorization: Bearer {{token}}
 
 {
-  "name": "seaside"
+  "name": "valley view"
 }
 
 ###
@@ -37,6 +37,6 @@ Content-Type: application/json
 ###
 
 ### Delete 
-DELETE {{baseUrl}}/5
+DELETE {{baseUrl}}/4
 Content-Type: application/json
 # Authorization: Bearer {{token}}
