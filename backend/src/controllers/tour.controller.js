@@ -10,7 +10,7 @@ const TourController = {
   }),
 
   getById: catchAsync(async (req, res, next) => {
-    const tour = await TourService.getById(req.params.id);
+    const tour = await TourService.getById(Number(req.params.id));
     res.status(200).json(ApiResponse.success(TourDTO.fromModel(tour)));
   }),
 
@@ -25,12 +25,12 @@ const TourController = {
   }),
 
   update: catchAsync(async (req, res, next) => {
-    const tour = await TourService.update(req.params.id, req.body);
+    const tour = await TourService.update(Number(req.params.id), req.body);
     res.status(200).json(ApiResponse.success(TourDTO.fromModel(tour)));
   }),
 
   delete: catchAsync(async (req, res, next) => {
-    await TourService.delete(req.params.id);
+    await TourService.delete(Number(req.params.id));
     res.status(204).json(ApiResponse.success());
   }),
 };
