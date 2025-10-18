@@ -9,6 +9,8 @@ const serviceRoutes = require('./service.routes');
 const cloudinaryRoutes = require('./cloudinary.routes');
 const placeRoutes = require('./place.routes');
 const tourRoutes = require('./tour.routes');
+const facilityRoutes = require('./facility.routes')
+const roomRoutes = require('./room.routes')
 
 function route(app) {
   app.use('/api/auth', authRoutes);
@@ -20,6 +22,8 @@ function route(app) {
   app.use('/api/cloudinary', cloudinaryRoutes);
   app.use('/api/place', placeRoutes);
   app.use('/api/tour', tourRoutes);
+  app.use('/api/facility', facilityRoutes)
+  app.use('/api/room', roomRoutes)
 
   // luôn để sau cùng
 
