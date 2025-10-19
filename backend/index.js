@@ -26,4 +26,3 @@ app.listen(PORT, () => {
 
 // Gắn các router
 route(app);
-console.log("new test");
