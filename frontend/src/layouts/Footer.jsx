@@ -62,3 +62,4 @@ const Footer = () => {
 };
 
 export default Footer;
+console.log("new test frontend");

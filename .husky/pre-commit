@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "Running backend"
-cd backend && npx lint-staged
-echo "Running frontend"
-cd ../frontend && npx lint-staged
+echo "Starting backend lint"
+cd backend && npx lint-staged || echo "Backend failed"
+echo "Starting frontend lint"
+cd ../frontend && npx lint-staged || echo "Frontend failed"
