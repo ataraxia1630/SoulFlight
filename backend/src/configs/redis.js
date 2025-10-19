@@ -1,7 +1,7 @@
-const { createClient } = require('redis');
+const { createClient } = require("redis");
 
 const redis = createClient({
-  username: 'default',
+  username: "default",
   password: process.env.REDIS_PASS,
   socket: {
     host: process.env.REDIS_HOST,
@@ -9,14 +9,14 @@ const redis = createClient({
   },
 });
 
-redis.on('error', (err) => console.log('Redis Client Error', err));
+redis.on("error", (err) => console.log("Redis Client Error", err));
 
 async function connectRedis() {
   try {
     await redis.connect();
-    console.log('✅ Đã kết nối redis thành công!');
+    console.log("✅ Đã kết nối redis thành công!");
   } catch (error) {
-    console.error('❌ Kết nối redis thất bại:', error.message);
+    console.error("❌ Kết nối redis thất bại:", error.message);
   }
 }
 

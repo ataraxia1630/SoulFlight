@@ -1,5 +1,5 @@
-const Joi = require('joi');
-const { openingHoursSchema } = require('./opening_hours.validator');
+const Joi = require("joi");
+const { openingHoursSchema } = require("./opening_hours.validator");
 
 const createSchema = Joi.object({
   name: Joi.string().min(3).max(100).required(),

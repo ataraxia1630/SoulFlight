@@ -1,2 +1,2 @@
-import ServiceRegistrationPage from './ServiceRegistrationPage';
+import ServiceRegistrationPage from "./ServiceRegistrationPage";
 export default ServiceRegistrationPage;

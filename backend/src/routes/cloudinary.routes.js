@@ -7,7 +7,7 @@ const {
   multipleUploadSchema,
   deleteSchema,
   updateSchema,
-  multipleDeleteSchema
+  multipleDeleteSchema,
 } = require("../validators/cloudinary.validator");
 const CloudinaryController = require("../controllers/cloudinary.controller");
 
@@ -15,14 +15,14 @@ router.post(
   "/single",
   upload.single("image"),
   validate(singleUploadSchema),
-  CloudinaryController.uploadSingle
+  CloudinaryController.uploadSingle,
 );
 
 router.post(
   "/multiple",
   upload.array("images", 10),
   validate(multipleUploadSchema),
-  CloudinaryController.uploadMultiple
+  CloudinaryController.uploadMultiple,
 );
 
 router.get("/url", CloudinaryController.generateUrl);
@@ -32,14 +32,9 @@ router.delete("/", validate(deleteSchema), CloudinaryController.deleteImage);
 router.delete(
   "/delete-multiple",
   validate(multipleDeleteSchema),
-  CloudinaryController.deleteMultiple
+  CloudinaryController.deleteMultiple,
 );
 
-router.put(
-  "/",
-  upload.single("image"),
-  validate(updateSchema),
-  CloudinaryController.updateImage
-);
+router.put("/", upload.single("image"), validate(updateSchema), CloudinaryController.updateImage);
 
 module.exports = router;

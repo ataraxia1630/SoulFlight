@@ -1,6 +1,6 @@
-const prisma = require('../configs/prisma');
-const AppError = require('../utils/AppError');
-const { ERROR_CODES } = require('../constants/errorCode');
+const prisma = require("../configs/prisma");
+const AppError = require("../utils/AppError");
+const { ERROR_CODES } = require("../constants/errorCode");
 
 const ServiceService = {
   getAll: async () => {
@@ -14,7 +14,7 @@ const ServiceService = {
       throw new AppError(
         ERROR_CODES.NOT_FOUND.statusCode,
         ERROR_CODES.NOT_FOUND.message,
-        ERROR_CODES.NOT_FOUND.code
+        ERROR_CODES.NOT_FOUND.code,
       );
     }
     return service;
@@ -30,7 +30,7 @@ const ServiceService = {
       throw new AppError(
         ERROR_CODES.NOT_FOUND.statusCode,
         ERROR_CODES.NOT_FOUND.message,
-        ERROR_CODES.NOT_FOUND.code
+        ERROR_CODES.NOT_FOUND.code,
       );
     }
     return await prisma.service.update({
@@ -46,7 +46,7 @@ const ServiceService = {
       throw new AppError(
         ERROR_CODES.NOT_FOUND.statusCode,
         ERROR_CODES.NOT_FOUND.message,
-        ERROR_CODES.NOT_FOUND.code
+        ERROR_CODES.NOT_FOUND.code,
       );
     }
     await prisma.service.delete({ where: { id: Number(id) } });

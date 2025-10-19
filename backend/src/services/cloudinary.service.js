@@ -21,11 +21,11 @@ const CloudinaryService = {
         secure: true,
         transformation: transformations,
       });
-    } catch (error) {
+    } catch (_error) {
       throw new AppError(
         ERROR_CODES.CLOUDINARY_UPLOAD_FAILED.statusCode,
         ERROR_CODES.CLOUDINARY_UPLOAD_FAILED.message,
-        ERROR_CODES.CLOUDINARY_UPLOAD_FAILED.code
+        ERROR_CODES.CLOUDINARY_UPLOAD_FAILED.code,
       );
     }
   },
@@ -45,63 +45,43 @@ const CloudinaryService = {
               new AppError(
                 ERROR_CODES.CLOUDINARY_UPLOAD_FAILED.statusCode,
                 ERROR_CODES.CLOUDINARY_UPLOAD_FAILED.message,
-                ERROR_CODES.CLOUDINARY_UPLOAD_FAILED.code
-              )
+                ERROR_CODES.CLOUDINARY_UPLOAD_FAILED.code,
+              ),
             );
           } else {
             resolve(result);
           }
-        }
+        },
       );
       streamifier.createReadStream(buffer).pipe(uploadStream);
     });
   },
 
   async uploadMultiple(buffers, options = {}) {
-    try {
-      return await Promise.all(
-        buffers.map((buffer) => this.uploadSingle(buffer, options))
-      );
-    } catch (error) {
-      throw error;
-    }
+    return await Promise.all(buffers.map((buffer) => this.uploadSingle(buffer, options)));
   },
 
   async deleteImage(publicId) {
     if (!publicId) return true;
-    try {
-      const result = await cloudinary.uploader.destroy(publicId);
-      if (result.result !== "ok") {
-        throw new AppError(
-          ERROR_CODES.IMAGE_NOT_FOUND.statusCode,
-          ERROR_CODES.IMAGE_NOT_FOUND.message,
-          ERROR_CODES.IMAGE_NOT_FOUND.code
-        );
-      }
-      return true;
-    } catch (error) {
-      throw error;
+    const result = await cloudinary.uploader.destroy(publicId);
+    if (result.result !== "ok") {
+      throw new AppError(
+        ERROR_CODES.IMAGE_NOT_FOUND.statusCode,
+        ERROR_CODES.IMAGE_NOT_FOUND.message,
+        ERROR_CODES.IMAGE_NOT_FOUND.code,
+      );
     }
+    return true;
   },
 
   async deleteMultiple(publicIds) {
-    try {
-      const results = await Promise.all(
-        publicIds.map((id) => this.deleteImage(id))
-      );
-      return results.every((success) => success);
-    } catch (error) {
-      throw error;
-    }
+    const results = await Promise.all(publicIds.map((id) => this.deleteImage(id)));
+    return results.every((success) => success);
   },
 
   async imageExists(publicId) {
-    try {
-      const result = await cloudinary.api.resource(publicId);
-      return !!result && result.resource_type !== "not_found";
-    } catch {
-      return false;
-    }
+    const result = await cloudinary.api.resource(publicId);
+    return !!result && result.resource_type !== "not_found";
   },
 };
 

@@ -1,21 +1,21 @@
-const Joi = require('joi');
+const Joi = require("joi");
 
 const UnitType = [
-  'PORTION',
-  'SERVING',
-  'PIECE',
-  'SLICE',
-  'SET',
-  'BOX',
-  'TRAY',
-  'PACK',
-  'CUP',
-  'BOTTLE',
-  'CAN',
-  'DISH',
-  'BOWL',
-  'GLASS',
-  'JAR',
+  "PORTION",
+  "SERVING",
+  "PIECE",
+  "SLICE",
+  "SET",
+  "BOX",
+  "TRAY",
+  "PACK",
+  "CUP",
+  "BOTTLE",
+  "CAN",
+  "DISH",
+  "BOWL",
+  "GLASS",
+  "JAR",
 ];
 
 const createSchema = Joi.object({
@@ -26,9 +26,7 @@ const createSchema = Joi.object({
   unit: Joi.string()
     .valid(...UnitType)
     .required(),
-  status: Joi.string()
-    .valid('AVAILABLE', 'UNAVAILABLE', 'NO_LONGER_PROVIDED')
-    .optional(),
+  status: Joi.string().valid("AVAILABLE", "UNAVAILABLE", "NO_LONGER_PROVIDED").optional(),
 });
 
 const updateSchema = Joi.object({
@@ -38,9 +36,7 @@ const updateSchema = Joi.object({
   unit: Joi.string()
     .valid(...Object.values(UnitType))
     .optional(),
-  status: Joi.string()
-    .valid('AVAILABLE', 'UNAVAILABLE', 'NO_LONGER_PROVIDED')
-    .optional(),
+  status: Joi.string().valid("AVAILABLE", "UNAVAILABLE", "NO_LONGER_PROVIDED").optional(),
 });
 
 module.exports = {

@@ -1,25 +1,21 @@
-class ApiResponse {
-  static success(data, message = 'success', code = 'SUCCESS', params = {}) {
-    return {
-      success: true,
-      code,
-      message,
-      params,
-      data,
-      timestamp: new Date().toISOString(),
-    };
-  }
-
-  static error(code, message, params = {}, path = '') {
-    return {
-      success: false,
-      code,
-      message,
-      params,
-      timestamp: new Date().toISOString(),
-      path,
-    };
-  }
+function success(data, message = "success", code = "SUCCESS", params = {}) {
+  return {
+    success: true,
+    message,
+    code,
+    data,
+    ...params,
+  };
 }
 
-module.exports = ApiResponse;
+function error(message = "error", code = "ERROR", statusCode = 500, params = {}) {
+  return {
+    success: false,
+    message,
+    code,
+    statusCode,
+    ...params,
+  };
+}
+
+module.exports = { success, error };
