@@ -1,6 +1,6 @@
-const prisma = require('../configs/prisma');
-const AppError = require('../utils/AppError');
-const { ERROR_CODES } = require('../constants/errorCode');
+const prisma = require("../configs/prisma");
+const AppError = require("../utils/AppError");
+const { ERROR_CODES } = require("../constants/errorCode");
 
 const ServiceTagService = {
   getAll: async () => {
@@ -15,7 +15,7 @@ const ServiceTagService = {
       return new AppError(
         ERROR_CODES.SERVICE_TAG_NOT_FOUND.statusCode,
         ERROR_CODES.SERVICE_TAG_NOT_FOUND.message,
-        ERROR_CODES.SERVICE_TAG_NOT_FOUND.code
+        ERROR_CODES.SERVICE_TAG_NOT_FOUND.code,
       );
     }
     return tag;
@@ -37,7 +37,7 @@ const ServiceTagService = {
       return new AppError(
         ERROR_CODES.SERVICE_TAG_NOT_FOUND.statusCode,
         ERROR_CODES.SERVICE_TAG_NOT_FOUND.message,
-        ERROR_CODES.SERVICE_TAG_NOT_FOUND.code
+        ERROR_CODES.SERVICE_TAG_NOT_FOUND.code,
       );
     }
     return updated;
@@ -51,7 +51,7 @@ const ServiceTagService = {
       return new AppError(
         ERROR_CODES.SERVICE_TAG_NOT_FOUND.statusCode,
         ERROR_CODES.SERVICE_TAG_NOT_FOUND.message,
-        ERROR_CODES.SERVICE_TAG_NOT_FOUND.code
+        ERROR_CODES.SERVICE_TAG_NOT_FOUND.code,
       );
     }
     return deleted;

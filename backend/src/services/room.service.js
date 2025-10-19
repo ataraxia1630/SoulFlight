@@ -2,8 +2,7 @@ const prisma = require("../configs/prisma");
 
 const RoomService = {
   create: (data) => {
-    const { connectFacilities, disconnectFacilities, serviceId, ...roomData } =
-      data;
+    const { connectFacilities, serviceId, ...roomData } = data;
 
     const facilitiesData = (connectFacilities || []).map((facilityId) => ({
       facility: { connect: { id: parseInt(facilityId, 10) } },
@@ -34,8 +33,7 @@ const RoomService = {
     }),
 
   update: (id, data) => {
-    const { connectFacilities, disconnectFacilities, serviceId, ...roomData } =
-      data;
+    const { connectFacilities, disconnectFacilities, serviceId, ...roomData } = data;
 
     const connectData = (connectFacilities || []).map((facilityId) => ({
       facility: { connect: { id: parseInt(facilityId, 10) } },

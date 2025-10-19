@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require("joi");
 
 const timePattern = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
@@ -6,11 +6,11 @@ const openingHourRange = Joi.object({
   open: Joi.string()
     .pattern(timePattern)
     .required()
-    .messages({ 'string.pattern.base': 'Open time must be in HH:mm format' }),
+    .messages({ "string.pattern.base": "Open time must be in HH:mm format" }),
   close: Joi.string()
     .pattern(timePattern)
     .required()
-    .messages({ 'string.pattern.base': 'Close time must be in HH:mm format' }),
+    .messages({ "string.pattern.base": "Close time must be in HH:mm format" }),
 });
 
 const openingHoursSchema = Joi.object({

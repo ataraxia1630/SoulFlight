@@ -1,4 +1,4 @@
-const Joi = require('joi');
+const Joi = require("joi");
 
 const sendOtpSchema = Joi.object({
   email: Joi.string().email().required(),
@@ -16,7 +16,7 @@ const createUserSchema = Joi.object({
   phone: Joi.string()
     .pattern(/^[0-9]{9,11}$/)
     .optional(),
-  role: Joi.string().valid('TRAVELER', 'PROVIDER').required(),
+  role: Joi.string().valid("TRAVELER", "PROVIDER").required(),
   verify_token: Joi.string().required(),
 });
 
@@ -25,8 +25,8 @@ const createTravelerSchema = Joi.object({
   phone: Joi.string()
     .pattern(/^[0-9]{9,11}$/)
     .optional(),
-  gender: Joi.string().valid('MALE', 'FEMALE', 'OTHER').optional(),
-  dob: Joi.date().less('now').optional(),
+  gender: Joi.string().valid("MALE", "FEMALE", "OTHER").optional(),
+  dob: Joi.date().less("now").optional(),
 });
 
 const createProviderSchema = Joi.object({
@@ -41,11 +41,7 @@ const createProviderSchema = Joi.object({
   address: Joi.string().min(10).max(200).required(),
   website_link: Joi.string().uri().min(0).optional(),
   id_card: Joi.string().min(6).max(20).required(),
-  establish_year: Joi.number()
-    .integer()
-    .min(1900)
-    .max(new Date().getFullYear())
-    .required(),
+  establish_year: Joi.number().integer().min(1900).max(new Date().getFullYear()).required(),
 });
 
 const loginSchema = Joi.object({

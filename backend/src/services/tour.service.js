@@ -1,9 +1,9 @@
-const prisma = require('../configs/prisma');
-const AppError = require('../utils/AppError');
-const { ERROR_CODES } = require('../constants/errorCode');
+const prisma = require("../configs/prisma");
+const AppError = require("../utils/AppError");
+const { ERROR_CODES } = require("../constants/errorCode");
 
 const TourService = {
-  getAll: async (req) => {
+  getAll: async (_req) => {
     return await prisma.tour.findMany();
   },
 
@@ -15,7 +15,7 @@ const TourService = {
       throw new AppError(
         ERROR_CODES.TOUR_NOT_FOUND.statusCode,
         ERROR_CODES.TOUR_NOT_FOUND.message,
-        ERROR_CODES.TOUR_NOT_FOUND.code
+        ERROR_CODES.TOUR_NOT_FOUND.code,
       );
     }
     return tour;
@@ -65,7 +65,7 @@ const TourService = {
         end_date,
         status,
         TourPlace: {
-          create: places.map((place, index) => ({
+          create: places.map((place, _index) => ({
             place_id: place.place_id,
             description: place.description,
             start_time: place.start_time,
@@ -106,7 +106,7 @@ const TourService = {
       throw new AppError(
         ERROR_CODES.TOUR_NOT_FOUND.statusCode,
         ERROR_CODES.TOUR_NOT_FOUND.message,
-        ERROR_CODES.TOUR_NOT_FOUND.code
+        ERROR_CODES.TOUR_NOT_FOUND.code,
       );
     }
     const updated = await prisma.tour.update({
@@ -127,7 +127,7 @@ const TourService = {
         TourPlace: places
           ? {
               deleteMany: {},
-              create: places.map((place, index) => ({
+              create: places.map((place, _index) => ({
                 place_id: place.place_id,
                 description: place.description,
                 start_time: place.start_time,
@@ -150,7 +150,7 @@ const TourService = {
       throw new AppError(
         ERROR_CODES.TOUR_NOT_FOUND.statusCode,
         ERROR_CODES.TOUR_NOT_FOUND.message,
-        ERROR_CODES.TOUR_NOT_FOUND.code
+        ERROR_CODES.TOUR_NOT_FOUND.code,
       );
     }
   },

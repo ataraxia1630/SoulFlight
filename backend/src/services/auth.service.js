@@ -1,10 +1,10 @@
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
-const redis = require('../configs/redis');
-const prisma = require('../configs/prisma');
-const AppError = require('../utils/AppError');
-const { ERROR_CODES } = require('../constants/errorCode');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
+const redis = require("../configs/redis");
+const prisma = require("../configs/prisma");
+const AppError = require("../utils/AppError");
+const { ERROR_CODES } = require("../constants/errorCode");
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
@@ -20,15 +20,15 @@ const OTP_RESEND_WINDOW_MIN = Number(process.env.OTP_RESEND_WINDOW_MIN || 60);
 const SALT_ROUNDS = Number(process.env.SALT_ROUNDS || 10);
 
 // helpers: jwt sign
-const signAccessToken = (payload, expires = '10d') =>
+const signAccessToken = (payload, expires = "10d") =>
   jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: expires });
 
-const signRefreshToken = (payload, expires = '30d') =>
+const signRefreshToken = (payload, expires = "30d") =>
   jwt.sign(payload, process.env.JWT_REFRESH_SECRET, { expiresIn: expires });
 
 // store single refresh token per user-device (simple). For multi-device, store as set.
 const storeRefreshToken = async (userId, token, ttlSeconds) => {
-  await redis.set(`refresh:${userId}`, token, 'EX', ttlSeconds);
+  await redis.set(`refresh:${userId}`, token, "EX", ttlSeconds);
 };
 
 const revokeRefreshToken = async (userId) => {
@@ -41,34 +41,34 @@ const getStoredRefreshToken = async (userId) => {
 
 const AuthService = {
   _generateOtp: () => {
-    const min = Math.pow(10, OTP_DIGITS - 1);
-    const max = Math.pow(10, OTP_DIGITS) - 1;
+    const min = 10 ** (OTP_DIGITS - 1);
+    const max = 10 ** OTP_DIGITS - 1;
     return String(Math.floor(min + Math.random() * (max - min + 1)));
   },
 
   sendOtp: async (email) => {
-    let existingUser = await prisma.user.findUnique({ where: { email } });
+    const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser)
       throw new AppError(
         ERROR_CODES.EMAIL_REGISTERED.statusCode,
         ERROR_CODES.EMAIL_REGISTERED.message,
-        ERROR_CODES.EMAIL_REGISTERED.code
+        ERROR_CODES.EMAIL_REGISTERED.code,
       );
 
     const otp = AuthService._generateOtp();
     const hashedOtp = await bcrypt.hash(otp, SALT_ROUNDS);
-    await redis.set(`otp:${email}`, hashedOtp, 'EX', 60 * OTP_EXPIRE_MIN);
+    await redis.set(`otp:${email}`, hashedOtp, "EX", 60 * OTP_EXPIRE_MIN);
     await redis.del(`otp_resend:${email}`);
 
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
-      subject: 'Mã OTP Đăng Ký SoulFlight',
+      subject: "Mã OTP Đăng Ký SoulFlight",
       html: `<p>Xin chào!</p><p>Mã OTP: <strong>${otp}</strong></p><p>Hết hạn sau 5 phút.</p><p>Trân trọng,<br>SoulFlight</p>`,
     };
     await transporter.sendMail(mailOptions);
 
-    return { message: 'OTP sent' };
+    return { message: "OTP sent" };
   },
 
   resendOtp: async (email) => {
@@ -79,7 +79,7 @@ const AuthService = {
         ERROR_CODES.OTP_LIMIT_EXCEEDED.statusCode,
         ERROR_CODES.OTP_LIMIT_EXCEEDED.message,
         ERROR_CODES.OTP_LIMIT_EXCEEDED.code,
-        { limit: OTP_RESEND_LIMIT, resend_after: OTP_RESEND_WINDOW_MIN }
+        { limit: OTP_RESEND_LIMIT, resend_after: OTP_RESEND_WINDOW_MIN },
       );
     }
 
@@ -98,18 +98,18 @@ const AuthService = {
       throw new AppError(
         ERROR_CODES.OTP_EXPIRED.statusCode,
         ERROR_CODES.OTP_EXPIRED.message,
-        ERROR_CODES.OTP_EXPIRED.code
+        ERROR_CODES.OTP_EXPIRED.code,
       );
     const isValid = await bcrypt.compare(otp, hashedOtp);
     if (!isValid)
       throw new AppError(
         ERROR_CODES.OTP_INVALID.statusCode,
         ERROR_CODES.OTP_INVALID.message,
-        ERROR_CODES.OTP_INVALID.code
+        ERROR_CODES.OTP_INVALID.code,
       );
     await redis.del(`otp:${email}`);
     const verify_token = jwt.sign({ email }, process.env.JWT_SECRET, {
-      expiresIn: '10m',
+      expiresIn: "10m",
     });
     return verify_token;
   },
@@ -119,18 +119,18 @@ const AuthService = {
     let decoded;
     try {
       decoded = jwt.verify(verify_token, process.env.JWT_SECRET);
-    } catch (err) {
+    } catch (_err) {
       throw new AppError(
         ERROR_CODES.INVALID_VERIFICATION_TOKEN.statusCode,
         ERROR_CODES.INVALID_VERIFICATION_TOKEN.message,
-        ERROR_CODES.INVALID_VERIFICATION_TOKEN.code
+        ERROR_CODES.INVALID_VERIFICATION_TOKEN.code,
       );
     }
     if (decoded.email !== email)
       throw new AppError(
         ERROR_CODES.EMAIL_MISMATCH.statusCode,
         ERROR_CODES.EMAIL_MISMATCH.message,
-        ERROR_CODES.EMAIL_MISMATCH.code
+        ERROR_CODES.EMAIL_MISMATCH.code,
       );
 
     let existingUser = await prisma.user.findUnique({ where: { email } });
@@ -138,14 +138,14 @@ const AuthService = {
       throw new AppError(
         ERROR_CODES.EMAIL_REGISTERED.statusCode,
         ERROR_CODES.EMAIL_REGISTERED.message,
-        ERROR_CODES.EMAIL_REGISTERED.code
+        ERROR_CODES.EMAIL_REGISTERED.code,
       );
     existingUser = await prisma.user.findUnique({ where: { username } });
     if (existingUser)
       throw new AppError(
         ERROR_CODES.USERNAME_TAKEN.statusCode,
         ERROR_CODES.USERNAME_TAKEN.message,
-        ERROR_CODES.USERNAME_TAKEN.code
+        ERROR_CODES.USERNAME_TAKEN.code,
       );
 
     const password_hash = await bcrypt.hash(password, SALT_ROUNDS);
@@ -155,7 +155,7 @@ const AuthService = {
         name: username,
         username,
         password: password_hash,
-        status: role === 'TRAVELER' ? 'ACTIVE' : 'UNVERIFIED',
+        status: role === "TRAVELER" ? "ACTIVE" : "UNVERIFIED",
       },
     });
     return user;
@@ -175,19 +175,19 @@ const AuthService = {
         throw new AppError(
           ERROR_CODES.USER_NOT_FOUND.statusCode,
           ERROR_CODES.USER_NOT_FOUND.message,
-          ERROR_CODES.USER_NOT_FOUND.code
+          ERROR_CODES.USER_NOT_FOUND.code,
         );
       if (user.Traveler)
         throw new AppError(
           ERROR_CODES.PROFILE_ALREADY_EXISTS.statusCode,
           ERROR_CODES.PROFILE_ALREADY_EXISTS.message,
-          ERROR_CODES.PROFILE_ALREADY_EXISTS.code
+          ERROR_CODES.PROFILE_ALREADY_EXISTS.code,
         );
       if (user.Provider)
         throw new AppError(
           ERROR_CODES.PROFILE_ALREADY_EXISTS.statusCode,
-          'User is already registered as a provider',
-          ERROR_CODES.PROFILE_ALREADY_EXISTS.code
+          "User is already registered as a provider",
+          ERROR_CODES.PROFILE_ALREADY_EXISTS.code,
         );
 
       if (phone) {
@@ -196,7 +196,7 @@ const AuthService = {
           throw new AppError(
             ERROR_CODES.PHONE_REGISTERED.statusCode,
             ERROR_CODES.PHONE_REGISTERED.message,
-            ERROR_CODES.PHONE_REGISTERED.code
+            ERROR_CODES.PHONE_REGISTERED.code,
           );
         await tx.user.update({
           where: { email },
@@ -226,19 +226,19 @@ const AuthService = {
         throw new AppError(
           ERROR_CODES.USER_NOT_FOUND.statusCode,
           ERROR_CODES.USER_NOT_FOUND.message,
-          ERROR_CODES.USER_NOT_FOUND.code
+          ERROR_CODES.USER_NOT_FOUND.code,
         );
       if (user.Provider)
         throw new AppError(
           ERROR_CODES.PROFILE_ALREADY_EXISTS.statusCode,
           ERROR_CODES.PROFILE_ALREADY_EXISTS.message,
-          ERROR_CODES.PROFILE_ALREADY_EXISTS.code
+          ERROR_CODES.PROFILE_ALREADY_EXISTS.code,
         );
       if (user.Traveler)
         throw new AppError(
           ERROR_CODES.PROFILE_ALREADY_EXISTS.statusCode,
-          'User is already registered as a traveler',
-          ERROR_CODES.PROFILE_ALREADY_EXISTS.code
+          "User is already registered as a traveler",
+          ERROR_CODES.PROFILE_ALREADY_EXISTS.code,
         );
 
       if (phone) {
@@ -247,7 +247,7 @@ const AuthService = {
           throw new AppError(
             ERROR_CODES.PHONE_REGISTERED.statusCode,
             ERROR_CODES.PHONE_REGISTERED.message,
-            ERROR_CODES.PHONE_REGISTERED.code
+            ERROR_CODES.PHONE_REGISTERED.code,
           );
         await tx.user.update({
           where: { id: user.id },
@@ -285,37 +285,34 @@ const AuthService = {
       throw new AppError(
         ERROR_CODES.WRONG_CREDENTIALS.statusCode,
         ERROR_CODES.WRONG_CREDENTIALS.message,
-        ERROR_CODES.WRONG_CREDENTIALS.code
+        ERROR_CODES.WRONG_CREDENTIALS.code,
       );
 
-    if (existingUser.status === 'LOCKED')
+    if (existingUser.status === "LOCKED")
       throw new AppError(
         ERROR_CODES.ACCOUNT_LOCKED.statusCode,
         ERROR_CODES.ACCOUNT_LOCKED.message,
-        ERROR_CODES.ACCOUNT_LOCKED.code
+        ERROR_CODES.ACCOUNT_LOCKED.code,
       );
 
-    const is_valid_password = await bcrypt.compare(
-      password,
-      existingUser.password
-    );
+    const is_valid_password = await bcrypt.compare(password, existingUser.password);
     if (!is_valid_password)
       throw new AppError(
         ERROR_CODES.WRONG_CREDENTIALS.statusCode,
         ERROR_CODES.WRONG_CREDENTIALS.message,
-        ERROR_CODES.WRONG_CREDENTIALS.code
+        ERROR_CODES.WRONG_CREDENTIALS.code,
       );
 
-    const accessExpires = remember ? '30d' : '10d';
+    const accessExpires = remember ? "30d" : "10d";
     const refreshTtlSeconds = remember ? 60 * 60 * 24 * 60 : 60 * 60 * 24 * 30;
 
     const access_token = signAccessToken(
       { id: existingUser.id, email: existingUser.email },
-      accessExpires
+      accessExpires,
     );
     const refresh_token = signRefreshToken(
       { id: existingUser.id },
-      `${Math.floor(refreshTtlSeconds / (60 * 60 * 24))}d`
+      `${Math.floor(refreshTtlSeconds / (60 * 60 * 24))}d`,
     );
 
     await storeRefreshToken(existingUser.id, refresh_token, refreshTtlSeconds);
@@ -331,17 +328,17 @@ const AuthService = {
     if (!refresh_token)
       throw new AppError(
         ERROR_CODES.MISSING_FIELDS.statusCode,
-        'Missing refresh_token',
-        ERROR_CODES.MISSING_FIELDS.code
+        "Missing refresh_token",
+        ERROR_CODES.MISSING_FIELDS.code,
       );
     let payload;
     try {
       payload = jwt.verify(refresh_token, process.env.JWT_REFRESH_SECRET);
-    } catch (err) {
+    } catch (_err) {
       throw new AppError(
         ERROR_CODES.INVALID_REFRESH_TOKEN.statusCode,
         ERROR_CODES.INVALID_REFRESH_TOKEN.message,
-        ERROR_CODES.INVALID_REFRESH_TOKEN.code
+        ERROR_CODES.INVALID_REFRESH_TOKEN.code,
       );
     }
 
@@ -351,13 +348,13 @@ const AuthService = {
       throw new AppError(
         ERROR_CODES.REVOKED_REFRESH_TOKEN.statusCode,
         ERROR_CODES.REVOKED_REFRESH_TOKEN.message,
-        ERROR_CODES.REVOKED_REFRESH_TOKEN.code
+        ERROR_CODES.REVOKED_REFRESH_TOKEN.code,
       );
     }
 
     // issue new tokens (keep same remember policy by checking remaining TTL? simple approach: default durations)
-    const access_token = signAccessToken({ id: userId }, '10d');
-    const new_refresh_token = signRefreshToken({ id: userId }, '30d');
+    const access_token = signAccessToken({ id: userId }, "10d");
+    const new_refresh_token = signRefreshToken({ id: userId }, "30d");
 
     // replace stored refresh token
     await storeRefreshToken(userId, new_refresh_token, 60 * 60 * 24 * 30);
@@ -365,19 +362,19 @@ const AuthService = {
     return { access_token, refresh_token: new_refresh_token };
   },
 
-  signupWithSocialMedia: async (req, res, next) => {},
+  signupWithSocialMedia: async (_req, _res, _next) => {},
 
-  loginWithSocialMedia: async (req, res, next) => {},
+  loginWithSocialMedia: async (_req, _res, _next) => {},
 
   logout: async ({ userId }) => {
     if (!userId)
       throw new AppError(
         ERROR_CODES.MISSING_FIELDS.statusCode,
-        'Missing userId',
-        ERROR_CODES.MISSING_FIELDS.code
+        "Missing userId",
+        ERROR_CODES.MISSING_FIELDS.code,
       );
     await revokeRefreshToken(userId);
-    return { message: 'Logged out' };
+    return { message: "Logged out" };
   },
 
   // helper for middleware
@@ -385,17 +382,17 @@ const AuthService = {
     if (!token)
       throw new AppError(
         ERROR_CODES.MISSING_FIELDS.statusCode,
-        'Missing access token',
-        ERROR_CODES.MISSING_FIELDS.code
+        "Missing access token",
+        ERROR_CODES.MISSING_FIELDS.code,
       );
     try {
       const payload = jwt.verify(token, process.env.JWT_SECRET);
       return payload;
-    } catch (err) {
+    } catch (_err) {
       throw new AppError(
         ERROR_CODES.INVALID_ACCESS_TOKEN.statusCode,
         ERROR_CODES.INVALID_ACCESS_TOKEN.message,
-        ERROR_CODES.INVALID_ACCESS_TOKEN.code
+        ERROR_CODES.INVALID_ACCESS_TOKEN.code,
       );
     }
   },

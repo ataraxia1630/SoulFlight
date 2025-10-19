@@ -1,0 +1,20 @@
+# Ensure consistent line endings
+* text=auto eol=lf
+
+# Treat all JS/TS/JSON files as UTF-8 text
+*.js text eol=lf
+*.ts text eol=lf
+*.jsx text eol=lf
+*.tsx text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.pdf binary
