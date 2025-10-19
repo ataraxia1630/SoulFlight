@@ -1,0 +1,5 @@
+#!/bin/sh
+echo "Running backend"
+cd backend && npx lint-staged
+echo "Running frontend"
+cd ../frontend && npx lint-staged
