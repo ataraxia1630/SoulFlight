@@ -17,6 +17,12 @@
     "fix": "biome check --write .",
     "format": "biome format --write"
   },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "biome check --write",
+      "biome format --write"
+    ]
+  },
   "dependencies": {
     "@prisma/client": "^6.16.2",
     "@supabase/supabase-js": "^2.57.4",
@@ -33,6 +39,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.2.6",
+    "lint-staged": "^16.2.4",
     "nodemon": "^3.1.10",
     "prisma": "^6.16.2"
   }
