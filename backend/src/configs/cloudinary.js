@@ -8,12 +8,12 @@ async function connectCloudinary() {
   try {
     const result = await cloudinary.api.ping();
     if (result.status === "ok") {
-      console.log("✅ Đã kết nối Cloudinary thành công!");
+      console.log("✅ Đã kết nối cloudinary thành công!");
     } else {
       console.log("⚠️ Cloudinary ping không phản hồi như mong đợi:", result);
     }
   } catch (error) {
-    console.error("❌ Kết nối Cloudinary thất bại:", error.message);
+    console.error("❌ Kết nối cloudinary thất bại:", error.message);
   }
 }
 
