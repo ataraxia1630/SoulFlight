@@ -13,8 +13,8 @@
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,css,scss,html,json}": [
-      "biome check --write",
-      "biome format --write"
+      "biome format --write",
+      "biome check --error-on-warnings"
     ]
   },
   "dependencies": {

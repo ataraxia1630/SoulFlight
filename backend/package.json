@@ -19,8 +19,8 @@
   },
   "lint-staged": {
     "*.{js,ts}": [
-      "biome check --write",
-      "biome format --write"
+      "biome format --write",
+      "biome check --error-on-warnings"
     ]
   },
   "dependencies": {
