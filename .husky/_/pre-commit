@@ -1,5 +1,7 @@
 #!/bin/sh
-echo "Starting backend lint" >> $(git rev-parse --show-toplevel)/hook.log
-cd $(git rev-parse --show-toplevel)/backend && npx lint-staged || { echo "Backend failed" >> $(git rev-parse --show-toplevel)/hook.log; exit 1; }
-echo "Starting frontend lint" >> $(git rev-parse --show-toplevel)/hook.log
-cd $(git rev-parse --show-toplevel)/frontend && npx lint-staged || { echo "Frontend failed" >> $(git rev-parse --show-toplevel)/hook.log; exit 1; }
+
+# Chạy lint-staged cho backend
+cd $(git rev-parse --show-toplevel)/backend && npx lint-staged || exit 1
+
+# Chạy lint-staged cho frontend
+cd $(git rev-parse --show-toplevel)/frontend && npx lint-staged || exit 1
