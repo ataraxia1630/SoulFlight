@@ -1,26 +1,29 @@
-const CloudinaryService = require("../services/cloudinary.service");
+class ImageDTO {
+  constructor(image) {
+    this.public_id = image.public_id;
+    this.url = image.secure_url;
+    this.generated_url = image.generated_url || image.secure_url;
+    this.format = image.format;
+    this.width = image.width;
+    this.height = image.height;
+    this.size = image.bytes;
+    this.created_at = image.created_at;
+  }
 
-class ImageResponseDTO {
-  constructor(result) {
-    this.public_id = result.public_id;
-    this.url = result.secure_url;
-    this.generated_url = CloudinaryService.generateUrl(result.public_id);
-    this.format = result.format;
-    this.width = result.width;
-    this.height = result.height;
-    this.size = result.bytes;
-    this.created_at = result.created_at;
+  static fromModel(image) {
+    return new ImageDTO(image);
+  }
+
+  static fromList(images) {
+    return images.map((img) => new ImageDTO(img));
   }
 }
 
-class MultipleImagesResponseDTO {
-  constructor(results) {
-    this.count = results.length;
-    this.images = results.map((result) => new ImageResponseDTO(result));
+class MultipleImagesDTO {
+  constructor(images) {
+    this.count = images.length;
+    this.images = ImageDTO.fromList(images);
   }
 }
 
-module.exports = {
-  ImageResponseDTO,
-  MultipleImagesResponseDTO,
-};
+module.exports = { ImageDTO, MultipleImagesDTO };
