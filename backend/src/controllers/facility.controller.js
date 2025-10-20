@@ -8,7 +8,7 @@ const FacilityController = {
     return res.status(201).json(ApiResponse.success(facility));
   }),
 
-  getAll: catchAsync(async (req, res, _next) => {
+  getAll: catchAsync(async (_req, res, _next) => {
     const facilities = await FacilityService.getAll();
     return res.status(200).json(ApiResponse.success(facilities));
   }),
