@@ -167,7 +167,7 @@ const CloudinaryService = {
     try {
       const resource = await cloudinary.api.resource(publicId);
       return !!resource && resource.resource_type !== "not_found";
-    } catch (error) {
+    } catch (_error) {
       return false;
     }
   },
