@@ -1,30 +1,31 @@
 const FacilityService = require("../services/facility.service");
 const catchAsync = require("../utils/catchAsync");
+const ApiResponse = require("../utils/ApiResponse");
 
 const FacilityController = {
-  getAll: catchAsync(async (_req, res, _next) => {
+  create: catchAsync(async (req, res, _next) => {
+    const facility = await FacilityService.create(req.body, req.file);
+    return res.status(201).json(ApiResponse.success(facility));
+  }),
+
+  getAll: catchAsync(async (req, res, _next) => {
     const facilities = await FacilityService.getAll();
-    res.status(200).json({ status: "success", facilities });
+    return res.status(200).json(ApiResponse.success(facilities));
   }),
 
   getOne: catchAsync(async (req, res, _next) => {
-    const facility = await FacilityService.getOne(parseInt(req.params.id, 10));
-    res.status(200).json({ status: "success", facility });
-  }),
-
-  create: catchAsync(async (req, res, _next) => {
-    const facility = await FacilityService.create(req.body);
-    res.status(201).json({ status: "success", facility });
+    const facility = await FacilityService.getOne(req.params.id);
+    return res.status(200).json(ApiResponse.success(facility));
   }),
 
   update: catchAsync(async (req, res, _next) => {
-    const facility = await FacilityService.update(parseInt(req.params.id, 10), req.body);
-    res.status(200).json({ status: "success", facility });
+    const facility = await FacilityService.update(req.params.id, req.body, req.file);
+    return res.status(200).json(ApiResponse.success(facility));
   }),
 
   remove: catchAsync(async (req, res, _next) => {
-    await FacilityService.remove(parseInt(req.params.id, 10));
-    res.status(204).json({ status: "success" });
+    await FacilityService.remove(req.params.id);
+    return res.status(200).json(ApiResponse.success());
   }),
 };
 

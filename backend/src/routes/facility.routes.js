@@ -1,11 +1,32 @@
 const express = require("express");
 const router = express.Router();
+const upload = require("../middlewares/multer.middleware");
+const validate = require("../middlewares/validate.middleware");
+const {
+  facilityCreateSchema,
+  facilityUpdateSchema,
+  facilityIdSchema,
+} = require("../validators/facility.validator");
 const FacilityController = require("../controllers/facility.controller");
 
-router.post("/", FacilityController.create);
+router.post(
+  "/",
+  upload.single("icon_url"),
+  validate(facilityCreateSchema),
+  FacilityController.create,
+);
+
 router.get("/", FacilityController.getAll);
-router.get("/:id", FacilityController.getOne);
-router.put("/:id", FacilityController.update);
-router.delete("/:id", FacilityController.remove);
+
+router.get("/:id", validate(facilityIdSchema), FacilityController.getOne);
+
+router.put(
+  "/:id",
+  upload.single("icon_url"),
+  validate(facilityUpdateSchema),
+  FacilityController.update,
+);
+
+router.delete("/:id", validate(facilityIdSchema), FacilityController.remove);
 
 module.exports = router;

@@ -1,5 +1,5 @@
 const CloudinaryService = require("../services/cloudinary.service");
-const { ImageResponseDTO, MultipleImagesResponseDTO } = require("../dtos/cloudinary.dto");
+const { ImageDTO, MultipleImagesDTO } = require("../dtos/cloudinary.dto");
 const catchAsync = require("../utils/catchAsync");
 const ApiResponse = require("../utils/ApiResponse");
 
@@ -9,7 +9,7 @@ const CloudinaryController = {
     const result = await CloudinaryService.uploadSingle(req.file.buffer, {
       folder,
     });
-    return res.status(201).json(ApiResponse.success(new ImageResponseDTO(result)));
+    return res.status(201).json(ApiResponse.success(new ImageDTO(result)));
   }),
 
   uploadMultiple: catchAsync(async (req, res, _next) => {
@@ -18,7 +18,15 @@ const CloudinaryController = {
       req.files.map((file) => file.buffer),
       { folder },
     );
-    return res.status(201).json(ApiResponse.success(new MultipleImagesResponseDTO(results)));
+    return res.status(201).json(ApiResponse.success(new MultipleImagesDTO(results)));
+  }),
+
+  uploadFromUrl: catchAsync(async (req, res, _next) => {
+    const { url, folder } = req.body;
+    const result = await CloudinaryService.uploadFromUrl(url, {
+      folder,
+    });
+    return res.status(201).json(ApiResponse.success(new ImageDTO(result)));
   }),
 
   generateUrl: catchAsync(async (req, res, _next) => {
@@ -55,7 +63,7 @@ const CloudinaryController = {
     const result = await CloudinaryService.uploadSingle(req.file.buffer, {
       folder,
     });
-    return res.status(200).json(ApiResponse.success(new ImageResponseDTO(result)));
+    return res.status(200).json(ApiResponse.success(new ImageDTO(result)));
   }),
 };
 

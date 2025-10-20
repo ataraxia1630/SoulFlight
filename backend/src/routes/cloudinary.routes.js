@@ -25,7 +25,9 @@ router.post(
   CloudinaryController.uploadMultiple,
 );
 
-router.get("/url", CloudinaryController.generateUrl);
+router.post("/upload-from-url", CloudinaryController.uploadFromUrl);
+
+router.get("/generate-url", CloudinaryController.generateUrl);
 
 router.delete("/", validate(deleteSchema), CloudinaryController.deleteImage);
 

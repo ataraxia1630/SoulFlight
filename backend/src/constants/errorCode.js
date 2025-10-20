@@ -195,6 +195,16 @@ const ERROR_CODES = {
     statusCode: 400,
     code: "INVALID_FOLDER_FORMAT",
   },
+  INVALID_URL: {
+    message: "Invalid url format",
+    statusCode: 400,
+    code: "INVALID_URL",
+  },
+  INVALID_INPUT: {
+    message: "Number of publicIds must match number of buffers",
+    statusCode: 400,
+    code: "INVALID_INPUT",
+  },
 
   //place
   PLACE_NOT_FOUND: {
@@ -208,6 +218,18 @@ const ERROR_CODES = {
     message: "Tour not found",
     statusCode: 404,
     code: "TOUR_NOT_FOUND",
+  },
+
+  //facility
+  FACILITY_NOT_FOUND: {
+    message: "Facility not found",
+    statusCode: 404,
+    code: "FACILITY_NOT_FOUND",
+  },
+  IMAGE_OR_URL_REQUIRED: {
+    message: "Image file or url is required",
+    statusCode: 400,
+    code: "IMAGE_OR_URL_REQUIRED",
   },
 };
 
