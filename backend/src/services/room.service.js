@@ -2,17 +2,17 @@ const prisma = require("../configs/prisma");
 
 const RoomService = {
   create: (data) => {
-    const { connectFacilities, serviceId, ...roomData } = data;
+    const { connectFacilities, service_id, ...roomData } = data;
 
-    const facilitiesData = (connectFacilities || []).map((facilityId) => ({
-      facility: { connect: { id: parseInt(facilityId, 10) } },
+    const facilitiesData = (connectFacilities || []).map((facility_id) => ({
+      facility: { connect: { id: parseInt(facility_id, 10) } },
     }));
 
     return prisma.room.create({
       data: {
         ...roomData,
         price_per_night: parseFloat(roomData.price_per_night) || undefined,
-        service: { connect: { id: parseInt(serviceId, 10) } },
+        service: { connect: { id: parseInt(service_id, 10) } },
         facilities: {
           create: facilitiesData,
         },
@@ -33,15 +33,15 @@ const RoomService = {
     }),
 
   update: (id, data) => {
-    const { connectFacilities, disconnectFacilities, serviceId, ...roomData } = data;
+    const { connectFacilities, disconnectFacilities, service_id, ...roomData } = data;
 
-    const connectData = (connectFacilities || []).map((facilityId) => ({
-      facility: { connect: { id: parseInt(facilityId, 10) } },
+    const connectData = (connectFacilities || []).map((facility_id) => ({
+      facility: { connect: { id: parseInt(facility_id, 10) } },
     }));
-    const disconnectData = (disconnectFacilities || []).map((facilityId) => ({
+    const disconnectData = (disconnectFacilities || []).map((facility_id) => ({
       roomId_facilityId: {
-        roomId: parseInt(id, 10),
-        facilityId: parseInt(facilityId, 10),
+        room_id: parseInt(id, 10),
+        facility_id: parseInt(facility_id, 10),
       },
     }));
 
@@ -52,8 +52,8 @@ const RoomService = {
         price_per_night: roomData.price_per_night
           ? parseFloat(roomData.price_per_night)
           : undefined,
-        ...(serviceId && {
-          service: { connect: { id: parseInt(serviceId, 10) } },
+        ...(service_id && {
+          service: { connect: { id: parseInt(service_id, 10) } },
         }),
         facilities: {
           create: connectData,
