@@ -140,12 +140,12 @@ model ServiceTag {
 }
 
 model ServiceOnTag {
-  serviceId Int
-  tagId     Int
-  Service   Service    @relation(fields: [serviceId], references: [id])
-  Tag       ServiceTag @relation(fields: [tagId], references: [id])
+  service_id Int
+  tag_id     Int
+  Service    Service    @relation(fields: [service_id], references: [id])
+  Tag        ServiceTag @relation(fields: [tag_id], references: [id])
 
-  @@id([serviceId, tagId]) // composite primary key
+  @@id([service_id, tag_id]) // composite primary key
 }
 
 model Menu {
@@ -254,7 +254,7 @@ model Facility {
 
 model Room {
   id                  Int            @id @default(autoincrement())
-  serviceId           Int
+  service_id          Int
   name                String
   description         String?
   price_per_night     Decimal        @db.Decimal(10, 2)
@@ -262,23 +262,23 @@ model Room {
   max_adult_number    Int?
   pet_allowed         Boolean        @default(false)
   bed_number          Int
-  service             Service        @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  service             Service        @relation(fields: [service_id], references: [id], onDelete: Cascade)
   facilities          RoomFacility[]
   created_at          DateTime       @default(now())
   updated_at          DateTime       @updatedAt
 
-  @@index([serviceId])
+  @@index([service_id])
 }
 
 model RoomFacility {
-  roomId     Int
-  facilityId Int
-  room       Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  facility   Facility @relation(fields: [facilityId], references: [id], onDelete: Cascade)
+  room_id    Int
+  facility_id Int
+  room       Room     @relation(fields: [room_id], references: [id], onDelete: Cascade)
+  facility   Facility @relation(fields: [facility_id], references: [id], onDelete: Cascade)
 
-  @@id([roomId, facilityId])
-  @@index([roomId])
-  @@index([facilityId])
+  @@id([room_id, facility_id])
+  @@index([room_id])
+  @@index([facility_id])
 }
 
 model Registration {
