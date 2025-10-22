@@ -231,6 +231,28 @@ const ERROR_CODES = {
     statusCode: 400,
     code: "IMAGE_OR_URL_REQUIRED",
   },
+
+  // ticket
+  TICKET_NOT_FOUND: {
+    statusCode: 404,
+    message: "Ticket not found",
+    code: "TICKET_NOT_FOUND",
+  },
+  TICKET_CREATE_FAILED: {
+    statusCode: 500,
+    message: "Failed to create ticket",
+    code: "TICKET_CREATE_FAILED",
+  },
+  TICKET_UPDATE_FAILED: {
+    statusCode: 500,
+    message: "Failed to update ticket",
+    code: "TICKET_UPDATE_FAILED",
+  },
+  TICKET_DELETE_FAILED: {
+    statusCode: 500,
+    message: "Failed to delete ticket",
+    code: "TICKET_DELETE_FAILED",
+  },
 };
 
 module.exports = { ERROR_CODES };
