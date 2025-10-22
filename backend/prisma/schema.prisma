@@ -129,6 +129,7 @@ model Service {
   Menus       Menu[]
   Tour        Tour[]
   Rooms       Room[]
+  Tickets     Ticket[]
 }
 
 model ServiceTag {
@@ -207,6 +208,7 @@ model Place {
   created_at    DateTime    @default(now())
   updated_at    DateTime    @updatedAt
   TourPlace     TourPlace[]
+  Tickets       Ticket[]
 }
 
 model TourPlace {
@@ -296,4 +298,17 @@ model ApprovalHistory {
   by         ActionTaker
   note       String?
   created_at DateTime    @default(now())
+}
+
+model Ticket {
+  id          Int      @id @default(autoincrement())
+  service_id  Int
+  name        String
+  description String?
+  price       Float
+  place_id    Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  Service     Service  @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  Place       Place   @relation(fields: [place_id], references: [id], onDelete: Cascade)
 }
