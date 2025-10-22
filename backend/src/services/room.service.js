@@ -64,7 +64,7 @@ const RoomService = {
     });
   },
 
-  remove: (id) => prisma.room.delete({ where: { id: parseInt(id, 10) } }),
+  delete: (id) => prisma.room.delete({ where: { id: parseInt(id, 10) } }),
 };
 
 module.exports = RoomService;

@@ -27,6 +27,6 @@ router.put(
   FacilityController.update,
 );
 
-router.delete("/:id", validate(facilityIdSchema), FacilityController.remove);
+router.delete("/:id", validate(facilityIdSchema), FacilityController.delete);
 
 module.exports = router;

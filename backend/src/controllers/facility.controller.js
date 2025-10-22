@@ -23,8 +23,8 @@ const FacilityController = {
     return res.status(200).json(ApiResponse.success(facility));
   }),
 
-  remove: catchAsync(async (req, res, _next) => {
-    await FacilityService.remove(req.params.id);
+  delete: catchAsync(async (req, res, _next) => {
+    await FacilityService.delete(req.params.id);
     return res.status(200).json(ApiResponse.success());
   }),
 };

@@ -109,7 +109,7 @@ const CloudinaryService = {
     }
   },
 
-  uploadFromUrl: async (url, options = {}) => {
+  async uploadFromUrl(url, options = {}) {
     try {
       const response = await fetch(url);
       this._validateImageUrl(response);
@@ -131,7 +131,7 @@ const CloudinaryService = {
     }
   },
 
-  uploadMultiple: async (buffers, options = {}) => {
+  async uploadMultiple(buffers, options = {}) {
     const uploadPromises = buffers.map((buffer) => this.uploadSingle(buffer, options));
     const results = await Promise.all(uploadPromises);
 
@@ -156,14 +156,14 @@ const CloudinaryService = {
     return true;
   },
 
-  deleteMultiple: async (publicIds) => {
+  async deleteMultiple(publicIds) {
     const deletePromises = publicIds.map((id) => this.deleteImage(id));
     const results = await Promise.all(deletePromises);
 
     return results.every((success) => success);
   },
 
-  imageExists: async (publicId) => {
+  async imageExists(publicId) {
     try {
       const resource = await cloudinary.api.resource(publicId);
       return !!resource && resource.resource_type !== "not_found";
