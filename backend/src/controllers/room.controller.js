@@ -22,8 +22,8 @@ const RoomController = {
     res.status(200).json({ status: "success", room });
   }),
 
-  remove: catchAsync(async (req, res, _next) => {
-    await RoomService.remove(parseInt(req.params.id, 10));
+  delete: catchAsync(async (req, res, _next) => {
+    await RoomService.delete(parseInt(req.params.id, 10));
     res.status(204).json({ status: "success" });
   }),
 };

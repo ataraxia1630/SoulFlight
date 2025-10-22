@@ -100,7 +100,7 @@ const FacilityService = {
     return FacilityDTO.fromModel(updatedFacility);
   },
 
-  remove: async (id) => {
+  delete: async (id) => {
     const parsedId = parseInt(id, 10);
 
     const facility = await prisma.facility.findUnique({
