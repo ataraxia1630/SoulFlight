@@ -17,6 +17,7 @@ const MainLayout = () => {
         display: "flex",
         minHeight: "100vh",
         bgcolor: "background.default",
+        overflowX: "hidden",
       }}
     >
       <ProviderSidebar open={sidebarOpen} onToggle={toggleSidebar} />
@@ -27,6 +28,7 @@ const MainLayout = () => {
           display: "flex",
           flexDirection: "column",
           minHeight: "100vh",
+          width: 0,
         }}
       >
         <Header drawerWidth={drawerWidth} onToggleSidebar={toggleSidebar} showMenuButton />
@@ -36,14 +38,14 @@ const MainLayout = () => {
           sx={{
             flex: 1,
             pt: { xs: 10, lg: 12 },
-            px: { md: 19 },
+            px: { md: 9 },
             overflowY: "auto",
             overflowX: "hidden",
             wordWrap: "break-word",
             overflowWrap: "break-word",
           }}
         >
-          <Container maxWidth={false} sx={{ wordBreak: "break-word" }}>
+          <Container maxWidth={false} sx={{ wordBreak: "break-word", px: { xs: 0, md: 2 } }}>
             <Outlet />
           </Container>
         </Box>

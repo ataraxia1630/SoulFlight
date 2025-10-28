@@ -89,6 +89,7 @@ export const ProviderSidebar = ({ open, onToggle }) => {
             width: open ? DRAWER_WIDTH : DRAWER_WIDTH_COLLAPSED,
             bgcolor: "background.paper",
             boxSizing: "border-box",
+            overflowX: "hidden",
           },
         }}
       >
