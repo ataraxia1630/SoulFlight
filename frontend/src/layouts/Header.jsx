@@ -1,6 +1,7 @@
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import Logo from "@/assets/logo";
 import MenuIcon from "@mui/icons-material/Menu";
 import {
   AppBar,
@@ -157,9 +158,17 @@ const Header = ({ drawerWidth = 0, onToggleSidebar, showMenuIcon = true }) => {
               </IconButton>
             )}
 
+            <Logo />
             <Typography
-              variant="h5"
-              sx={{ fontWeight: 600, letterSpacing: "-0.5px" }}
+              variant="h3"
+              sx={{
+                fontWeight: 900,
+                letterSpacing: "0.7px",
+                background: "linear-gradient(to right, #1E9BCD, #1ABFC3)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
             >
               SOULFLIGHT
             </Typography>
