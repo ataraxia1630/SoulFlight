@@ -20,6 +20,7 @@ import {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
+import Logo from "@/assets/logo";
 
 const NavButton = ({ item, onClick, theme, t }) => (
   <Button
@@ -157,7 +158,18 @@ const Header = ({ drawerWidth = 0, onToggleSidebar, showMenuIcon = true }) => {
               </IconButton>
             )}
 
-            <Typography variant="h5" sx={{ fontWeight: 600, letterSpacing: "-0.5px" }}>
+            <Logo />
+            <Typography
+              variant="h3"
+              sx={{
+                fontWeight: 900,
+                letterSpacing: "0.3px",
+                background: "linear-gradient(to right, #1E9BCD, #1ABFC3)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+              }}
+            >
               SOULFLIGHT
             </Typography>
           </Box>
