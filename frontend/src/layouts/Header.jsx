@@ -1,7 +1,6 @@
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import Logo from "@/assets/logo";
 import MenuIcon from "@mui/icons-material/Menu";
 import {
   AppBar,
@@ -21,6 +20,7 @@ import {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
+import Logo from "@/assets/logo";
 
 const NavButton = ({ item, onClick, theme, t }) => (
   <Button
@@ -163,7 +163,7 @@ const Header = ({ drawerWidth = 0, onToggleSidebar, showMenuIcon = true }) => {
               variant="h3"
               sx={{
                 fontWeight: 900,
-                letterSpacing: "0.7px",
+                letterSpacing: "0.3px",
                 background: "linear-gradient(to right, #1E9BCD, #1ABFC3)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
