@@ -1,0 +1,42 @@
+# Ignore node modules
+
+node_modules/
+
+# Ignore build outputs
+
+dist/
+build/
+frontend/build/
+backend/dist/
+
+# Ignore environment and coverage files
+
+.env
+coverage/
+
+# Ignore asset folders
+
+**/assets/
+**/fonts/
+**/images/
+**/uploads/
+
+# Ignore lock files and configs
+
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+vite.config.js
+webpack.config.js
+
+# Ignore minified and generated files
+
+_.min.js
+_.bundle.js
+\*.map
+
+# Ignore temporary or editor files
+
+.DS_Store
+Thumbs.db
+\*.log

@@ -1,5 +1,6 @@
-const prisma = require('../configs/prisma');
-const AppError = require('../utils/AppError');
+const prisma = require("../configs/prisma");
+const AppError = require("../utils/AppError");
+const { ERROR_CODES } = require("../constants/errorCode");
 
 const ServiceTagService = {
   getAll: async () => {
@@ -11,7 +12,11 @@ const ServiceTagService = {
       where: { id },
     });
     if (!tag) {
-      return new AppError(404, 'Service Tag not found');
+      return new AppError(
+        ERROR_CODES.SERVICE_TAG_NOT_FOUND.statusCode,
+        ERROR_CODES.SERVICE_TAG_NOT_FOUND.message,
+        ERROR_CODES.SERVICE_TAG_NOT_FOUND.code,
+      );
     }
     return tag;
   },
@@ -29,7 +34,11 @@ const ServiceTagService = {
       data,
     });
     if (!updated) {
-      return new AppError(404, 'Service Tag not found');
+      return new AppError(
+        ERROR_CODES.SERVICE_TAG_NOT_FOUND.statusCode,
+        ERROR_CODES.SERVICE_TAG_NOT_FOUND.message,
+        ERROR_CODES.SERVICE_TAG_NOT_FOUND.code,
+      );
     }
     return updated;
   },
@@ -39,7 +48,11 @@ const ServiceTagService = {
       where: { id },
     });
     if (!deleted) {
-      return new AppError(404, 'Service Tag not found');
+      return new AppError(
+        ERROR_CODES.SERVICE_TAG_NOT_FOUND.statusCode,
+        ERROR_CODES.SERVICE_TAG_NOT_FOUND.message,
+        ERROR_CODES.SERVICE_TAG_NOT_FOUND.code,
+      );
     }
     return deleted;
   },

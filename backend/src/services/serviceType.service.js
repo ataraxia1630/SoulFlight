@@ -1,5 +1,6 @@
-const prisma = require('../configs/prisma');
-const AppError = require('../utils/AppError');
+const prisma = require("../configs/prisma");
+const AppError = require("../utils/AppError");
+const { ERROR_CODES } = require("../constants/errorCode");
 
 const ServiceTypeService = {
   getAll: async () => {
@@ -11,7 +12,11 @@ const ServiceTypeService = {
       where: { id },
     });
     if (!type) {
-      return new AppError(404, 'Service Type not found');
+      return new AppError(
+        ERROR_CODES.SERVICE_TYPE_NOT_FOUND.statusCode,
+        ERROR_CODES.SERVICE_TYPE_NOT_FOUND.message,
+        ERROR_CODES.SERVICE_TYPE_NOT_FOUND.code,
+      );
     }
     return type;
   },
@@ -29,7 +34,11 @@ const ServiceTypeService = {
       data,
     });
     if (!updated) {
-      return new AppError(404, 'Service Type not found');
+      return new AppError(
+        ERROR_CODES.SERVICE_TYPE_NOT_FOUND.statusCode,
+        ERROR_CODES.SERVICE_TYPE_NOT_FOUND.message,
+        ERROR_CODES.SERVICE_TYPE_NOT_FOUND.code,
+      );
     }
     return updated;
   },
@@ -39,7 +48,11 @@ const ServiceTypeService = {
       where: { id },
     });
     if (!deleted) {
-      return new AppError(404, 'Service Type not found');
+      return new AppError(
+        ERROR_CODES.SERVICE_TYPE_NOT_FOUND.statusCode,
+        ERROR_CODES.SERVICE_TYPE_NOT_FOUND.message,
+        ERROR_CODES.SERVICE_TYPE_NOT_FOUND.code,
+      );
     }
   },
 };

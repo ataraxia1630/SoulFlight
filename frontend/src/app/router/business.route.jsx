@@ -1,3 +1,4 @@
+import ServiceRegistrationPage from "@business/pages/service_registration";
 import { Route } from "react-router-dom";
 import BusinessHome from "@/features/business/pages/Home";
 import { createAuthRoutes } from "./auth.route";
@@ -8,6 +9,7 @@ const mainRoutes = (
   <>
     <Route path="business" element={<BusinessHome />} />
     {/* Add routes */}
+    <Route path="business/service-registration" element={<ServiceRegistrationPage />} />
   </>
 );
 

@@ -8,6 +8,9 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"), // @ sẽ trỏ thẳng tới folder src
+      "@business": path.resolve(__dirname, "./src/features/business"),
+      "@traveler": path.resolve(__dirname, "./src/features/traveler"),
+      "@admin": path.resolve(__dirname, "./src/features/admin"),
     },
   },
 });

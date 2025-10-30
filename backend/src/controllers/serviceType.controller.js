@@ -1,8 +1,8 @@
-const { ServiceTypeService } = require('../services/serviceType.service');
-const catchAsync = require('../utils/catchAsync');
+const { ServiceTypeService } = require("../services/serviceType.service");
+const catchAsync = require("../utils/catchAsync");
 
 const ServiceTypeController = {
-  getAll: catchAsync(async (req, res) => {
+  getAll: catchAsync(async (_req, res) => {
     const serviceTypes = await ServiceTypeService.getAll();
     res.status(200).json({ serviceTypes });
   }),

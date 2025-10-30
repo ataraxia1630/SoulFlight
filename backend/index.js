@@ -1,16 +1,18 @@
-const express = require('express');
-const prisma = require('./src/configs/prisma');
-const redis = require('./src/configs/redis');
-const route = require('./src/routes/index');
+const express = require("express");
+const cors = require("cors");
+
+require("./src/configs/prisma");
+require("./src/configs/redis");
+
+const route = require("./src/routes/index");
 const app = express();
-const cors = require('cors');
 
 // Cấu hình CORS
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: "http://localhost:5173",
     credentials: true,
-  })
+  }),
 );
 
 // Middleware

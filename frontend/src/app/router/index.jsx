@@ -1,16 +1,12 @@
-import {
-  createBrowserRouter,
-  createRoutesFromElements,
-  Route,
-} from "react-router-dom";
-import App from "../App";
-import MainLayout from "@/layouts/MainLayout";
+import { createBrowserRouter, createRoutesFromElements, Route } from "react-router-dom";
 import AuthLayout from "@/layouts/AuthLayout";
+import MainLayout from "@/layouts/MainLayout";
 import HomePage from "@/shared/pages/HomePage";
 import LoginPage from "@/shared/pages/LoginPage";
-import travelerRoutes from "./traveler.route";
-import businessRoutes from "./business.route";
+import App from "../App";
 import adminRoutes from "./admin.route";
+import businessRoutes from "./business.route";
+import travelerRoutes from "./traveler.route";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -27,8 +23,8 @@ const router = createBrowserRouter(
         {travelerRoutes.auth}
         {businessRoutes.auth}
       </Route>
-    </Route>
-  )
+    </Route>,
+  ),
 );
 
 export default router;

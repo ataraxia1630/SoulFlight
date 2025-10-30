@@ -43,6 +43,26 @@ enum UnitType {
   JAR
 }
 
+enum RegistrationStatus {
+  DRAFT
+  PENDING
+  APPROVED
+  INFO_REQUIRED
+  REJECTED
+}
+
+enum ActionTaker {
+  PROVIDER
+  ADMIN
+}
+
+enum Action {
+  SEND
+  APPROVE
+  REJECT
+  REQUIRE_INFO
+}
+
 model User {
   id         Int        @id @default(autoincrement())
   username   String     @unique
@@ -107,6 +127,9 @@ model Service {
   Provider    Provider       @relation(fields: [provider_id], references: [id])
   Tags        ServiceOnTag[]
   Menus       Menu[]
+  Tour        Tour[]
+  Rooms       Room[]
+  Tickets     Ticket[]
 }
 
 model ServiceTag {
@@ -118,12 +141,12 @@ model ServiceTag {
 }
 
 model ServiceOnTag {
-  serviceId Int
-  tagId     Int
-  Service   Service    @relation(fields: [serviceId], references: [id])
-  Tag       ServiceTag @relation(fields: [tagId], references: [id])
+  service_id Int
+  tag_id     Int
+  Service    Service    @relation(fields: [service_id], references: [id])
+  Tag        ServiceTag @relation(fields: [tag_id], references: [id])
 
-  @@id([serviceId, tagId]) // composite primary key
+  @@id([service_id, tag_id]) // composite primary key
 }
 
 model Menu {
@@ -150,4 +173,142 @@ model MenuItem {
   created_at  DateTime      @default(now())
   updated_at  DateTime      @updatedAt
   Menu        Menu          @relation(fields: [menu_id], references: [id])
+}
+
+model Tour {
+  id            Int           @id @default(autoincrement())
+  name          String
+  description   String?
+  service_price Float
+  total_price   Float
+  duration      Float // in hours
+  is_recurring  Boolean       @default(false)
+  repeat_rule   String? // 'daily' | 'weekly' | 'monthly'
+  repeat_days   String[] // ['monday', 'friday'] nếu weekly
+  start_date    DateTime? // chỉ cần nếu là tour 1 lần
+  end_date      DateTime? // nếu tour kéo dài nhiều ngày
+  status        ServiceStatus @default(AVAILABLE)
+  service_id    Int
+  tourguide_id  Int?
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
+  Service       Service       @relation(fields: [service_id], references: [id])
+  TourPlace     TourPlace[]
+  TourGuide     TourGuide?    @relation(fields: [tourguide_id], references: [id])
+}
+
+model Place {
+  id            Int         @id @default(autoincrement())
+  name          String
+  description   String?
+  image_url     String?
+  address       String?
+  opening_hours Json?
+  entry_fee     Float?
+  created_at    DateTime    @default(now())
+  updated_at    DateTime    @updatedAt
+  TourPlace     TourPlace[]
+  Tickets       Ticket[]
+}
+
+model TourPlace {
+  tour_id     Int
+  place_id    Int
+  description String?
+  start_time  String?
+  end_time    String?
+  Tour        Tour    @relation(fields: [tour_id], references: [id])
+  Place       Place   @relation(fields: [place_id], references: [id])
+
+  @@id([tour_id, place_id])
+}
+
+model TourGuide {
+  id          Int      @id @default(autoincrement())
+  name        String
+  phone       String
+  description String?
+  image_url   String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  Tour        Tour[]
+}
+
+model Image {
+  id           Int      @id @default(autoincrement())
+  url          String
+  position     Int      @default(0) // for ordering images
+  is_main      Boolean  @default(false) // main image flag
+  related_id   Int // ID of the related entity
+  related_type String // e.g. 'Service', 'Menu', 'Place', etc.
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+}
+
+model Facility {
+  id         Int            @id @default(autoincrement())
+  name       String
+  icon_url   String?
+  rooms      RoomFacility[]
+  created_at DateTime       @default(now())
+  updated_at DateTime       @updatedAt
+}
+
+model Room {
+  id                  Int            @id @default(autoincrement())
+  service_id          Int
+  name                String
+  description         String?
+  price_per_night     Decimal        @db.Decimal(10, 2)
+  max_children_number Int?
+  max_adult_number    Int?
+  pet_allowed         Boolean        @default(false)
+  bed_number          Int
+  service             Service        @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  facilities          RoomFacility[]
+  created_at          DateTime       @default(now())
+  updated_at          DateTime       @updatedAt
+
+  @@index([service_id])
+}
+
+model RoomFacility {
+  room_id    Int
+  facility_id Int
+  room       Room     @relation(fields: [room_id], references: [id], onDelete: Cascade)
+  facility   Facility @relation(fields: [facility_id], references: [id], onDelete: Cascade)
+
+  @@id([room_id, facility_id])
+  @@index([room_id])
+  @@index([facility_id])
+}
+
+model Registration {
+  id          String             @id
+  provider_id Int
+  status      RegistrationStatus @default(PENDING)
+  metadata    Json
+  created_at  DateTime           @default(now())
+  updated_at  DateTime           @updatedAt
+}
+
+model ApprovalHistory {
+  id         Int         @id @default(autoincrement())
+  action     Action
+  by         ActionTaker
+  note       String?
+  created_at DateTime    @default(now())
+}
+
+model Ticket {
+  id          Int      @id @default(autoincrement())
+  service_id  Int
+  name        String
+  description String?
+  price       Float
+  place_id    Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  Service     Service  @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  Place       Place   @relation(fields: [place_id], references: [id], onDelete: Cascade)
 }

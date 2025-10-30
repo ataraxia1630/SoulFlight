@@ -15,22 +15,13 @@ export const createAuthRoutes = ({ userType, CompleteProfilePage }) => {
 
   return (
     <>
-      <Route
-        path={`${userType}/signup`}
-        element={<SignupPage userType={userType} />}
-      />
-      <Route
-        path={`${userType}/verify-otp`}
-        element={<VerifyOTPPage userType={userType} />}
-      />
+      <Route path={`${userType}/signup`} element={<SignupPage userType={userType} />} />
+      <Route path={`${userType}/verify-otp`} element={<VerifyOTPPage userType={userType} />} />
       <Route
         path={`${userType}/create-account`}
         element={<CreateAccountPage userType={userType} />}
       />
-      <Route
-        path={`${userType}/complete-profile`}
-        element={<CompleteProfileComponent />}
-      />
+      <Route path={`${userType}/complete-profile`} element={<CompleteProfileComponent />} />
     </>
   );
 };
