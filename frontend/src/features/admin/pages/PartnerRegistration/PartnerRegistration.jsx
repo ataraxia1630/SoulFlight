@@ -51,7 +51,7 @@ const mockData = [
     provider: "Tour du lịch Cả nhà cùng vui",
     service: "5 services",
     submitDate: "18/10/2025",
-    status: "Info Required",
+    status: "Info_Required",
   },
   {
     id: "#PR-90233",
@@ -65,7 +65,7 @@ const mockData = [
     provider: "Vietnam Airline",
     service: "1 services",
     submitDate: "18/10/2025",
-    status: "Info Required",
+    status: "Info_Required",
   },
   {
     id: "#PR-90323",

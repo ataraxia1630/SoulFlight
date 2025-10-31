@@ -14,7 +14,7 @@ const chipColors = {
     bg: "#FCEEEE",
     text: "#EB4335",
   },
-  InfoRequired: {
+  Info_Required: {
     bg: "#F3EFFF",
     text: "#8E4FFF",
   },

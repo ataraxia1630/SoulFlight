@@ -2,6 +2,15 @@ import StatusChip from "./StatusChip";
 
 const columnConfig = [
   {
+    // có cái này để đánh STT
+    id: "index",
+    label: "NO.",
+    width: "8%",
+    header_align: "center",
+    cell_align: "center",
+    render: (index) => index + 1,
+  },
+  {
     id: "id",
     label: "APPLICANT ID",
     width: "15%",
@@ -19,14 +28,14 @@ const columnConfig = [
   {
     id: "service",
     label: "SERVICE",
-    width: "15%",
+    width: "12%",
     header_align: "center",
     cell_align: "center",
   },
   {
     id: "submitDate",
     label: "SUBMIT DATE",
-    width: "20%",
+    width: "15%",
     header_align: "center",
     cell_align: "center",
   },
