@@ -5,8 +5,8 @@ import { Outlet } from "react-router-dom";
 import Footer from "./Footer";
 import Header from "./Header";
 
-const LEFT_SIDEBAR_WIDTH = 290;
-const RIGHT_SIDEBAR_WIDTH = 290;
+const LEFT_SIDEBAR_WIDTH = 230;
+const RIGHT_SIDEBAR_WIDTH = 230;
 
 const TravelerLayout = () => {
   const theme = useTheme();
@@ -23,10 +23,8 @@ const TravelerLayout = () => {
             sx={{
               width: LEFT_SIDEBAR_WIDTH,
               flexShrink: 0,
-              px: 2,
+              px: 1.5,
               pt: 3,
-              borderRight: 1,
-              borderColor: "divider",
             }}
           >
             <Toolbar />
@@ -60,10 +58,8 @@ const TravelerLayout = () => {
             sx={{
               width: RIGHT_SIDEBAR_WIDTH,
               flexShrink: 0,
-              px: 2,
+              px: 1.5,
               pt: 3,
-              borderLeft: 1,
-              borderColor: "divider",
             }}
           >
             <Toolbar />
