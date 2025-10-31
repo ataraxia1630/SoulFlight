@@ -52,15 +52,15 @@
     "id_card": "Identity Card"
   },
 
-  "provider_sidebar": {
+  "sidebar": {
     "dashboard": "Dashboard",
     "service": "Service",
     "voucher": "Voucher",
-    "dishes": "Dishes",
     "staff": "Staff",
     "payment": "Payment",
     "assessment": "Assessment",
-    "report": "Report"
+    "report": "Report",
+    "tag": "Tag"
   },
 
   "or": "OR",

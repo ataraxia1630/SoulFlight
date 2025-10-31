@@ -6,7 +6,6 @@ import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import GroupIcon from "@mui/icons-material/Group";
 import PaymentIcon from "@mui/icons-material/Payment";
-import RestaurantIcon from "@mui/icons-material/Restaurant";
 import RoomServiceIcon from "@mui/icons-material/RoomService";
 import {
   Box,
@@ -37,38 +36,33 @@ const ProviderSidebar = ({ open, onToggle }) => {
 
   const menuItems = [
     {
-      text: t("provider_sidebar.dashboard"),
+      text: t("sidebar.dashboard"),
       icon: <DashboardIcon />,
       path: "/business/dashboard",
     },
     {
-      text: t("provider_sidebar.service"),
+      text: t("sidebar.service"),
       icon: <RoomServiceIcon />,
       path: "/business/service",
     },
     {
-      text: t("provider_sidebar.voucher"),
+      text: t("sidebar.voucher"),
       icon: <ConfirmationNumberIcon />,
       path: "/business/voucher",
     },
+    { text: t("sidebar.staff"), icon: <GroupIcon />, path: "/business/staff" },
     {
-      text: t("provider_sidebar.dishes"),
-      icon: <RestaurantIcon />,
-      path: "/business/dishes",
-    },
-    { text: t("provider_sidebar.staff"), icon: <GroupIcon />, path: "/business/staff" },
-    {
-      text: t("provider_sidebar.payment"),
+      text: t("sidebar.payment"),
       icon: <PaymentIcon />,
       path: "/business/payment",
     },
     {
-      text: t("provider_sidebar.assessment"),
+      text: t("sidebar.assessment"),
       icon: <AssessmentIcon />,
       path: "/business/assessment",
     },
     {
-      text: t("provider_sidebar.report"),
+      text: t("sidebar.report"),
       icon: <BarChartIcon />,
       path: "/business/report",
     },
