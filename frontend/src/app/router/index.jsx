@@ -1,6 +1,7 @@
 import { createBrowserRouter, createRoutesFromElements, Route } from "react-router-dom";
 import AuthLayout from "@/layouts/AuthLayout";
-import MainLayout from "@/layouts/MainLayout";
+import ManagementLayout from "@/layouts/ManagementLayout";
+import TravelerLayout from "@/layouts/TravelerLayout";
 import HomePage from "@/shared/pages/HomePage";
 import LoginPage from "@/shared/pages/LoginPage";
 import App from "../App";
@@ -11,10 +12,13 @@ import travelerRoutes from "./traveler.route";
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
-      <Route element={<MainLayout />}>
-        <Route index element={<HomePage />} />
+      <Route element={<ManagementLayout />}>
         {adminRoutes}
         {businessRoutes.main}
+      </Route>
+
+      <Route element={<TravelerLayout />}>
+        <Route index element={<HomePage />} />
         {travelerRoutes.main}
       </Route>
 

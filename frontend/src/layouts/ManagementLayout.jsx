@@ -1,11 +1,14 @@
-import { Box, Container } from "@mui/material";
+import ProviderSidebar, {
+  DRAWER_WIDTH_CLOSE,
+  DRAWER_WIDTH_OPEN,
+} from "@business/components/ProviderSidebar";
+import { Box, Container, Toolbar } from "@mui/material";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Footer from "./Footer";
 import Header from "./Header";
-import ProviderSidebar, { DRAWER_WIDTH_CLOSE, DRAWER_WIDTH_OPEN } from "./ProviderSidebar";
 
-const MainLayout = () => {
+const ManagementLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
 
@@ -29,13 +32,13 @@ const MainLayout = () => {
           minHeight: "100vh",
         }}
       >
-        <Header drawerWidth={drawerWidth} onToggleSidebar={toggleSidebar} showMenuButton />
+        <Header drawerWidth={drawerWidth} onToggleSidebar={toggleSidebar} showMenuIcon />
 
         <Box
           component="main"
           sx={{
             flex: 1,
-            pt: { xs: 10, lg: 12 },
+            pt: { xs: 3, lg: 5 },
             px: { md: 19 },
             overflowY: "auto",
             overflowX: "hidden",
@@ -43,6 +46,7 @@ const MainLayout = () => {
             overflowWrap: "break-word",
           }}
         >
+          <Toolbar />
           <Container maxWidth={false} sx={{ wordBreak: "break-word" }}>
             <Outlet />
           </Container>
@@ -54,4 +58,4 @@ const MainLayout = () => {
   );
 };
 
-export default MainLayout;
+export default ManagementLayout;

@@ -110,7 +110,7 @@ const AuthButtons = ({ isDrawer = false, toggleDrawer, t }) => (
   </Box>
 );
 
-const Header = ({ drawerWidth = 0, onToggleSidebar, showMenuIcon = true }) => {
+const Header = ({ drawerWidth = 0, onToggleSidebar, showMenuIcon = false }) => {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);

@@ -28,7 +28,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const DRAWER_WIDTH = 260;
 const DRAWER_WIDTH_COLLAPSED = 72;
 
-export const ProviderSidebar = ({ open, onToggle }) => {
+const ProviderSidebar = ({ open, onToggle }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -39,38 +39,38 @@ export const ProviderSidebar = ({ open, onToggle }) => {
     {
       text: t("provider_sidebar.dashboard"),
       icon: <DashboardIcon />,
-      path: "/dashboard",
+      path: "/business/dashboard",
     },
     {
       text: t("provider_sidebar.service"),
       icon: <RoomServiceIcon />,
-      path: "/service",
+      path: "/business/service",
     },
     {
       text: t("provider_sidebar.voucher"),
       icon: <ConfirmationNumberIcon />,
-      path: "/voucher",
+      path: "/business/voucher",
     },
     {
       text: t("provider_sidebar.dishes"),
       icon: <RestaurantIcon />,
-      path: "/dishes",
+      path: "/business/dishes",
     },
-    { text: t("provider_sidebar.staff"), icon: <GroupIcon />, path: "/staff" },
+    { text: t("provider_sidebar.staff"), icon: <GroupIcon />, path: "/business/staff" },
     {
       text: t("provider_sidebar.payment"),
       icon: <PaymentIcon />,
-      path: "/payment",
+      path: "/business/payment",
     },
     {
       text: t("provider_sidebar.assessment"),
       icon: <AssessmentIcon />,
-      path: "/assessment",
+      path: "/business/assessment",
     },
     {
       text: t("provider_sidebar.report"),
       icon: <BarChartIcon />,
-      path: "/report",
+      path: "/business/report",
     },
   ];
 
