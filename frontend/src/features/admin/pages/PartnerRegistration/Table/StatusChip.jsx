@@ -1,7 +1,7 @@
 import { Chip } from "@mui/material";
 import { styled } from "@mui/material/styles";
 
-const chipColors = {
+const chipConfig = {
   Pending: {
     bg: "#FFF3CD",
     text: "#EAB308",
@@ -16,7 +16,7 @@ const chipColors = {
   },
   Info_Required: {
     bg: "#F3EFFF",
-    text: "#8E4FFF",
+    text: "#4F46E5",
   },
   Default: {
     bg: "#F0F0F0",
@@ -24,22 +24,31 @@ const chipColors = {
   },
 };
 
-const StyledChip = styled(Chip, {
-  shouldForwardProp: (prop) => prop !== "statusType",
-})(({ statusType }) => {
-  const colors = chipColors[statusType] || chipColors.Default;
+const CHIP_WIDTH = 120;
+
+const StyledChip = styled(Chip)(({ status }) => {
+  const { bg, text } = chipConfig[status] || { bg: "#E5E7EB", text: "#374151" };
+
   return {
-    backgroundColor: colors.bg,
-    color: colors.text,
-    fontWeight: "bold",
-    borderRadius: "8px",
-    padding: "2px 4px",
-    height: "28px",
+    backgroundColor: bg,
+    color: text,
+    fontWeight: 600,
+    fontSize: "14px",
+    letterSpacing: "0.5px",
+    height: 32,
+    minWidth: CHIP_WIDTH,
+    maxWidth: CHIP_WIDTH,
+    borderRadius: "4px",
+    "& .MuiChip-label": {
+      paddingLeft: 8,
+      paddingRight: 8,
+    },
   };
 });
 
 function StatusChip({ status }) {
-  return <StyledChip label={status} statusType={status} />;
+  const displayStatus = status === "Info_Required" ? "Info Required" : status;
+  return <StyledChip label={displayStatus} status={status} />;
 }
 
 export default StatusChip;
