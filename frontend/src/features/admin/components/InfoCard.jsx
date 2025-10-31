@@ -8,8 +8,9 @@ export default function InfoCard({ title, content, highlightColor }) {
     <Card
       sx={{
         borderRadius: "16px",
+        border: "0.1px solid #E5E7EB",
         borderLeft: `4px solid ${color}`,
-        boxShadow: "0 4px 20px rgba(0,0,0,0.07)",
+        boxShadow: "0 4px 10px rgba(0,0,0,0.03)",
         minWidth: "150px",
         width: "220px",
         height: "102px",

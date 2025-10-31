@@ -2,7 +2,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
   InputAdornment,
-  Paper,
   Table,
   TableBody,
   TableCell,
@@ -41,7 +40,17 @@ export default function CustomTable({ columns, data }) {
     setPage(0);
   };
   return (
-    <Box sx={{ mt: 4 }}>
+    <Box
+      sx={{
+        mt: 4,
+        backgroundColor: "#FFFFFF",
+        border: "0.1px solid #E5E7EB",
+        borderRadius: 2,
+        overflow: "hidden",
+        boxShadow: "0 4px 10px rgba(0,0,0,0.03)",
+        padding: 4,
+      }}
+    >
       <TextField
         fullWidth
         size="small"
@@ -61,12 +70,8 @@ export default function CustomTable({ columns, data }) {
         sx={{ mb: 2 }}
       />
 
-      <TableContainer
-        component={Paper}
-        elevation={0}
-        sx={{ mt: 4, borderRadius: 2, overflow: "hidden" }}
-      >
-        <Table sx={{ minWidth: 650, tableLayout: "fixed" }} size="medium">
+      <TableContainer>
+        <Table sx={{ minWidth: 650, tableLayout: "fixed", bgcolor: "#FFFFFF" }} size="medium">
           <TableHead>
             <TableRow>
               {columns.map((column) => (
