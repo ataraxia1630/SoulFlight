@@ -1,10 +1,10 @@
 import { Box } from "@mui/material";
 
-const CarouselDots = ({ totalDots, currentIndex, onDotClick, categories }) => {
+const CarouselDots = ({ totalDots, currentIndex, onDotClick, categories, itemsPerPage }) => {
   return (
     <Box sx={{ display: "flex", gap: 1.5, justifyContent: "center" }}>
       {Array.from({ length: totalDots }).map((_, index) => {
-        const groupStart = index * 3;
+        const groupStart = index * itemsPerPage;
         const keyId = categories[groupStart]?.id || `dot-${index}`;
 
         return (

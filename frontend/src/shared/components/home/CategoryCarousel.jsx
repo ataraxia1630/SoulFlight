@@ -38,29 +38,21 @@ const CategoryCarousel = () => {
   ];
 
   const itemsPerPage = 3;
-  const cardWidth = 280;
+  const cardWidth = 193;
+  const gap = 5.5;
 
   const { scrollContainerRef, currentIndex, totalDots, scrollToIndex } = useCarouselPagination({
     itemsLength: categories.length,
     itemsPerPage,
     cardWidth,
+    gap,
   });
 
   return (
-    <Box
-      sx={{
-        py: { xs: 5, md: 7 },
-      }}
-    >
+    <Box sx={{ py: { xs: 5, md: 7 } }}>
       <Container maxWidth="lg">
         <Box sx={{ textAlign: "center", mb: { xs: 3, md: 4 } }}>
-          <Typography
-            variant="h3"
-            sx={{
-              letterSpacing: "2px",
-              mb: 1.5,
-            }}
-          >
+          <Typography variant="h3" sx={{ letterSpacing: "2px", mb: 1.5 }}>
             EXPLORE OUR CATEGORIES
           </Typography>
           <Typography sx={{ color: "text.secondary", fontSize: "15px" }}>
@@ -73,6 +65,7 @@ const CategoryCarousel = () => {
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
+            width: "100%",
             gap: 1.7,
           }}
         >
@@ -80,14 +73,18 @@ const CategoryCarousel = () => {
             ref={scrollContainerRef}
             sx={{
               display: "flex",
-              gap: { xs: 3.5, md: 5.5 },
-              overflowX: "hidden",
+              gap,
+              overflowX: "auto",
+              scrollSnapType: "x mandatory",
+              scrollBehavior: "smooth",
               py: 0.5,
-              width: "100%",
+              maxWidth: "100%",
+              "::-webkit-scrollbar": { display: "none" },
+              scrollbarWidth: "none",
             }}
           >
             {categories.map((cat, i) => (
-              <Box key={`${cat.id}-${i}`}>
+              <Box key={`${cat.id}-${i}`} sx={{ scrollSnapAlign: "start" }}>
                 <CategoryCard {...cat} />
               </Box>
             ))}
@@ -98,6 +95,7 @@ const CategoryCarousel = () => {
             currentIndex={currentIndex}
             onDotClick={scrollToIndex}
             categories={categories}
+            itemsPerPage={itemsPerPage}
           />
         </Box>
 

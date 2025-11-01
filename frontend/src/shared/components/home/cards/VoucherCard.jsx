@@ -1,6 +1,6 @@
 import { Box, Button, Card, CardContent, CardMedia, Typography } from "@mui/material";
 
-const VoucherCard = ({ code, discount, image }) => {
+const VoucherCard = ({ title, code, discount, image }) => {
   return (
     <Card
       sx={{
@@ -32,32 +32,35 @@ const VoucherCard = ({ code, discount, image }) => {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          color: "white",
+          color: "text.contrast",
         }}
       >
         <Box>
-          <Typography variant="body2" sx={{ mb: 0.5 }}>
-            SEOUL TOUR- {code}
+          <Typography
+            variant="h5"
+            sx={{ mb: 0.5, color: "text.contrast", textTransform: "uppercase" }}
+          >
+            {title} - {code}
           </Typography>
-          <Typography variant="caption" sx={{ color: "grey.300" }}>
+          <Typography variant="caption" sx={{ color: "border.light" }}>
             Sale Up To
           </Typography>
         </Box>
         <Box>
-          <Typography sx={{ fontSize: "4rem", fontWeight: "bold", mb: 2 }}>
+          <Typography sx={{ fontSize: "70px", fontWeight: "bold", mb: 2 }}>
             {discount}
-            <Box component="span" sx={{ fontSize: "1.5rem", color: "red", ml: 1 }}>
+            <Box component="span" sx={{ fontSize: "29px", color: "red", ml: 1 }}>
               %OFF
             </Box>
           </Typography>
           <Button
             variant="outlined"
             sx={{
-              borderColor: "white",
-              color: "white",
+              borderColor: "border.light",
+              color: "text.contrast",
               "&:hover": {
-                bgcolor: "white",
-                color: "grey.900",
+                bgcolor: "background.default",
+                color: "text.tertiary",
               },
             }}
           >

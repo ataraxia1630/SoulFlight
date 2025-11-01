@@ -16,7 +16,7 @@ const SectionHeader = ({ title, gradient = ["primary.main", "third.main"], align
       </Typography>
       <Box
         sx={{
-          width: 135,
+          width: 125,
           height: 4,
           background: `linear-gradient(90deg, ${
             theme.palette[gradient[0].split(".")[0]][gradient[0].split(".")[1]]

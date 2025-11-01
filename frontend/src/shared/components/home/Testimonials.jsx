@@ -27,7 +27,9 @@ const Testimonials = () => {
     <Box
       sx={{
         position: "relative",
-        py: 12,
+        py: 6,
+        mt: 5,
+        m: 3,
         backgroundImage:
           "url(https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&h=900&fit=crop)",
         backgroundSize: "cover",
