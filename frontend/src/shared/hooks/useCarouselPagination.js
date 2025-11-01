@@ -1,5 +1,3 @@
-"use client";
-
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const useCarouselPagination = ({ itemsLength, itemsPerPage = 3, cardWidth = 193, gap = 0 }) => {

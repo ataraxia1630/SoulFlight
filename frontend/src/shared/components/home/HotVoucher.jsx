@@ -68,7 +68,7 @@ const HotVouchers = () => {
                 overflowX: "auto",
                 scrollSnapType: "x mandatory",
                 scrollBehavior: "smooth",
-                py: 0.5,
+                py: 1.5,
                 maxWidth: "100%",
                 "::-webkit-scrollbar": { display: "none" },
                 scrollbarWidth: "none",
