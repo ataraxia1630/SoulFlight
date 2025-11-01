@@ -1,9 +1,12 @@
-import { ChevronLeft, ChevronRight } from "@mui/icons-material";
-import { Box, Card, CardMedia, Container, IconButton, Typography } from "@mui/material";
-import { useId } from "react";
+import { Box, Container, Typography } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
 import CategoryCard from "./cards/CategoryCard";
 
 const CategoryCarousel = () => {
+  const scrollContainerRef = useRef(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const itemsPerPage = 3;
+
   const categories = [
     {
       id: "tours-1",
@@ -25,90 +28,187 @@ const CategoryCarousel = () => {
       name: "RESTAURANTS",
       image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=200&h=300&fit=crop",
     },
+    {
+      id: "tours-3",
+      name: "TOURS",
+      image: "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=200&h=300&fit=crop",
+    },
+    {
+      id: "restaurants-3",
+      name: "RESTAURANTS",
+      image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=200&h=300&fit=crop",
+    },
   ];
 
-  const baseId = useId();
+  const totalDots = Math.ceil(categories.length / itemsPerPage);
+
+  const scrollToIndex = (index) => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const scrollAmount = 280 * itemsPerPage;
+    container.scrollTo({
+      left: scrollAmount * index,
+      behavior: "smooth",
+    });
+    setCurrentIndex(index);
+  };
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const scrollAmount = 280 * itemsPerPage;
+      const newIndex = Math.round(container.scrollLeft / scrollAmount);
+      setCurrentIndex(newIndex);
+    };
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <Box sx={{ py: 8, bgcolor: "grey.50" }}>
-      <Container>
-        <Typography variant="h5" sx={{ textAlign: "center", color: "text.secondary", mb: 6 }}>
-          We have everything you need for your journey.
-        </Typography>
-
-        <Box sx={{ position: "relative" }}>
-          <IconButton
+    <Box
+      sx={{
+        py: { xs: 5, md: 7 },
+      }}
+    >
+      <Container maxWidth="lg">
+        <Box sx={{ textAlign: "center", mb: { xs: 3, md: 4 } }}>
+          <Typography
+            variant="h3"
             sx={{
-              position: "absolute",
-              left: 0,
-              top: "50%",
-              transform: "translateY(-50%)",
-              zIndex: 10,
-              bgcolor: "rgba(255,255,255,0.8)",
-              "&:hover": { bgcolor: "white" },
+              letterSpacing: "2px",
+              mb: 1.5,
             }}
           >
-            <ChevronLeft />
-          </IconButton>
+            EXPLORE OUR CATEGORIES
+          </Typography>
+          <Typography sx={{ color: "text.secondary", fontSize: "15px" }}>
+            We have everything you need for your journey.
+          </Typography>
+        </Box>
 
-          {/* ✅ FIXED: key unique + stable */}
-          <Box sx={{ display: "flex", gap: 3, overflowX: "auto", px: 6 }}>
-            {[...categories, ...categories].map((cat, i) => (
-              <CategoryCard key={`${baseId}-${cat.id}-${i}`} {...cat} />
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 1.7,
+          }}
+        >
+          <Box
+            ref={scrollContainerRef}
+            sx={{
+              display: "flex",
+              gap: { xs: 3.5, md: 5.5 },
+              overflowX: "hidden",
+              py: 0.5,
+              width: "100%",
+            }}
+          >
+            {categories.map((cat, i) => (
+              <Box key={`${cat.id}-${i}`}>
+                <CategoryCard {...cat} />
+              </Box>
             ))}
           </Box>
 
-          <IconButton
+          <Box
             sx={{
-              position: "absolute",
-              right: 0,
-              top: "50%",
-              transform: "translateY(-50%)",
-              zIndex: 10,
-              bgcolor: "rgba(255,255,255,0.8)",
-              "&:hover": { bgcolor: "white" },
+              display: "flex",
+              gap: 1.5,
+              justifyContent: "center",
             }}
           >
-            <ChevronRight />
-          </IconButton>
+            {Array.from({ length: totalDots }).map((_, index) => {
+              const groupStart = index * itemsPerPage;
+              const keyId = categories[groupStart]?.id || `dot-${index}`;
+
+              return (
+                <Box
+                  key={`dot-${keyId}`}
+                  onClick={() => scrollToIndex(index)}
+                  sx={(theme) => ({
+                    width: 10,
+                    height: 10,
+                    borderRadius: "50%",
+                    bgcolor:
+                      currentIndex === index
+                        ? theme.palette.primary.darkest
+                        : theme.palette.border.main,
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      bgcolor:
+                        currentIndex === index
+                          ? theme.palette.primary.darkest
+                          : theme.palette.primary.darker,
+                    },
+                  })}
+                />
+              );
+            })}
+          </Box>
         </Box>
 
-        {/* Large Hotels Card */}
-        <Card
+        <Box
           sx={{
             position: "relative",
-            mt: 6,
-            height: 384,
-            borderRadius: 4,
+            height: { xs: "320px", md: "384px" },
+            borderRadius: "24px",
             overflow: "hidden",
+            mt: { xs: 3, md: 5 },
+            cursor: "pointer",
+            "&:hover img": {
+              transform: "scale(1.05)",
+            },
           }}
         >
-          <CardMedia
-            component="img"
-            image="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1200&h=600&fit=crop"
+          <img
+            src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=1200&h=600&fit=crop"
             alt="Hotels"
-            sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              transition: "transform 0.5s ease",
+            }}
           />
           <Box
             sx={{
               position: "absolute",
               inset: 0,
-              bgcolor: "rgba(0,0,0,0.4)",
+              background: "linear-gradient(to right, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3))",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <Box sx={{ textAlign: "center", color: "white" }}>
-              <Typography variant="h2" sx={{ fontWeight: "bold", mb: 2 }}>
-                Hotels
+            <Box sx={{ textAlign: "center", color: "text.contrast" }}>
+              <Typography
+                sx={{
+                  fontSize: "45px",
+                  fontWeight: "650",
+                  mb: 1,
+                  letterSpacing: "3px",
+                }}
+              >
+                HOTELS
               </Typography>
-              <Typography variant="h6">
-                Search hotels & Places Hire to our most popular destinations
+              <Typography
+                sx={{
+                  color: "text.contrast",
+                  fontSize: "17px",
+                  maxWidth: "447px",
+                }}
+              >
+                Search hotels & places to hire to our most popular destinations
               </Typography>
             </Box>
           </Box>
-        </Card>
+        </Box>
       </Container>
     </Box>
   );
