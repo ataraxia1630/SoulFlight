@@ -36,7 +36,7 @@ const MainLayout = () => {
           sx={{
             flex: 1,
             pt: { xs: 10, lg: 12 },
-            px: { md: 19 },
+            // px: { md: 19 },
             overflowY: "auto",
             overflowX: "hidden",
             wordWrap: "break-word",
