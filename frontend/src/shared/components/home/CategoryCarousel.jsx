@@ -1,12 +1,9 @@
 import { Box, Container, Typography } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import useCarouselPagination from "@/shared/hooks/useCarouselPagination";
+import CarouselDots from "./CarouselDots";
 import CategoryCard from "./cards/CategoryCard";
 
 const CategoryCarousel = () => {
-  const scrollContainerRef = useRef(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const itemsPerPage = 3;
-
   const categories = [
     {
       id: "tours-1",
@@ -40,33 +37,14 @@ const CategoryCarousel = () => {
     },
   ];
 
-  const totalDots = Math.ceil(categories.length / itemsPerPage);
+  const itemsPerPage = 3;
+  const cardWidth = 280;
 
-  const scrollToIndex = (index) => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const scrollAmount = 280 * itemsPerPage;
-    container.scrollTo({
-      left: scrollAmount * index,
-      behavior: "smooth",
-    });
-    setCurrentIndex(index);
-  };
-
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const handleScroll = () => {
-      const scrollAmount = 280 * itemsPerPage;
-      const newIndex = Math.round(container.scrollLeft / scrollAmount);
-      setCurrentIndex(newIndex);
-    };
-
-    container.addEventListener("scroll", handleScroll);
-    return () => container.removeEventListener("scroll", handleScroll);
-  }, []);
+  const { scrollContainerRef, currentIndex, totalDots, scrollToIndex } = useCarouselPagination({
+    itemsLength: categories.length,
+    itemsPerPage,
+    cardWidth,
+  });
 
   return (
     <Box
@@ -115,42 +93,12 @@ const CategoryCarousel = () => {
             ))}
           </Box>
 
-          <Box
-            sx={{
-              display: "flex",
-              gap: 1.5,
-              justifyContent: "center",
-            }}
-          >
-            {Array.from({ length: totalDots }).map((_, index) => {
-              const groupStart = index * itemsPerPage;
-              const keyId = categories[groupStart]?.id || `dot-${index}`;
-
-              return (
-                <Box
-                  key={`dot-${keyId}`}
-                  onClick={() => scrollToIndex(index)}
-                  sx={(theme) => ({
-                    width: 10,
-                    height: 10,
-                    borderRadius: "50%",
-                    bgcolor:
-                      currentIndex === index
-                        ? theme.palette.primary.darkest
-                        : theme.palette.border.main,
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                    "&:hover": {
-                      bgcolor:
-                        currentIndex === index
-                          ? theme.palette.primary.darkest
-                          : theme.palette.primary.darker,
-                    },
-                  })}
-                />
-              );
-            })}
-          </Box>
+          <CarouselDots
+            totalDots={totalDots}
+            currentIndex={currentIndex}
+            onDotClick={scrollToIndex}
+            categories={categories}
+          />
         </Box>
 
         <Box
