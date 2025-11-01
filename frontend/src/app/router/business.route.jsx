@@ -1,4 +1,5 @@
-import ServiceRegistrationPage from "@business/pages/service_registration";
+import PartnerRegistration from "@business/pages/PartnerRegistration";
+import RegistrationWizard from "@business/pages/PartnerRegistration/RegistrationWizard";
 import { Route } from "react-router-dom";
 import BusinessHome from "@/features/business/pages/Home";
 import { createAuthRoutes } from "./auth.route";
@@ -9,7 +10,15 @@ const mainRoutes = (
   <>
     <Route path="business" element={<BusinessHome />} />
     {/* Add routes */}
-    <Route path="business/service-registration" element={<ServiceRegistrationPage />} />
+    <Route path="business/partner-registration" element={<PartnerRegistration />} />
+    <Route
+      path="business/partner-registration/stay"
+      element={<RegistrationWizard defaultModel="Stay" />}
+    />
+    <Route
+      path="business/partner-registration/fnb"
+      element={<RegistrationWizard defaultModel="FnB" />}
+    />
   </>
 );
 
