@@ -4,10 +4,9 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import DashboardIcon from "@mui/icons-material/Dashboard";
-import GroupIcon from "@mui/icons-material/Group";
 import PaymentIcon from "@mui/icons-material/Payment";
-import RestaurantIcon from "@mui/icons-material/Restaurant";
 import RoomServiceIcon from "@mui/icons-material/RoomService";
+import TagIcon from "@mui/icons-material/Tag";
 import {
   Box,
   Divider,
@@ -28,7 +27,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const DRAWER_WIDTH = 260;
 const DRAWER_WIDTH_COLLAPSED = 72;
 
-export const ProviderSidebar = ({ open, onToggle }) => {
+const AdminSidebar = ({ open, onToggle }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useTranslation();
@@ -37,40 +36,39 @@ export const ProviderSidebar = ({ open, onToggle }) => {
 
   const menuItems = [
     {
-      text: t("provider_sidebar.dashboard"),
+      text: t("sidebar.dashboard"),
       icon: <DashboardIcon />,
-      path: "/dashboard",
+      path: "/admin/dashboard",
     },
     {
-      text: t("provider_sidebar.service"),
+      text: t("sidebar.service"),
       icon: <RoomServiceIcon />,
-      path: "/service",
+      path: "/admin/service",
     },
     {
-      text: t("provider_sidebar.voucher"),
+      text: t("sidebar.voucher"),
       icon: <ConfirmationNumberIcon />,
-      path: "/voucher",
+      path: "/admin/voucher",
     },
     {
-      text: t("provider_sidebar.dishes"),
-      icon: <RestaurantIcon />,
-      path: "/dishes",
+      text: t("sidebar.tag"),
+      icon: <TagIcon />,
+      path: "/admin/tag",
     },
-    { text: t("provider_sidebar.staff"), icon: <GroupIcon />, path: "/staff" },
     {
-      text: t("provider_sidebar.payment"),
+      text: t("sidebar.payment"),
       icon: <PaymentIcon />,
-      path: "/payment",
+      path: "/admin/payment",
     },
     {
-      text: t("provider_sidebar.assessment"),
+      text: t("sidebar.assessment"),
       icon: <AssessmentIcon />,
-      path: "/assessment",
+      path: "/admin/assessment",
     },
     {
-      text: t("provider_sidebar.report"),
+      text: t("sidebar.report"),
       icon: <BarChartIcon />,
-      path: "/report",
+      path: "/admin/report",
     },
   ];
 
@@ -167,4 +165,4 @@ export const ProviderSidebar = ({ open, onToggle }) => {
 export const DRAWER_WIDTH_OPEN = DRAWER_WIDTH;
 export const DRAWER_WIDTH_CLOSE = DRAWER_WIDTH_COLLAPSED;
 
-export default ProviderSidebar;
+export default AdminSidebar;

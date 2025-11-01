@@ -52,15 +52,15 @@
     "id_card": "Căn cước công dân"
   },
 
-  "provider_sidebar": {
+  "sidebar": {
     "dashboard": "Bảng điều khiển",
     "service": "Dịch vụ",
     "voucher": "Mã khuyến mãi",
-    "dishes": "Món ăn",
     "staff": "Nhân viên",
     "payment": "Thanh toán",
     "assessment": "Đánh giá",
-    "report": "Báo cáo"
+    "report": "Báo cáo",
+    "tag": "Nhãn"
   },
 
   "or": "HOẶC",
