@@ -4,6 +4,7 @@ import { RouterProvider } from "react-router-dom";
 import CustomThemeProvider from "./app/providers/ThemeProvider";
 import router from "./app/router";
 import "./app/i18n/index";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
