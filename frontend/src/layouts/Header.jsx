@@ -167,7 +167,7 @@ const Header = ({ drawerWidth = 0, onToggleSidebar, showMenuIcon = false }) => {
               variant="h3"
               sx={{
                 fontWeight: 900,
-                letterSpacing: "0.1px",
+                letterSpacing: "0.3px",
                 background: `linear-gradient(to right, ${theme.palette.primary.main}, ${theme.palette.third.main})`,
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
