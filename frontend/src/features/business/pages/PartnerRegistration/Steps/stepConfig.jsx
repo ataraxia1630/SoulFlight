@@ -13,6 +13,7 @@ const STEP_CONFIG = {
         id: "service-info",
         component: ServiceInfoStep,
         title: "Service Info",
+        fields: ["serviceName", "location.lat", "location.lng"],
       },
       {
         id: "model-tag",
