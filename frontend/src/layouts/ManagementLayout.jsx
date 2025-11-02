@@ -39,7 +39,7 @@ const ManagementLayout = () => {
           sx={{
             flex: 1,
             pt: { xs: 3, lg: 5 },
-            px: { md: 19 },
+            // px: { md: 19 },
             overflowY: "auto",
             overflowX: "hidden",
             wordWrap: "break-word",

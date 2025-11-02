@@ -20,7 +20,8 @@ import {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link as RouterLink } from "react-router-dom";
-import Logo from "@/assets/logo";
+
+// import Logo from "@/assets/logo";
 
 const NavButton = ({ item, onClick, theme, t }) => (
   <Button
@@ -32,6 +33,9 @@ const NavButton = ({ item, onClick, theme, t }) => (
       fontWeight: 500,
       textTransform: "capitalize",
       "&:hover": { backgroundColor: theme.palette.action.hover },
+      textAlign: "center",
+      display: "flex",
+      justifyContent: "center",
     }}
   >
     {t(`header.${item}`)}
@@ -158,13 +162,13 @@ const Header = ({ drawerWidth = 0, onToggleSidebar, showMenuIcon = false }) => {
               </IconButton>
             )}
 
-            <Logo />
+            {/* <Logo /> */}
             <Typography
               variant="h3"
               sx={{
                 fontWeight: 900,
                 letterSpacing: "0.3px",
-                background: "linear-gradient(to right, #1E9BCD, #1ABFC3)",
+                background: `linear-gradient(to right, ${theme.palette.primary.main}, ${theme.palette.third.main})`,
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
