@@ -46,10 +46,11 @@ export default function ModelCard({ config }) {
       sx={{
         backgroundColor: "#ffffff",
         borderRadius: "45px",
-        padding: { xs: "20px", md: "28px" },
+        padding: { xs: "16px", md: "20px" },
         display: "flex",
         flexDirection: "column",
-        width: "580px",
+        width: "460px",
+        minWidth: "300px",
         boxSizing: "border-box",
         pb: 0,
       }}
@@ -64,8 +65,8 @@ export default function ModelCard({ config }) {
           sx={{
             backgroundColor: color,
             color: "white",
-            width: "52px",
-            height: "52px",
+            width: "40px",
+            height: "40px",
             mr: 2,
           }}
         >
@@ -75,7 +76,7 @@ export default function ModelCard({ config }) {
           variant="h4"
           sx={{
             fontWeight: "600",
-            fontSize: "32px",
+            fontSize: "24px",
           }}
         >
           {name}
@@ -83,18 +84,17 @@ export default function ModelCard({ config }) {
       </Box>
 
       <Collapse in={isExpanded} timeout="auto" unmountOnExit id={`model-card-content-${name}`}>
-        <Typography variant="body1" sx={{ mb: 1, pl: 2, pt: 2, fontWeight: "500" }}>
+        <Typography variant="body1" sx={{ pl: 2, pt: 2, fontWeight: "500" }}>
           Your business provide:
         </Typography>
 
-        <List sx={{ pl: 2, mb: 2 }}>
+        <List sx={{ pl: 2 }}>
           {list.map((item) => (
             <ListItem key={item} sx={{ paddingLeft: 0, alignItems: "flex-start" }}>
               <ListItemIcon
                 sx={{
                   minWidth: "auto",
                   mr: 1.5,
-                  mt: "4px",
                 }}
               >
                 <CheckCircleIcon sx={{ color: GREEN_CHECK_COLOR }} />
@@ -102,7 +102,7 @@ export default function ModelCard({ config }) {
               <ListItemText
                 primary={item}
                 sx={{
-                  "& .MuiTypography-root": { fontSize: "1rem" },
+                  "& .MuiTypography-root": { fontSize: "14px" },
                   color: "text.secondary",
                 }}
               />
@@ -110,16 +110,16 @@ export default function ModelCard({ config }) {
           ))}
         </List>
 
-        <Divider sx={{ mb: 3, mt: 1 }} />
+        <Divider sx={{ mb: 2 }} />
 
         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
           <Button
             variant="contained"
             sx={{
-              borderRadius: "50px",
-              padding: "10px 30px",
+              borderRadius: "40px",
+              padding: "8px 20px",
               textTransform: "none",
-              fontSize: "1rem",
+              fontSize: "14px",
               fontWeight: "bold",
             }}
             onClick={() => handleClick()}

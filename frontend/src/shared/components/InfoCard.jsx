@@ -22,6 +22,7 @@ export default function InfoCard({ title, content, highlightColor }) {
         flexDirection: "center",
         alignItems: "center",
         color: "white",
+        flexGrow: 1,
       }}
     >
       <CardContent

@@ -1,5 +1,5 @@
-import InfoCard from "@admin/components/InfoCard";
 import { Box, Stack } from "@mui/material";
+import InfoCard from "@/shared/components/InfoCard";
 import CustomTable from "@/shared/components/Table";
 import columnConfig from "./Table/columnsConfig";
 
@@ -79,7 +79,7 @@ const mockData = [
 export default function PartnerRegistration() {
   return (
     <Box sx={{ width: "100%", p: { xs: 2, sm: 3 } }}>
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={3} sx={{ mb: 4 }}>
+      <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={4}>
         <InfoCard title="Pending Approval" content="4 applicants" highlightColor="#EAB308" />
         <InfoCard title="Approved" content="128 applicants" highlightColor="#1ABFC3" />
 
