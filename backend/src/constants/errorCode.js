@@ -253,6 +253,13 @@ const ERROR_CODES = {
     message: "Failed to delete ticket",
     code: "TICKET_DELETE_FAILED",
   },
+
+  // room
+  ROOM_NOT_FOUND: {
+    statusCode: 404,
+    message: "Không tìm thấy phòng",
+    code: "ROOM_NOT_FOUND",
+  },
 };
 
 module.exports = { ERROR_CODES };

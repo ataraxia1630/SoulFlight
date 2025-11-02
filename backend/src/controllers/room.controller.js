@@ -1,30 +1,50 @@
 const RoomService = require("../services/room.service");
 const catchAsync = require("../utils/catchAsync");
+const { success } = require("../utils/ApiResponse");
 
 const RoomController = {
-  getAll: catchAsync(async (_req, res, _next) => {
+  create: catchAsync(async (req, res) => {
+    const room = await RoomService.create(req.body, req.files);
+    return res.status(201).json(success(room));
+  }),
+
+  getAll: catchAsync(async (_req, res) => {
     const rooms = await RoomService.getAll();
-    res.status(200).json({ status: "success", rooms });
+    return res.json(success(rooms));
   }),
 
-  getOne: catchAsync(async (req, res, _next) => {
-    const room = await RoomService.getOne(parseInt(req.params.id, 10));
-    res.status(200).json({ status: "success", room });
+  getOne: catchAsync(async (req, res) => {
+    const room = await RoomService.getOne(req.params.id);
+    return res.json(success(room));
   }),
 
-  create: catchAsync(async (req, res, _next) => {
-    const room = await RoomService.create(req.body);
-    res.status(201).json({ status: "success", room });
+  update: catchAsync(async (req, res) => {
+    let imageUpdates = [];
+
+    if (req.body.imageActions != null) {
+      try {
+        if (typeof req.body.imageActions === "string") {
+          imageUpdates = JSON.parse(req.body.imageActions);
+        } else if (Array.isArray(req.body.imageActions)) {
+          imageUpdates = req.body.imageActions;
+        }
+
+        if (!Array.isArray(imageUpdates)) {
+          imageUpdates = [];
+        }
+      } catch {
+        imageUpdates = [];
+      }
+    }
+
+    const room = await RoomService.update(req.params.id, req.body, req.files || [], imageUpdates);
+
+    return res.json(success(room));
   }),
 
-  update: catchAsync(async (req, res, _next) => {
-    const room = await RoomService.update(parseInt(req.params.id, 10), req.body);
-    res.status(200).json({ status: "success", room });
-  }),
-
-  delete: catchAsync(async (req, res, _next) => {
-    await RoomService.delete(parseInt(req.params.id, 10));
-    res.status(204).json({ status: "success" });
+  delete: catchAsync(async (req, res) => {
+    await RoomService.delete(req.params.id);
+    return res.json(success());
   }),
 };
 
