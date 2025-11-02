@@ -241,6 +241,9 @@ model Image {
   is_main      Boolean  @default(false) // main image flag
   related_id   Int // ID of the related entity
   related_type String // e.g. 'Service', 'Menu', 'Place', etc.
+
+  room          Room?    @relation("RoomImages", fields: [related_id], references: [id], onDelete: Cascade)
+  
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
 }
@@ -265,7 +268,10 @@ model Room {
   pet_allowed         Boolean        @default(false)
   bed_number          Int
   service             Service        @relation(fields: [service_id], references: [id], onDelete: Cascade)
+
   facilities          RoomFacility[]
+  images              Image[]              @relation("RoomImages")
+
   created_at          DateTime       @default(now())
   updated_at          DateTime       @updatedAt
 
