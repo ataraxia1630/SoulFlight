@@ -138,11 +138,13 @@ model Service {
 
 model ServiceTag {
   id         Int            @id @default(autoincrement())
-  name       String         @unique
+  name       String
   category   String
   created_at DateTime       @default(now())
   updated_at DateTime       @updatedAt
   Services   ServiceOnTag[]
+
+  @@unique([name, category])
 }
 
 model ServiceOnTag {
@@ -240,17 +242,17 @@ model TourGuide {
 }
 
 model Image {
-  id           Int      @id @default(autoincrement())
+  id           Int     @id @default(autoincrement())
   url          String
-  position     Int      @default(0) // for ordering images
-  is_main      Boolean  @default(false) // main image flag
+  position     Int     @default(0) // for ordering images
+  is_main      Boolean @default(false) // main image flag
   related_id   Int // ID of the related entity
   related_type String // e.g. 'Service', 'Menu', 'Place', etc.
 
-  room          Room?    @relation("RoomImages", fields: [related_id], references: [id], onDelete: Cascade)
-  
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  room Room? @relation("RoomImages", fields: [related_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 }
 
 model Facility {
@@ -263,31 +265,31 @@ model Facility {
 }
 
 model Room {
-  id                  Int            @id @default(autoincrement())
+  id                  Int     @id @default(autoincrement())
   service_id          Int
   name                String
   description         String?
-  price_per_night     Decimal        @db.Decimal(10, 2)
+  price_per_night     Decimal @db.Decimal(10, 2)
   max_children_number Int?
   max_adult_number    Int?
-  pet_allowed         Boolean        @default(false)
+  pet_allowed         Boolean @default(false)
   bed_number          Int
-  service             Service        @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  service             Service @relation(fields: [service_id], references: [id], onDelete: Cascade)
 
-  facilities          RoomFacility[]
-  images              Image[]              @relation("RoomImages")
+  facilities RoomFacility[]
+  images     Image[]        @relation("RoomImages")
 
-  created_at          DateTime       @default(now())
-  updated_at          DateTime       @updatedAt
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@index([service_id])
 }
 
 model RoomFacility {
-  room_id    Int
+  room_id     Int
   facility_id Int
-  room       Room     @relation(fields: [room_id], references: [id], onDelete: Cascade)
-  facility   Facility @relation(fields: [facility_id], references: [id], onDelete: Cascade)
+  room        Room     @relation(fields: [room_id], references: [id], onDelete: Cascade)
+  facility    Facility @relation(fields: [facility_id], references: [id], onDelete: Cascade)
 
   @@id([room_id, facility_id])
   @@index([room_id])
@@ -321,20 +323,20 @@ model Ticket {
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
   Service     Service  @relation(fields: [service_id], references: [id], onDelete: Cascade)
-  Place       Place   @relation(fields: [place_id], references: [id], onDelete: Cascade)
+  Place       Place    @relation(fields: [place_id], references: [id], onDelete: Cascade)
 }
 
 model Voucher {
-  id               Int      @id @default(autoincrement())
+  id               Int       @id @default(autoincrement())
   service_id       Int?
   title            String
-  code             String   @unique
+  code             String    @unique
   discount_percent Float
   description      String
   valid_from       DateTime?
   valid_to         DateTime?
-  is_global        Boolean  @default(false)
-  created_at       DateTime @default(now())
+  is_global        Boolean   @default(false)
+  created_at       DateTime  @default(now())
 
-  service          Service? @relation(fields: [service_id], references: [id])
+  service Service? @relation(fields: [service_id], references: [id])
 }
