@@ -9,13 +9,18 @@
   "directories": {
     "test": "test"
   },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js",
     "dev": "nodemon index.js",
     "lint": "biome check .",
     "fix": "biome check --write .",
-    "format": "biome format --write"
+    "format": "biome format --write",
+    "db:seed": "prisma db seed",
+    "db:reset": "prisma migrate reset --force"
   },
   "lint-staged": {
     "*.{js,ts}": [
