@@ -71,6 +71,7 @@ model User {
   email      String     @unique
   phone      String?    @unique
   status     UserStatus @default(UNVERIFIED)
+  is_admin   Boolean    @default(false)
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
   Provider   Provider[]
@@ -121,6 +122,8 @@ model Service {
   rating      Float          @default(0)
   type_id     Int
   provider_id Int
+  price_min   Float?
+  price_max   Float?
   created_at  DateTime       @default(now())
   updated_at  DateTime       @updatedAt
   Type        ServiceType    @relation(fields: [type_id], references: [id])
@@ -130,11 +133,13 @@ model Service {
   Tour        Tour[]
   Rooms       Room[]
   Tickets     Ticket[]
+  Vouchers    Voucher[]
 }
 
 model ServiceTag {
   id         Int            @id @default(autoincrement())
   name       String         @unique
+  category   String
   created_at DateTime       @default(now())
   updated_at DateTime       @updatedAt
   Services   ServiceOnTag[]
@@ -317,4 +322,19 @@ model Ticket {
   updated_at  DateTime @updatedAt
   Service     Service  @relation(fields: [service_id], references: [id], onDelete: Cascade)
   Place       Place   @relation(fields: [place_id], references: [id], onDelete: Cascade)
+}
+
+model Voucher {
+  id               Int      @id @default(autoincrement())
+  service_id       Int?
+  title            String
+  code             String   @unique
+  discount_percent Float
+  description      String
+  valid_from       DateTime?
+  valid_to         DateTime?
+  is_global        Boolean  @default(false)
+  created_at       DateTime @default(now())
+
+  service          Service? @relation(fields: [service_id], references: [id])
 }
