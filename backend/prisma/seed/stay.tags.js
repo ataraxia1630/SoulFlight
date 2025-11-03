@@ -106,7 +106,7 @@ const stayTags = [
 
 async function seedStayTags(prisma) {
   console.log("Seeding stay tags...");
-  await upsertMany(prisma, prisma.serviceTag, stayTags, "name");
+  await upsertMany(prisma, prisma.serviceTag, stayTags, ["name", "category"]);
   console.log(`Seeded ${stayTags.length} stay tags`);
 }
 

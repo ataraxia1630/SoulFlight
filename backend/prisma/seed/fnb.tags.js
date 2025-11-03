@@ -97,7 +97,7 @@ const fnbTags = [
 
 async function seedFnbTags(prisma) {
   console.log("Seeding F&B tags...");
-  await upsertMany(prisma, prisma.serviceTag, fnbTags, "name");
+  await upsertMany(prisma, prisma.serviceTag, fnbTags, ["name", "category"]);
   console.log(`Seeded ${fnbTags.length} F&B tags`);
 }
 
