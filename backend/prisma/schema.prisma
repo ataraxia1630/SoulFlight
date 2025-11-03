@@ -133,6 +133,7 @@ model Service {
   Tour        Tour[]
   Rooms       Room[]
   Tickets     Ticket[]
+  Vouchers    Voucher[]
 }
 
 model ServiceTag {
@@ -315,4 +316,19 @@ model Ticket {
   updated_at  DateTime @updatedAt
   Service     Service  @relation(fields: [service_id], references: [id], onDelete: Cascade)
   Place       Place   @relation(fields: [place_id], references: [id], onDelete: Cascade)
+}
+
+model Voucher {
+  id               Int      @id @default(autoincrement())
+  service_id       Int?
+  title            String
+  code             String   @unique
+  discount_percent Float
+  description      String
+  valid_from       DateTime?
+  valid_to         DateTime?
+  is_global        Boolean  @default(false)
+  created_at       DateTime @default(now())
+
+  service          Service? @relation(fields: [service_id], references: [id])
 }
