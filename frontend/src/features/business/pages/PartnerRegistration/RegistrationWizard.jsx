@@ -103,20 +103,14 @@ const RegistrationWizard = ({ defaultModel = DEFAULT_MODEL }) => {
           </Box>
         </Typography>
 
-        <Box mt={4} bgcolor="white" borderRadius={3} boxShadow="0 1px 3px rgba(0,0,0,0.1)">
+        <Box mt={4} bgcolor="white" borderRadius={3}>
           <CustomStepper steps={steps} activeStep={activeStep} changeStep={handleChangeStep} />
         </Box>
 
-        <Box mt={4} bgcolor="white" borderRadius={3} boxShadow="0 1px 3px rgba(0,0,0,0.1)">
+        <Box mt={4} width="100%">
           <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <Box
-                pt={6}
-                minHeight="500px"
-                display="flex"
-                flexDirection="column"
-                alignItems="center"
-              >
+              <Box display="flex" flexDirection="column" width="100%">
                 <CurrentStepComponent />
               </Box>
             </form>
