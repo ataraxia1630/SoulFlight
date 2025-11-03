@@ -90,11 +90,13 @@ export default function ServiceInfoStep() {
   return (
     <Box
       width="100%"
+      bgcolor="white"
+      borderRadius={3}
       sx={{
         display: "flex",
         flexDirection: "column",
         justifyContent: "center",
-        padding: "0 100px 60px 100px",
+        padding: "30px 100px 60px 100px",
       }}
     >
       <Typography
