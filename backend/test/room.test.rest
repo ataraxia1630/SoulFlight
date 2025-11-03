@@ -1,0 +1,52 @@
+@baseUrl = http://localhost:1601/api/room
+
+### Get all 
+GET {{baseUrl}}
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+###
+
+### Get by ID
+GET {{baseUrl}}/5
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+###
+
+### Create
+POST {{baseUrl}}
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+{
+  "name": "VIP room",
+  "description": "Travel and sightseeing services",
+  "serviceId": 3,
+  "price_per_night": 3.99,
+  "connectFacilities": [1, 2],
+  "bed_number": 3
+}
+
+###
+
+### Update 
+PUT {{baseUrl}}/6
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+{
+  "name": "VIP room",
+  "description": "Travel and sightseeing services",
+  "price_per_night": 10.99,
+  "disconnectFacilities": [2],
+  "connectFacilities": [],
+  "bed_number": 3
+}
+
+###
+
+### Delete 
+DELETE {{baseUrl}}/5
+Content-Type: application/json
+# Authorization: Bearer {{token}}
