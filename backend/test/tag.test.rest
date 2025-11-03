@@ -1,0 +1,42 @@
+@baseUrl = http://localhost:1601/api/service-tag
+
+### Get all 
+GET {{baseUrl}}
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+###
+
+### Get by ID
+GET {{baseUrl}}/5
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+###
+
+### Create
+POST {{baseUrl}}
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+{
+  "name": "valley view"
+}
+
+###
+
+### Update 
+PUT {{baseUrl}}/1
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+{
+  "name": "sea view"
+}
+
+###
+
+### Delete 
+DELETE {{baseUrl}}/4
+Content-Type: application/json
+# Authorization: Bearer {{token}}

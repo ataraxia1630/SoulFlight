@@ -1,0 +1,50 @@
+@baseUrl = http://localhost:1601/api/menu
+# Nếu có JWT thì bật dòng này:
+# @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+###
+
+### Get all menus
+GET {{baseUrl}}
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+###
+
+### Get a single menu by ID
+GET {{baseUrl}}/1
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+###
+
+### Create a new menu
+POST {{baseUrl}}
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+{
+  "name": "Seafood Buffet",
+  "description": "All-you-can-eat seafood menu with local specialties",
+  "service_id": 3
+}
+
+###
+
+### Update a menu
+PUT {{baseUrl}}/1
+Content-Type: application/json
+# Authorization: Bearer {{token}}
+
+{
+  "name": "Deluxe Seafood Buffet",
+  "description": "Upgraded version with premium lobsters and oysters",
+  "cover_url": "https://example.com/images/deluxe-seafood.jpg"
+}
+
+###
+
+### Delete a menu
+DELETE {{baseUrl}}/1
+Content-Type: application/json
+# Authorization: Bearer {{token}}

@@ -1,6 +1,7 @@
 const { ServiceService } = require("../services/service.service");
 const catchAsync = require("../utils/catchAsync");
 const ApiResponse = require("../utils/ApiResponse");
+
 const ServiceController = {
   getAll: catchAsync(async (_req, res, _next) => {
     const services = await ServiceService.getAll();
@@ -8,7 +9,7 @@ const ServiceController = {
   }),
   getById: catchAsync(async (req, res, _next) => {
     const { id } = req.params;
-    const service = await ServiceService.getById(id);
+    const service = await ServiceService.getById(Number(id));
     res.status(200).json(ApiResponse.success(service));
   }),
   create: catchAsync(async (req, res, _next) => {
@@ -19,12 +20,12 @@ const ServiceController = {
   update: catchAsync(async (req, res, _next) => {
     const { id } = req.params;
     const serviceData = req.body;
-    const updatedService = await ServiceService.update(id, serviceData);
+    const updatedService = await ServiceService.update(Number(id), serviceData);
     res.status(200).json(ApiResponse.success(updatedService));
   }),
   delete: catchAsync(async (req, res, _next) => {
     const { id } = req.params;
-    await ServiceService.delete(id);
+    await ServiceService.delete(Number(id));
     res.status(200).json(ApiResponse.success());
   }),
 };

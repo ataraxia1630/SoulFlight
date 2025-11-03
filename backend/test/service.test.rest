@@ -1,0 +1,45 @@
+@baseUrl = http://localhost:1601/api/service
+
+### Get all services
+GET {{baseUrl}}
+Content-Type: application/json
+
+###
+
+### Get a single service by ID
+GET {{baseUrl}}/1
+Content-Type: application/json
+
+###
+
+### Create a new service
+POST {{baseUrl}}
+Content-Type: application/json
+
+{
+  "name": "Sunset Cruise Tour",
+  "description": "A relaxing evening cruise to watch the sunset.",
+  "location": "Da Nang Bay",
+  "rating": 4.8,
+  "type_id": 1,
+  "provider_id": 4
+}
+
+###
+
+### Update a service
+PUT {{baseUrl}}/2
+Content-Type: application/json
+
+{
+  "name": "Sunset Cruise Premium",
+  "description": "Upgraded tour with dinner included",
+  "rating": 5,
+  "location": "Da Nang Bay"
+}
+
+###
+
+### Delete a service
+DELETE {{baseUrl}}/2
+Content-Type: application/json
