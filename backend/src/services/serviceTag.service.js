@@ -12,7 +12,7 @@ const ServiceTagService = {
       where: { id },
     });
     if (!tag) {
-      return new AppError(
+      throw new AppError(
         ERROR_CODES.SERVICE_TAG_NOT_FOUND.statusCode,
         ERROR_CODES.SERVICE_TAG_NOT_FOUND.message,
         ERROR_CODES.SERVICE_TAG_NOT_FOUND.code,
@@ -29,32 +29,19 @@ const ServiceTagService = {
   },
 
   update: async (id, data) => {
+    await ServiceTagService.getById(id);
     const updated = await prisma.serviceTag.update({
       where: { id },
       data,
     });
-    if (!updated) {
-      return new AppError(
-        ERROR_CODES.SERVICE_TAG_NOT_FOUND.statusCode,
-        ERROR_CODES.SERVICE_TAG_NOT_FOUND.message,
-        ERROR_CODES.SERVICE_TAG_NOT_FOUND.code,
-      );
-    }
     return updated;
   },
 
   delete: async (id) => {
-    const deleted = await prisma.serviceTag.delete({
+    await ServiceTagService.getById(id);
+    await prisma.serviceTag.delete({
       where: { id },
     });
-    if (!deleted) {
-      return new AppError(
-        ERROR_CODES.SERVICE_TAG_NOT_FOUND.statusCode,
-        ERROR_CODES.SERVICE_TAG_NOT_FOUND.message,
-        ERROR_CODES.SERVICE_TAG_NOT_FOUND.code,
-      );
-    }
-    return deleted;
   },
 };
 
