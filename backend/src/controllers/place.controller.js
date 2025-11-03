@@ -10,7 +10,7 @@ const PlaceController = {
   }),
 
   getById: catchAsync(async (req, res, _next) => {
-    const place = await PlaceService.getById(req.params.id);
+    const place = await PlaceService.getById(Number(req.params.id));
     res.status(200).json(ApiResponse.success(PlaceDTO.fromModel(place)));
   }),
 
@@ -20,12 +20,12 @@ const PlaceController = {
   }),
 
   update: catchAsync(async (req, res, _next) => {
-    const place = await PlaceService.update(req.params.id, req.body);
+    const place = await PlaceService.update(Number(req.params.id), req.body);
     res.status(200).json(ApiResponse.success(PlaceDTO.fromModel(place)));
   }),
 
   delete: catchAsync(async (req, res, _next) => {
-    await PlaceService.delete(req.params.id);
+    await PlaceService.delete(Number(req.params.id));
     res.status(204).json(ApiResponse.success());
   }),
 };
