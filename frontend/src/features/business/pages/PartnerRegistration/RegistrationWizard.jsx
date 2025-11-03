@@ -47,7 +47,7 @@ const RegistrationWizard = ({ defaultModel = DEFAULT_MODEL }) => {
   const handleChangeStep = (index) => setActiveStep(index);
 
   const onSubmit = (data) => {
-    console.log("Final data:", { model: DEFAULT_MODEL, ...data });
+    console.log("Final data:", { model: defaultModel, ...data });
     alert("Đăng ký thành công! (Xem console)");
   };
 
