@@ -19,6 +19,7 @@ const STEP_CONFIG = {
         id: "model-tag",
         component: ModelTagStep,
         title: "Model Tag",
+        fields: ["modelTag"],
       },
       {
         id: "service-tags",
