@@ -11,6 +11,7 @@ const tourRoutes = require("./tour.routes");
 const facilityRoutes = require("./facility.routes");
 const roomRoutes = require("./room.routes");
 const ticketRoutes = require("./ticket.routes");
+const searchRoutes = require("./search.route");
 
 function route(app) {
   app.use("/api/auth", authRoutes);
@@ -25,6 +26,7 @@ function route(app) {
   app.use("/api/facility", facilityRoutes);
   app.use("/api/room", roomRoutes);
   app.use("/api/ticket", ticketRoutes);
+  app.use("/api/search", searchRoutes);
 
   // luôn để sau cùng
 
