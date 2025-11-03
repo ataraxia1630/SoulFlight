@@ -3,6 +3,7 @@ const cors = require("cors");
 
 require("./src/configs/prisma");
 require("./src/configs/redis");
+require("./src/configs/gemini");
 
 const route = require("./src/routes/index");
 const app = express();
