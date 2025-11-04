@@ -9,6 +9,11 @@ const ServiceTagController = {
     res.status(200).json(ApiResponse.success(ServiceTagDTO.fromList(tags)));
   }),
 
+  getByType: catchAsync(async (req, res, _next) => {
+    const { type, grouped } = await ServiceTagService.getByType(req.query.type);
+    res.status(200).json(ApiResponse.success({ type, grouped }));
+  }),
+
   getById: catchAsync(async (req, res, _next) => {
     const tag = await ServiceTagService.getById(Number(req.params.id));
     res.status(200).json(ApiResponse.success(ServiceTagDTO.fromModel(tag)));

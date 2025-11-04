@@ -2,9 +2,54 @@ const prisma = require("../configs/prisma");
 const AppError = require("../utils/AppError");
 const { ERROR_CODES } = require("../constants/errorCode");
 
+function toPascalCase(str) {
+  return str
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
+function formatGroupTitle(key) {
+  const map = {
+    nature: "Environment",
+    concept: "Concept",
+    experience: "Experience",
+    feature: "Feature",
+    location: "Location",
+    vibe: "Vibe",
+    model: "Model",
+  };
+  return map[key] || toPascalCase(key);
+}
+
 const ServiceTagService = {
   getAll: async () => {
     return await prisma.serviceTag.findMany();
+  },
+
+  getByType: async (type) => {
+    const tags = await prisma.serviceTag.findMany({
+      where: {
+        category: {
+          startsWith: `${type}/`,
+        },
+      },
+      orderBy: [{ category: "asc" }, { name: "asc" }],
+    });
+
+    const grouped = tags.reduce((acc, tag) => {
+      const groupKey = tag.category.split("/")[1];
+      const groupTitle = formatGroupTitle(groupKey);
+      if (!acc[groupTitle]) acc[groupTitle] = [];
+      acc[groupTitle].push({
+        id: tag.id,
+        name: tag.name,
+        display: toPascalCase(tag.name),
+      });
+      return acc;
+    }, {});
+
+    return { type, grouped };
   },
 
   getById: async (id) => {
