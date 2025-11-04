@@ -303,7 +303,7 @@ const AuthService = {
         ERROR_CODES.WRONG_CREDENTIALS.code,
       );
 
-    const accessExpires = remember ? "30d" : "10d";
+    const accessExpires = remember ? "7d" : "1h";
     const refreshTtlSeconds = remember ? 60 * 60 * 24 * 60 : 60 * 60 * 24 * 30;
 
     const access_token = signAccessToken(
@@ -311,16 +311,27 @@ const AuthService = {
       accessExpires,
     );
     const refresh_token = signRefreshToken(
-      { id: existingUser.id },
+      { id: existingUser.id, remember },
       `${Math.floor(refreshTtlSeconds / (60 * 60 * 24))}d`,
     );
 
     await storeRefreshToken(existingUser.id, refresh_token, refreshTtlSeconds);
 
+    let role = "UNVERIFIED";
+    if (existingUser.Traveler) role = "TRAVELER";
+    else if (existingUser.Provider) role = "PROVIDER";
+    else if (existingUser.is_admin) role = "ADMIN";
+
     return {
       access_token,
       refresh_token,
       expires_in: accessExpires,
+      user: {
+        id: existingUser.id,
+        email: existingUser.email,
+        role,
+        name: existingUser.name,
+      },
     };
   },
 
@@ -343,6 +354,7 @@ const AuthService = {
     }
 
     const userId = payload.id;
+    const remember = payload.remember || false;
     const stored = await getStoredRefreshToken(userId);
     if (!stored || stored !== refresh_token) {
       throw new AppError(
@@ -354,10 +366,10 @@ const AuthService = {
 
     // issue new tokens (keep same remember policy by checking remaining TTL? simple approach: default durations)
     const access_token = signAccessToken({ id: userId }, "10d");
-    const new_refresh_token = signRefreshToken({ id: userId }, "30d");
+    const new_refresh_token = signRefreshToken({ id: userId, remember }, remember ? "60d" : "30d");
 
-    // replace stored refresh token
-    await storeRefreshToken(userId, new_refresh_token, 60 * 60 * 24 * 30);
+    const ttlSeconds = remember ? 60 * 60 * 24 * 60 : 60 * 60 * 24 * 30;
+    await storeRefreshToken(userId, new_refresh_token, ttlSeconds);
 
     return { access_token, refresh_token: new_refresh_token };
   },
@@ -387,7 +399,42 @@ const AuthService = {
       );
     try {
       const payload = jwt.verify(token, process.env.JWT_SECRET);
-      return payload;
+      const user = await prisma.user.findUnique({
+        where: { id: payload.id },
+        select: {
+          id: true,
+          email: true,
+          status: true,
+          Traveler: true,
+          Provider: true,
+        },
+      });
+
+      if (!user)
+        throw new AppError(
+          ERROR_CODES.WRONG_CREDENTIALS.statusCode,
+          ERROR_CODES.WRONG_CREDENTIALS.message,
+          ERROR_CODES.WRONG_CREDENTIALS.code,
+        );
+
+      if (user.status === "LOCKED") {
+        throw new AppError(
+          ERROR_CODES.ACCOUNT_LOCKED.statusCode,
+          ERROR_CODES.ACCOUNT_LOCKED.message,
+          ERROR_CODES.ACCOUNT_LOCKED.code,
+        );
+      }
+
+      let role = "UNVERIFIED";
+      if (user.Traveler) role = "TRAVELER";
+      if (user.Provider) role = "PROVIDER";
+      if (user.is_admin) role = "ADMIN";
+
+      return {
+        id: user.id,
+        email: user.email,
+        role,
+      };
     } catch (_err) {
       throw new AppError(
         ERROR_CODES.INVALID_ACCESS_TOKEN.statusCode,

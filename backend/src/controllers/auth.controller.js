@@ -35,12 +35,12 @@ const AuthController = {
   }),
 
   login: catchAsync(async (req, res, _next) => {
-    const { access_token, refresh_token } = await AuthService.login(
+    const result = await AuthService.login(
       req.body.username,
       req.body.password,
       req.body.rememberMe,
     );
-    return res.status(200).json(ApiResponse.success({ access_token, refresh_token }));
+    return res.status(200).json(ApiResponse.success(result));
   }),
 
   signupWithSocialMedia: catchAsync(async (req, res, _next) => {
