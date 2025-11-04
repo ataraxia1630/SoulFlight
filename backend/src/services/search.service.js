@@ -2,6 +2,7 @@ const prisma = require("../configs/prisma");
 const { defaultModel } = require("../configs/gemini");
 const SearchQueryBuilder = require("../utils/SearchQueryBuilder");
 const { applyFilters } = require("../utils/autoFilter");
+const { voicePrompt, imagePrompt } = require("../utils/prompts");
 const {
   SearchServiceDTO,
   SearchVoucherDTO,
@@ -197,23 +198,8 @@ const SearchService = {
     const mimeType = mode === "voice" ? "audio/webm" : "image/jpeg";
 
     const prompts = {
-      voice: `You are a travel search assistant. 
-        Analyze this voice recording and return ONLY a JSON object with:
-        {
-          "searchQuery": "main keyword user wants to search",
-          "location": "city or place mentioned",
-          "filters": { "pet_friendly": true, "price": "0-1000000", ... }
-        }
-        Example: {"searchQuery": "spa", "location": "Đà Lạt", "filters": {}}`,
-
-      image: `You are a travel search assistant.
-        Analyze this image and return ONLY a JSON object with:
-        {
-          "searchQuery": "what user wants to find",
-          "location": "where it is",
-          "filters": { "type": "Hotel", "rating_min": "4.0", ... }
-        }
-        Example: {"searchQuery": "beach resort", "location": "Phú Quốc", "filters": {}}`,
+      voice: voicePrompt,
+      image: imagePrompt,
     };
 
     const result = await defaultModel.generateContent([
