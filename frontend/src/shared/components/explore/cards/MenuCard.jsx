@@ -111,7 +111,7 @@ const MenuCard = ({ data }) => {
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: "auto" }}>
             {data.service.tags.map((tag, idx) => (
               <Chip
-                key={item.id || idx}
+                key={tag.id || idx}
                 label={tag.name}
                 size="small"
                 sx={{

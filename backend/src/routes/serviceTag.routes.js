@@ -6,6 +6,7 @@ const { createSchema, updateSchema } = require("../validators/serviceTag.validat
 const router = Router();
 
 router.get("/", ServiceTagController.getAll);
+router.get("/type", ServiceTagController.getByType);
 router.get("/:id", ServiceTagController.getById);
 router.post("/", validate(createSchema), ServiceTagController.create);
 router.put("/:id", validate(updateSchema), ServiceTagController.update);

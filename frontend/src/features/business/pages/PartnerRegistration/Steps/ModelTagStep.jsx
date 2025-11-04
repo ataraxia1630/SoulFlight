@@ -1,35 +1,56 @@
-import ApartmentIcon from "@mui/icons-material/Apartment";
-import CottageIcon from "@mui/icons-material/Cottage";
-import DirectionsBoatIcon from "@mui/icons-material/DirectionsBoat";
-import HomeIcon from "@mui/icons-material/Home";
-import HotelIcon from "@mui/icons-material/Hotel";
-import HouseIcon from "@mui/icons-material/House";
-import MeetingRoomIcon from "@mui/icons-material/MeetingRoom";
-import ParkIcon from "@mui/icons-material/Park";
-import VillaIcon from "@mui/icons-material/Villa";
+import TagService from "@business/services/tag.service";
 import { Box, Typography, useTheme } from "@mui/material";
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-
-const MODEL_OPTIONS = [
-  { label: "Khách sạn", icon: <HotelIcon />, value: "hotel" },
-  { label: "Khu nghỉ dưỡng", icon: <CottageIcon />, value: "resort" },
-  { label: "Homestay", icon: <HomeIcon />, value: "homestay" },
-  { label: "Căn hộ", icon: <ApartmentIcon />, value: "apartment" },
-  { label: "Biệt thự", icon: <VillaIcon />, value: "villa" },
-  { label: "Nhà nghỉ (Motel)", icon: <MeetingRoomIcon />, value: "motel" },
-  { label: "Nhà trọ", icon: <HouseIcon />, value: "guesthouse" },
-  { label: "Lều/Cắm trại", icon: <ParkIcon />, value: "camping" },
-  { label: "Du thuyền/Thuyền", icon: <DirectionsBoatIcon />, value: "boat" },
-];
 
 export default function ModelTagStep() {
   const theme = useTheme();
   const { setValue, watch } = useFormContext();
   const selected = watch("modelTag") || "";
+  const type = watch("model");
+  const [models, setModels] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleSelect = (model) => {
-    setValue("modelTag", model, { shouldValidate: true });
+  useEffect(() => {
+    if (!type) {
+      setModels([]);
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    TagService.getByType({ type: type, mode: "model" })
+      .then((data) => setModels(data.models || []))
+      .catch(() => alert("Load model tags failed"))
+      .finally(() => setLoading(false));
+  }, [type]);
+
+  const handleSelect = (modelId) => {
+    setValue("modelTag", modelId, { shouldValidate: true });
   };
+
+  if (!type) {
+    return (
+      <Box textAlign="center" py={5}>
+        <Typography color="text.secondary">Vui lòng chọn loại dịch vụ trước.</Typography>
+      </Box>
+    );
+  }
+
+  if (loading) {
+    return (
+      <Box textAlign="center" py={5}>
+        <Typography>Đang tải trang...</Typography>
+      </Box>
+    );
+  }
+
+  if (models.length === 0) {
+    return (
+      <Box textAlign="center" py={5}>
+        <Typography color="text.secondary">Không có mô hình nào cho loại dịch vụ này.</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -57,13 +78,13 @@ export default function ModelTagStep() {
 
       <Box flexGrow={1} bgcolor="white" px={{ xs: 2, sm: 4, md: 6 }} py={3} alignItems="center">
         <Box display="grid" gridTemplateColumns="repeat(auto-fit, minmax(200px, 1fr))" gap={5}>
-          {MODEL_OPTIONS.map((tag) => {
-            const isSelected = selected === tag.value;
+          {models.map((tag) => {
+            const isSelected = selected === tag.id;
 
             return (
               <Box
-                key={tag.value}
-                onClick={() => handleSelect(tag.value)}
+                key={tag.id}
+                onClick={() => handleSelect(tag.id)}
                 sx={{
                   height: 80,
                   borderRadius: 3,
@@ -104,7 +125,7 @@ export default function ModelTagStep() {
                     fontWeight: "inherit",
                   }}
                 >
-                  {tag.label}
+                  {tag.display || tag.name}
                 </Typography>
               </Box>
             );

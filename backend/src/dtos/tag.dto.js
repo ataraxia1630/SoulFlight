@@ -2,6 +2,7 @@ class ServiceTagDTO {
   constructor(tag) {
     this.id = tag.id;
     this.name = tag.name;
+    this.category = tag.category;
   }
 
   static fromModel(tag) {

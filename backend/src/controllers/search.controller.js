@@ -26,7 +26,6 @@ const SearchController = {
   searchPlaces: handleSearch(SearchService.searchPlaces),
   searchTours: handleSearch(SearchService.searchTours),
   searchProviders: handleSearch(SearchService.searchProviders),
-  searchTags: handleSearch(SearchService.searchTags),
 };
 
 module.exports = SearchController;
