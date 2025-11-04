@@ -35,12 +35,12 @@ const AuthController = {
   }),
 
   login: catchAsync(async (req, res, _next) => {
-    const { access_token, refresh_token } = await AuthService.login(
+    const result = await AuthService.login(
       req.body.username,
       req.body.password,
       req.body.rememberMe,
     );
-    return res.status(200).json(ApiResponse.success({ access_token, refresh_token }));
+    return res.status(200).json(ApiResponse.success(result));
   }),
 
   signupWithSocialMedia: catchAsync(async (req, res, _next) => {
@@ -63,6 +63,19 @@ const AuthController = {
   logout: catchAsync(async (req, res, _next) => {
     await AuthService.logout(req.user.id);
     return res.status(200).json(ApiResponse.success());
+  }),
+
+  refreshToken: catchAsync(async (req, res, _next) => {
+    const { refresh_token } = req.body;
+
+    const tokens = await AuthService.refreshToken({ refresh_token });
+
+    return res.status(200).json(
+      ApiResponse.success({
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+      }),
+    );
   }),
 };
 
