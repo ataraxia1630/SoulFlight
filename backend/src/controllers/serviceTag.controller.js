@@ -10,8 +10,8 @@ const ServiceTagController = {
   }),
 
   getByType: catchAsync(async (req, res, _next) => {
-    const { type, grouped } = await ServiceTagService.getByType(req.query.type);
-    res.status(200).json(ApiResponse.success({ type, grouped }));
+    const data = await ServiceTagService.getByType(req.query);
+    res.status(200).json(ApiResponse.success(data));
   }),
 
   getById: catchAsync(async (req, res, _next) => {
