@@ -364,6 +364,26 @@ const AuthService = {
       );
     }
 
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { Traveler: true, Provider: true },
+    });
+
+    if (!user)
+      throw new AppError(
+        ERROR_CODES.WRONG_CREDENTIALS.statusCode,
+        ERROR_CODES.WRONG_CREDENTIALS.message,
+        ERROR_CODES.WRONG_CREDENTIALS.code,
+      );
+
+    if (user.status === "LOCKED") {
+      throw new AppError(
+        ERROR_CODES.ACCOUNT_LOCKED.statusCode,
+        ERROR_CODES.ACCOUNT_LOCKED.message,
+        ERROR_CODES.ACCOUNT_LOCKED.code,
+      );
+    }
+
     // issue new tokens (keep same remember policy by checking remaining TTL? simple approach: default durations)
     const access_token = signAccessToken({ id: userId }, "10d");
     const new_refresh_token = signRefreshToken({ id: userId, remember }, remember ? "60d" : "30d");

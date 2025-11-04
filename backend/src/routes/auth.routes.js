@@ -28,6 +28,8 @@ router.post("/create-provider", validate(createProviderSchema), AuthController.c
 // Log in (chưa có quên mật khẩu -> reset)
 router.post("/login", validate(loginSchema), AuthController.login);
 
+router.post("/refresh-token", AuthController.refreshToken);
+
 router.post("/logout", authMiddleware, AuthController.logout);
 
 module.exports = router;

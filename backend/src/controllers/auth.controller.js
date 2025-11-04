@@ -64,6 +64,19 @@ const AuthController = {
     await AuthService.logout(req.user.id);
     return res.status(200).json(ApiResponse.success());
   }),
+
+  refreshToken: catchAsync(async (req, res, _next) => {
+    const { refresh_token } = req.body;
+
+    const tokens = await AuthService.refreshToken({ refresh_token });
+
+    return res.status(200).json(
+      ApiResponse.success({
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+      }),
+    );
+  }),
 };
 
 module.exports = { AuthController };
