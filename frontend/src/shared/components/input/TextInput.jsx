@@ -13,14 +13,13 @@ const TextInput = ({
   sx,
   ...props
 }) => {
-  const {
-    register,
-    formState: { errors },
-  } = useFormContext();
+  const formContext = useFormContext();
+  const register = formContext?.register;
+  const errors = formContext?.formState?.errors || {};
 
   return (
     <TextField
-      {...register(name)}
+      {...(register ? register(name) : {})}
       fullWidth
       name={name}
       type={type}
@@ -28,7 +27,7 @@ const TextInput = ({
       label={label}
       value={value}
       onChange={onChange}
-      error={!!errors[name] || error}
+      error={!!errors[name] || !!error}
       helperText={errors[name]?.message || helperText}
       variant="outlined"
       sx={sx}
