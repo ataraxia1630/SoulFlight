@@ -8,9 +8,7 @@ import { defaultFormValues } from "./Steps/defaultValues";
 import STEP_CONFIG from "./Steps/stepConfig";
 import { fullSchema } from "./Steps/validationSchemas";
 
-const DEFAULT_MODEL = "FnB";
-
-const RegistrationWizard = ({ defaultModel = DEFAULT_MODEL }) => {
+const RegistrationWizard = ({ defaultModel }) => {
   const theme = useTheme();
   const [activeStep, setActiveStep] = useState(0);
 
@@ -20,7 +18,10 @@ const RegistrationWizard = ({ defaultModel = DEFAULT_MODEL }) => {
 
   const methods = useForm({
     mode: "onChange",
-    defaultValues: defaultFormValues,
+    defaultValues: {
+      ...defaultFormValues,
+      model: defaultModel.toLowerCase(),
+    },
     resolver: yupResolver(fullSchema),
   });
 
