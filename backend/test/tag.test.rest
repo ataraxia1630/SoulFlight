@@ -6,7 +6,7 @@ Content-Type: application/json
 # Authorization: Bearer {{token}}
 
 ### Get by type
-GET {{baseUrl}}/type?type=stay
+GET {{baseUrl}}/type?type=stay&&mode=other
 Content-Type: application/json
 # Authorization: Bearer {{token}}
 

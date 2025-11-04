@@ -27,7 +27,7 @@ const ServiceTagService = {
     return await prisma.serviceTag.findMany();
   },
 
-  getByType: async (type) => {
+  getByType: async ({ type, mode }) => {
     const tags = await prisma.serviceTag.findMany({
       where: {
         category: {
@@ -49,7 +49,36 @@ const ServiceTagService = {
       return acc;
     }, {});
 
-    return { type, grouped };
+    if (!mode) return { type, grouped };
+
+    if (mode === "model") {
+      const modelTags = tags
+        .filter((t) => t.category === "stay/model")
+        .map((t) => ({
+          id: t.id,
+          name: t.name,
+          display: toPascalCase(t.name),
+        }));
+      return { type, models: modelTags };
+    }
+
+    if (mode === "other") {
+      const otherGrouped = tags
+        .filter((t) => t.category !== "stay/model")
+        .reduce((acc, tag) => {
+          const groupKey = tag.category.split("/")[1];
+          const groupTitle = formatGroupTitle(groupKey);
+          if (!acc[groupTitle]) acc[groupTitle] = [];
+          acc[groupTitle].push({
+            id: tag.id,
+            name: tag.name,
+            display: toPascalCase(tag.name),
+          });
+          return acc;
+        }, {});
+
+      return { type, grouped: otherGrouped };
+    }
   },
 
   getById: async (id) => {
