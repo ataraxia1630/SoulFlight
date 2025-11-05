@@ -26,7 +26,12 @@ const STEP_CONFIG = {
         component: ServiceTagStep,
         title: "Service Tags",
       },
-      { id: "rooms", component: AddRoomStep, title: "Add Rooms" },
+      {
+        id: "rooms",
+        component: AddRoomStep,
+        title: "Add Rooms",
+        fields: ["rooms"],
+      },
     ],
   },
   FnB: {
