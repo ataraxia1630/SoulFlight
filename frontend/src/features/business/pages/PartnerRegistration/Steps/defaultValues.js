@@ -8,3 +8,7 @@ export const defaultFormValues = {
   modelTag: "",
   rooms: [],
 };
+
+export const defaultContextValues = {
+  services: [],
+};
