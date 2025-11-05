@@ -1,18 +1,17 @@
-import { CalendarMonth, LocationOn, People, Search } from "@mui/icons-material";
+import { LocationOn, People, Search } from "@mui/icons-material";
+import PaymentsIcon from "@mui/icons-material/Payments";
 import { Box, Divider, IconButton, Typography } from "@mui/material";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import SearchDialog from "./SearchDialog";
 
 const SearchBar = () => {
-  const navigate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeField, setActiveField] = useState("location");
 
   const [searchParams, setSearchParams] = useState({
     location: "",
-    checkIn: null,
-    checkOut: null,
+    priceMin: "",
+    priceMax: "",
     guests: null,
   });
 
@@ -24,16 +23,16 @@ const SearchBar = () => {
       fieldType: "location",
     },
     {
-      icon: <CalendarMonth sx={{ color: "text.secondary", fontSize: 25 }} />,
-      title: "Check in",
-      subtitle: "Add dates",
-      fieldType: "checkIn",
+      icon: <PaymentsIcon sx={{ color: "text.secondary", fontSize: 25 }} />,
+      title: "Price Min",
+      subtitle: "Add price",
+      fieldType: "priceMin",
     },
     {
-      icon: <CalendarMonth sx={{ color: "text.secondary", fontSize: 25 }} />,
-      title: "Check out",
-      subtitle: "Add dates",
-      fieldType: "checkOut",
+      icon: <PaymentsIcon sx={{ color: "text.secondary", fontSize: 25 }} />,
+      title: "Price Max",
+      subtitle: "Add price",
+      fieldType: "priceMax",
     },
     {
       icon: <People sx={{ color: "text.secondary", fontSize: 25 }} />,
@@ -46,18 +45,6 @@ const SearchBar = () => {
   const handleFieldClick = (fieldType) => {
     setActiveField(fieldType);
     setDialogOpen(true);
-  };
-
-  const handleSearch = () => {
-    // Navigate sang trang explore với search params
-    const params = new URLSearchParams();
-    if (searchParams.location) params.append("location", searchParams.location);
-    if (searchParams.checkIn) params.append("checkIn", searchParams.checkIn);
-    if (searchParams.checkOut) params.append("checkOut", searchParams.checkOut);
-    if (searchParams.guests) params.append("guests", searchParams.guests);
-
-    navigate(`/explore?${params.toString()}`);
-    setDialogOpen(false);
   };
 
   return (
@@ -136,7 +123,6 @@ const SearchBar = () => {
         activeField={activeField}
         searchParams={searchParams}
         onSearchParamsChange={setSearchParams}
-        onSearch={handleSearch}
       />
     </>
   );

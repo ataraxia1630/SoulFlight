@@ -133,7 +133,16 @@ class SearchQueryBuilder {
     return this.where.AND.length ? { AND: this.where.AND } : {};
   }
   buildForVoucher() {
-    return this.build();
+    const now = new Date();
+    const base = this.build();
+    return {
+      AND: [
+        ...(base.AND || []),
+        {
+          OR: [{ valid_to: { gte: now } }, { valid_to: null }],
+        },
+      ],
+    };
   }
   buildForRoom() {
     return this.build();

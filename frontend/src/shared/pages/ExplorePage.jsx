@@ -1,43 +1,38 @@
 import { Box, Container, useTheme } from "@mui/material";
 import { useState } from "react";
-import ErrorState from "../components/ErrorState";
+import { useLocation } from "react-router-dom";
+import ErrorState from "../components/explore/ErrorState";
 import ExploreHeader from "../components/explore/Header";
+import LoadingState from "../components/explore/LoadingState";
 import Results from "../components/explore/Results";
 import ExploreTabs from "../components/explore/Tabs";
-import LoadingState from "../components/LoadingState";
 import { mockExploreResults } from "./mockdata";
 
 export default function ExplorePage() {
   const theme = useTheme();
+  const { state } = useLocation();
+  const results = state?.results || mockExploreResults;
+  const searchParams = state?.searchParams || {};
+
   const [tab, setTab] = useState("all");
-  const [results] = useState(mockExploreResults);
   const [loading] = useState(false);
   const [error] = useState(null);
 
-  const params = new URLSearchParams(window.location.search);
-  const location = params.get("location") || "";
-  const checkIn = params.get("checkIn") || "";
-  const checkOut = params.get("checkOut") || "";
-  const guests = params.get("guests") || "1";
+  const filtered = tab === "all" ? results : { [`${tab}s`]: results?.[`${tab}s`] || [] };
 
-  const filtered =
-    !results || tab === "all" ? results : { [`${tab}s`]: results?.[`${tab}s`] || [] };
-
-  const totalResults =
-    results &&
-    ["services", "rooms", "menus", "tickets", "tours"].reduce(
-      (sum, key) => sum + (results[key]?.length || 0),
-      0,
-    );
+  const totalResults = ["services", "rooms", "menus", "tickets", "tours"].reduce(
+    (sum, key) => sum + (results[key]?.length || 0),
+    0,
+  );
 
   return (
     <Box sx={{ minHeight: "100vh" }}>
       <Container>
         <ExploreHeader
-          location={location}
-          checkIn={checkIn}
-          checkOut={checkOut}
-          guests={guests}
+          location={searchParams.location || ""}
+          priceMin={searchParams.priceMin || 0}
+          priceMax={searchParams.priceMax || ""}
+          guests={searchParams.guests || "1"}
           totalResults={totalResults}
           theme={theme}
         />
@@ -49,7 +44,7 @@ export default function ExplorePage() {
         ) : error ? (
           <ErrorState message={error} />
         ) : (
-          <Results filtered={filtered || {}} currentTab={tab} />
+          <Results filtered={filtered} currentTab={tab} />
         )}
       </Container>
     </Box>

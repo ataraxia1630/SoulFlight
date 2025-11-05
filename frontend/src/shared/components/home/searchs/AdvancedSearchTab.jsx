@@ -6,27 +6,11 @@ import VoiceSearch from "./VoiceSearch";
 
 const searchModes = [
   { label: "Text", icon: <TextFields />, mode: "text" },
-  { label: "Voice", icon: <Mic />, mode: "audio" },
+  { label: "Voice", icon: <Mic />, mode: "voice" },
   { label: "Image", icon: <Image />, mode: "image" },
 ];
 
-const AdvancedSearchTab = ({
-  searchMode,
-  setSearchMode,
-  searchText,
-  setSearchText,
-  audioBlob,
-  setAudioBlob,
-  imageFile,
-  setImageFile,
-  isRecording,
-  setIsRecording,
-  recordingTime,
-  setRecordingTime,
-  mediaRecorderRef,
-  streamRef,
-  recordingTimerRef,
-}) => {
+const AdvancedSearchTab = (props) => {
   return (
     <Box>
       <Box sx={{ display: "flex", gap: 3, mb: 3, justifyContent: "center" }}>
@@ -35,44 +19,21 @@ const AdvancedSearchTab = ({
             key={mode}
             label={label}
             icon={icon}
-            onClick={() => setSearchMode(mode)}
-            variant={searchMode === mode ? "filled" : "outlined"}
-            color={searchMode === mode ? "primary" : "default"}
-            sx={{
-              cursor: "pointer",
-              fontSize: "17px",
-              p: 1.5,
-              "& .MuiChip-icon": {
-                fontSize: "20px",
-                ml: 0.5,
-              },
-              "&:hover": {
-                bgcolor: searchMode === mode ? "primary.dark" : "action.hover",
-              },
-            }}
+            onClick={() => props.setSearchMode(mode)}
+            variant={props.searchMode === mode ? "filled" : "outlined"}
+            color={props.searchMode === mode ? "primary" : "default"}
+            sx={{ cursor: "pointer", fontSize: 17, p: 1.5 }}
           />
         ))}
       </Box>
 
-      {searchMode === "text" && (
-        <TextSearch searchText={searchText} setSearchText={setSearchText} />
+      {props.searchMode === "text" && (
+        <TextSearch searchText={props.searchText} setSearchText={props.setSearchText} />
       )}
-
-      {searchMode === "audio" && (
-        <VoiceSearch
-          audioBlob={audioBlob}
-          setAudioBlob={setAudioBlob}
-          isRecording={isRecording}
-          setIsRecording={setIsRecording}
-          recordingTime={recordingTime}
-          setRecordingTime={setRecordingTime}
-          mediaRecorderRef={mediaRecorderRef}
-          streamRef={streamRef}
-          recordingTimerRef={recordingTimerRef}
-        />
+      {props.searchMode === "voice" && <VoiceSearch {...props} />}
+      {props.searchMode === "image" && (
+        <ImageSearch imageFile={props.imageFile} setImageFile={props.setImageFile} />
       )}
-
-      {searchMode === "image" && <ImageSearch imageFile={imageFile} setImageFile={setImageFile} />}
     </Box>
   );
 };

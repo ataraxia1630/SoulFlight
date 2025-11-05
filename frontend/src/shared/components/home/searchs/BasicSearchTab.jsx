@@ -1,21 +1,33 @@
-import { Add, CalendarMonth, LocationOn, People, Remove } from "@mui/icons-material";
+import { Add, LocationOn, People, Remove } from "@mui/icons-material";
+import PaymentsIcon from "@mui/icons-material/Payments";
 import { Box, IconButton, Paper, Typography } from "@mui/material";
 import { useState } from "react";
 import FormInput from "../../FormInput";
 
 const BasicSearchTab = ({ searchParams, setSearchParams, activeField }) => {
+  const formatPrice = (value) => {
+    if (!value) return "";
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  };
+
+  const parsePrice = (value) => Number(value.replace(/\./g, "") || 0);
+
+  const handlePriceChange = (name, value) => {
+    const numericValue = parsePrice(value);
+    if (Number.isNaN(numericValue)) return;
+
+    setSearchParams((prev) => ({
+      ...prev,
+      [name]: numericValue,
+      [`${name}Display`]: formatPrice(numericValue),
+    }));
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setSearchParams((prev) => ({
       ...prev,
       [name]: value,
-    }));
-  };
-
-  const handleDateChange = (name, date) => {
-    setSearchParams((prev) => ({
-      ...prev,
-      [name]: date,
     }));
   };
 
@@ -33,7 +45,11 @@ const BasicSearchTab = ({ searchParams, setSearchParams, activeField }) => {
     }
   };
 
-  const [isFocused, setIsFocused] = useState(false);
+  const [focus, setFocus] = useState({
+    location: false,
+    priceMin: false,
+    priceMax: false,
+  });
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -44,42 +60,49 @@ const BasicSearchTab = ({ searchParams, setSearchParams, activeField }) => {
         </Box>
         <FormInput
           name="location"
-          placeholder={isFocused ? "" : "Where are you going?"}
-          value={searchParams.location}
+          placeholder={focus.location || searchParams.location ? "" : "Where are you going?"}
+          value={searchParams.location || ""}
           onChange={handleChange}
-          InputLabelProps={{ shrink: false }}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          onFocus={() => setFocus((f) => ({ ...f, location: true }))}
+          onBlur={() => setFocus((f) => ({ ...f, location: false }))}
+          autoFocus={activeField === "location"}
         />
       </Box>
 
       <Box sx={{ display: "flex", gap: 2 }}>
         <Box sx={{ flex: 1 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-            <CalendarMonth sx={{ color: "primary.main" }} />
-            <Typography sx={{ fontWeight: 600 }}>Check In</Typography>
+            <PaymentsIcon sx={{ color: "primary.main" }} />
+            <Typography sx={{ fontWeight: 600 }}>Price Min</Typography>
           </Box>
           <FormInput
-            type="date"
-            name="checkIn"
-            value={searchParams.checkIn}
-            onChange={(newValue) => handleDateChange("checkIn", newValue)}
-            autoFocus={activeField === "checkIn"}
+            name="priceMin"
+            placeholder={
+              focus.priceMin || searchParams.priceMinDisplay ? "" : "Enter minimum price"
+            }
+            value={searchParams.priceMinDisplay || ""}
+            onChange={(e) => handlePriceChange("priceMin", e.target.value)}
+            onFocus={() => setFocus((f) => ({ ...f, priceMin: true }))}
+            onBlur={() => setFocus((f) => ({ ...f, priceMin: false }))}
+            autoFocus={activeField === "priceMin"}
           />
         </Box>
 
         <Box sx={{ flex: 1 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-            <CalendarMonth sx={{ color: "primary.main" }} />
-            <Typography sx={{ fontWeight: 600 }}>Check Out</Typography>
+            <PaymentsIcon sx={{ color: "primary.main" }} />
+            <Typography sx={{ fontWeight: 600 }}>Price Max</Typography>
           </Box>
           <FormInput
-            type="date"
-            name="checkOut"
-            value={searchParams.checkOut}
-            onChange={(newValue) => handleDateChange("checkOut", newValue)}
-            autoFocus={activeField === "checkOut"}
-            InputLabelProps={{ shrink: true }}
+            name="priceMax"
+            placeholder={
+              focus.priceMax || searchParams.priceMaxDisplay ? "" : "Enter maximum price"
+            }
+            value={searchParams.priceMaxDisplay || ""}
+            onChange={(e) => handlePriceChange("priceMax", e.target.value)}
+            onFocus={() => setFocus((f) => ({ ...f, priceMax: true }))}
+            onBlur={() => setFocus((f) => ({ ...f, priceMax: false }))}
+            autoFocus={activeField === "priceMax"}
           />
         </Box>
       </Box>
@@ -122,6 +145,7 @@ const BasicSearchTab = ({ searchParams, setSearchParams, activeField }) => {
               onChange={handleGuestInputChange}
               inputProps={{ min: 1, style: { textAlign: "center", width: 40 } }}
               size="small"
+              autoFocus={activeField === "guests"}
             />
 
             <IconButton

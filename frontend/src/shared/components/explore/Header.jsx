@@ -1,7 +1,7 @@
 import { Box, Chip, Fade, Paper, Typography } from "@mui/material";
 import SearchBar from "../home/SearchBar";
 
-const ExploreHeader = ({ location, checkIn, checkOut, guests, totalResults, theme }) => {
+const ExploreHeader = ({ location, priceMin, priceMax, guests, totalResults, theme }) => {
   return (
     <Fade in timeout={500}>
       <Paper
@@ -30,14 +30,16 @@ const ExploreHeader = ({ location, checkIn, checkOut, guests, totalResults, them
               alignItems: "center",
             }}
           >
-            {(checkIn || checkOut) && (
+            {(priceMin || priceMax) && (
               <Chip
                 label={
-                  checkIn && checkOut
-                    ? `${checkIn} - ${checkOut}`
-                    : checkIn
-                      ? `From ${checkIn}`
-                      : `Until ${checkOut}`
+                  priceMin && priceMax
+                    ? `${priceMin.toLocaleString()} - ${priceMax.toLocaleString()} VND`
+                    : priceMin
+                      ? `From ${priceMin.toLocaleString()} VND`
+                      : priceMax
+                        ? `Up to ${priceMax.toLocaleString()} VND`
+                        : ""
                 }
                 sx={{
                   bgcolor: "rgba(255,255,255,0.2)",
