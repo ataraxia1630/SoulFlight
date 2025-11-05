@@ -20,7 +20,8 @@
     "fix": "biome check --write .",
     "format": "biome format --write",
     "db:seed": "prisma db seed",
-    "db:reset": "prisma migrate reset --force"
+    "db:reset": "prisma migrate reset --force",
+    "seed": "node prisma/seed/index.js"
   },
   "lint-staged": {
     "*.{js,ts}": [
