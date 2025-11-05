@@ -1,10 +1,12 @@
+import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Box, Button, Card, CardContent, Divider, Stack, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, Stack, Typography, useTheme } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useFormData } from "@/features/business/context/FormDataContext";
 
 export default function ReviewSubmitPage() {
+  const theme = useTheme();
   const navigate = useNavigate();
   const { services = [], resetServices } = useFormData();
 
@@ -32,13 +34,11 @@ export default function ReviewSubmitPage() {
 
   return (
     <Box maxWidth="lg" mx="auto" py={4}>
-      {/* Header */}
       <Typography variant="h5" fontWeight={600} mb={4}>
         Partner Registration
       </Typography>
 
-      {/* Danh sách service */}
-      <Stack spacing={3} mb={5}>
+      <Stack spacing={3} mb={2}>
         {services.map((svc, index) => (
           <Card key={svc.id} variant="outlined">
             <CardContent>
@@ -60,26 +60,32 @@ export default function ReviewSubmitPage() {
           </Card>
         ))}
 
-        {/* Add another service */}
         <Card variant="outlined" sx={{ borderStyle: "dashed" }}>
-          <CardContent>
-            <Button
-              fullWidth
-              startIcon={<AddIcon />}
-              onClick={handleAddAnotherService}
-              sx={{ py: 2 }}
-            >
+          <CardContent
+            sx={{
+              "&:last-child": {
+                pb: 2,
+              },
+              p: 2,
+            }}
+          >
+            <Button fullWidth startIcon={<AddIcon />} onClick={handleAddAnotherService}>
               Add another service
             </Button>
           </CardContent>
         </Card>
       </Stack>
 
-      <Divider sx={{ my: 4 }} />
-
-      {/* Thông báo sẵn sàng */}
       <Box bgcolor="primary.50" borderRadius={3} p={4} textAlign="center" mb={4}>
-        <Typography variant="h5" color="primary" fontWeight={600} mb={2}>
+        <Typography
+          variant="h4"
+          sx={{
+            color: theme.palette.text.dark,
+            fontWeight: 600,
+            textAlign: "center",
+            mb: 2,
+          }}
+        >
           Your Application is Ready!
         </Typography>
         <Typography variant="body2" color="text.secondary" mb={3}>
@@ -90,15 +96,47 @@ export default function ReviewSubmitPage() {
           for being reviewed.
         </Typography>
 
-        <Box bgcolor="info.50" borderRadius={2} p={3} textAlign="left" mb={3}>
-          <Typography variant="subtitle1" color="info.main" fontWeight={500} mb={2}>
-            Next Step: Waiting Approval
+        <Box
+          bgcolor="#EFF6FF"
+          borderRadius={2}
+          p={3}
+          textAlign="left"
+          sx={{ marginX: { sm: "200px", xs: "20px" } }}
+          border="solid #BFDBFE 0.1px"
+        >
+          <Typography
+            variant="subtitle1"
+            color={theme.palette.primary.main}
+            fontWeight={600}
+            mb={2}
+            sx={{ pl: { sm: "20px", xs: "0" } }}
+          >
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <AccessTimeOutlinedIcon sx={{ fontSize: 28, color: theme.palette.primary.main }} />
+              <span>Next Step: Waiting Approval</span>
+            </Stack>
           </Typography>
-          <Typography variant="body2" component="div">
+          <Typography
+            variant="body2"
+            component="div"
+            sx={{
+              paddingX: { xs: 0, sm: "30px" },
+              "& li": {
+                marginBottom: "8px",
+                lineHeight: 1.8,
+                fontSize: "14px",
+              },
+              "& .highlight": {
+                color: "#16A34A",
+                fontWeight: 600,
+              },
+            }}
+          >
             <ul>
               <li>
                 <strong>Processing Time:</strong> Your application will be reviewed by our team
-                within 1-3 business days.
+                within
+                <span className="highlight"> 1–3 business days.</span>
               </li>
               <li>
                 <strong>Result Notification:</strong> We will send detailed information about the
@@ -113,7 +151,6 @@ export default function ReviewSubmitPage() {
         </Box>
       </Box>
 
-      {/* Nút hành động */}
       <Box display="flex" justifyContent="center" gap={2}>
         <Button variant="outlined" size="large">
           Save Draft
