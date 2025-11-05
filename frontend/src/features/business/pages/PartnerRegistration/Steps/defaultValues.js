@@ -6,4 +6,5 @@ export const defaultFormValues = {
   formattedAddress: "",
   tags: [],
   modelTag: "",
+  rooms: [],
 };
