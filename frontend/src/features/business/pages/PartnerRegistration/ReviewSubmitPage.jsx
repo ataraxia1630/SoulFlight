@@ -1,14 +1,12 @@
-// src/features/business/pages/PartnerRegistration/ReviewSubmitPage.jsx
-
 import AddIcon from "@mui/icons-material/Add";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Box, Button, Card, CardContent, Chip, Divider, Stack, Typography } from "@mui/material";
+import { Box, Button, Card, CardContent, Divider, Stack, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useFormData } from "@/features/business/context/FormDataContext";
 
 export default function ReviewSubmitPage() {
   const navigate = useNavigate();
-  const { services = [], resetServices } = useFormData(); // LẤY TỪ CONTEXT
+  const { services = [], resetServices } = useFormData();
 
   const handleAddAnotherService = () => {
     navigate("/business/partner-registration");
@@ -16,8 +14,7 @@ export default function ReviewSubmitPage() {
 
   const handleReviewService = (index) => {
     const service = services[index];
-    // Chuyển đến wizard với model đúng + edit index
-    navigate(`/business/partner-registration/${service.model.toLowerCase()}?edit=${index}`);
+    navigate(`/business/partner-registration/${service.data.model.toLowerCase()}?edit=${index}`);
   };
 
   const onSubmit = () => {
@@ -30,8 +27,7 @@ export default function ReviewSubmitPage() {
     // XÓA DỮ LIỆU SAU KHI SUBMIT
     resetServices();
 
-    // Chuyển về dashboard hoặc thông báo
-    // navigate('/business/dashboard');
+    navigate("/business");
   };
 
   return (
@@ -49,9 +45,8 @@ export default function ReviewSubmitPage() {
               <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Box>
                   <Typography variant="h6" fontWeight={500}>
-                    {svc.name || "Untitled Service"}
+                    {svc.data.serviceName || "Untitled Service"}
                   </Typography>
-                  <Chip label={svc.model} size="small" sx={{ mt: 1 }} />
                 </Box>
                 <Button
                   startIcon={<VisibilityIcon />}
