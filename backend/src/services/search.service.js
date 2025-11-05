@@ -44,7 +44,7 @@ const SearchService = {
       orderBy: { rating: "desc" },
     });
 
-    return SearchServiceDTO.fromList(services);
+    return SearchServiceDTO(services);
   },
 
   searchVouchers: async (query, location, filters = {}) => {
@@ -64,10 +64,10 @@ const SearchService = {
           },
         },
       },
-      orderBy: { discount_percent: "desc" },
+      orderBy: [{ valid_to: "asc" }, { discount_percent: "desc" }],
     });
 
-    return SearchVoucherDTO.fromList(vouchers);
+    return SearchVoucherDTO(vouchers);
   },
 
   searchRooms: async (query, location, filters = {}) => {
@@ -86,7 +86,7 @@ const SearchService = {
       orderBy: { price_per_night: "asc" },
     });
 
-    return SearchRoomDTO.fromList(rooms);
+    return SearchRoomDTO(rooms);
   },
 
   searchMenus: async (query, location, filters = {}) => {
@@ -104,7 +104,7 @@ const SearchService = {
       orderBy: { created_at: "desc" },
     });
 
-    return SearchMenuDTO.fromList(menus);
+    return SearchMenuDTO(menus);
   },
 
   searchTickets: async (query, location, filters = {}) => {
@@ -122,7 +122,7 @@ const SearchService = {
       orderBy: { price: "asc" },
     });
 
-    return SearchTicketDTO.fromList(tickets);
+    return SearchTicketDTO(tickets);
   },
 
   searchPlaces: async (query, location, filters = {}) => {
@@ -152,7 +152,7 @@ const SearchService = {
       orderBy: { created_at: "desc" },
     });
 
-    return SearchPlaceDTO.fromList(places);
+    return SearchPlaceDTO(places);
   },
 
   searchTours: async (query, location, filters = {}) => {
@@ -171,7 +171,7 @@ const SearchService = {
       orderBy: { total_price: "asc" },
     });
 
-    return SearchTourDTO.fromList(tours);
+    return SearchTourDTO(tours);
   },
 
   searchProviders: async (query, location, filters = {}) => {
@@ -189,7 +189,7 @@ const SearchService = {
       orderBy: { created_at: "desc" },
     });
 
-    return SearchProviderDTO.fromList(providers);
+    return SearchProviderDTO(providers);
   },
 
   // Image & Voice

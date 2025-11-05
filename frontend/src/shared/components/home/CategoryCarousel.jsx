@@ -1,6 +1,6 @@
 import { Box, Container, Typography } from "@mui/material";
 import useCarouselPagination from "@/shared/hooks/useCarouselPagination";
-import CarouselDots from "./CarouselDots";
+import CarouselDots from "../CarouselDots";
 import CategoryCard from "./cards/CategoryCard";
 
 const CategoryCarousel = () => {

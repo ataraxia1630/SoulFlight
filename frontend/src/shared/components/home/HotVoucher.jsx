@@ -1,6 +1,6 @@
 import { Box, Container, Grid } from "@mui/material";
 import useCarouselPagination from "@/shared/hooks/useCarouselPagination";
-import CarouselDots from "./CarouselDots";
+import CarouselDots from "../CarouselDots";
 import InfoCard from "./cards/InfoCard";
 import VoucherCard from "./cards/VoucherCard";
 import SectionHeader from "./SectionHeader";
