@@ -19,9 +19,9 @@ function SearchServiceDTO(services) {
         ? `${formatPrice(s.price_min)} - ${formatPrice(s.price_max)}`
         : null,
     tags:
-      s.Tags?.map((t) => ({
-        name: t.Tag.name,
-        category: t.Tag.category,
+      s.Tags?.map((serviceOnTag) => ({
+        name: serviceOnTag.Tag?.name,
+        category: serviceOnTag.Tag?.category,
       })) || [],
     image: pickImage(s),
   }));
@@ -42,10 +42,10 @@ function SearchVoucherDTO(vouchers) {
           location: v.service.location,
           type: v.service.Type?.name,
           tags:
-            v.service.Tags?.map((t) => ({
-              name: t.Tag.name,
-              category: t.Tag.category,
-            })) || [],
+            v.service.Tags?.map((serviceOnTag) => ({
+              name: serviceOnTag.Tag?.name,
+              category: serviceOnTag.Tag?.category,
+            })).filter((tag) => tag.name) || [], // Filter out invalid tags
         }
       : null,
   }));
@@ -58,14 +58,16 @@ function SearchRoomDTO(rooms) {
     price_per_night: Number(r.price_per_night),
     pet_allowed: r.pet_allowed,
     image: r.images?.find((img) => img.is_main)?.url || r.images?.[0]?.url || null,
-    facilities: r.facilities?.map((f) => f.facility.name) || [],
+    facilities: r.facilities?.map((f) => f.facility?.name) || [],
     service: {
       id: r.service.id,
       name: r.service.name,
+      location: r.service.location,
+      rating: r.service.rating, // Fixed typo: ratin -> rating
       tags:
-        r.service.Tags?.map((t) => ({
-          name: t.Tag.name,
-          category: t.Tag.category,
+        r.service.Tags?.map((serviceOnTag) => ({
+          name: serviceOnTag.Tag?.name,
+          category: serviceOnTag.Tag?.category,
         })) || [],
     },
   }));
@@ -82,15 +84,17 @@ function SearchMenuDTO(menus) {
         price: i.price,
         unit: i.unit,
       })) || [],
-    service: {
-      id: m.Service.id,
-      name: m.Service.name,
-      tags:
-        m.Service.Tags?.map((t) => ({
-          name: t.Tag.name,
-          category: t.Tag.category,
-        })) || [],
-    },
+    service: m.Service
+      ? {
+          id: m.Service.id,
+          name: m.Service.name,
+          tags:
+            m.Service.Tags?.map((serviceOnTag) => ({
+              name: serviceOnTag.Tag?.name,
+              category: serviceOnTag.Tag?.category,
+            })) || [],
+        }
+      : null,
   }));
 }
 
@@ -100,15 +104,17 @@ function SearchTicketDTO(tickets) {
     name: t.name,
     price: t.price,
     place: t.Place ? { name: t.Place.name, image: t.Place.image_url } : null,
-    service: {
-      id: t.Service.id,
-      name: t.Service.name,
-      tags:
-        t.Service.Tags?.map((t) => ({
-          name: t.Tag.name,
-          category: t.Tag.category,
-        })) || [],
-    },
+    service: t.Service
+      ? {
+          id: t.Service.id,
+          name: t.Service.name,
+          tags:
+            t.Service.Tags?.map((serviceOnTag) => ({
+              name: serviceOnTag.Tag?.name,
+              category: serviceOnTag.Tag?.category,
+            })) || [],
+        }
+      : null,
   }));
 }
 
@@ -131,22 +137,24 @@ function SearchTourDTO(tours) {
     total_price: t.total_price,
     duration: t.duration,
     places: t.TourPlace?.map((tp) => tp.Place?.name).filter(Boolean) || [],
-    service: {
-      id: t.Service.id,
-      name: t.Service.name,
-      tags:
-        t.Service.Tags?.map((t) => ({
-          name: t.Tag.name,
-          category: t.Tag.category,
-        })) || [],
-    },
+    service: t.Service
+      ? {
+          id: t.Service.id,
+          name: t.Service.name,
+          tags:
+            t.Service.Tags?.map((serviceOnTag) => ({
+              name: serviceOnTag.Tag?.name,
+              category: serviceOnTag.Tag?.category,
+            })) || [],
+        }
+      : null,
   }));
 }
 
 function SearchProviderDTO(providers) {
   return providers.map((p) => ({
     id: p.id,
-    name: p.user.name,
+    name: p.user?.name,
     logo: p.logo_url,
     province: p.province,
     services_count: p.Services?.length || 0,

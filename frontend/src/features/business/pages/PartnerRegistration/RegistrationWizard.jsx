@@ -1,9 +1,11 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ArrowBack } from "@mui/icons-material";
 import { Box, Button, CircularProgress, Container, Typography, useTheme } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import CustomStepper from "../../components/CustomStepper";
+import { useFormData } from "../../context/FormDataContext";
 import { defaultFormValues } from "./Steps/defaultValues";
 import STEP_CONFIG from "./Steps/stepConfig";
 import { fullSchema } from "./Steps/validationSchemas";
@@ -24,15 +26,18 @@ const RegistrationWizard = ({ defaultModel }) => {
     },
     resolver: yupResolver(fullSchema),
   });
-
   const { handleSubmit, trigger, watch } = methods;
   const _formData = watch();
 
-  const handleNext = async () => {
+  const validate = async () => {
     const fieldsToValidate = steps[activeStep]?.fields || [];
     console.log(fieldsToValidate);
     const isStepValid = await trigger(fieldsToValidate);
-    console.log("→ Valid?", isStepValid);
+    return isStepValid;
+  };
+
+  const handleNext = async () => {
+    const isStepValid = await validate();
     if (!isStepValid) {
       const errors = methods.formState.errors;
       console.log("Validation errors:", errors);
@@ -47,12 +52,44 @@ const RegistrationWizard = ({ defaultModel }) => {
 
   const handleChangeStep = (index) => setActiveStep(index);
 
-  const onSubmit = (data) => {
-    console.log("Final data:", { model: defaultModel, ...data });
-    alert("Đăng ký thành công! (Xem console)");
+  const { services, updateService, addService } = useFormData();
+  const navigate = useNavigate();
+
+  const onSubmit = async (data) => {
+    const isValid = await validate();
+    if (!isValid) return;
+
+    const newService = {
+      id: `${defaultModel}-${Date.now()}`,
+      data: { ...data },
+      completedAt: new Date().toISOString(),
+    };
+
+    if (editIndex) {
+      updateService(editIndex, newService);
+    } else addService(newService);
+
+    methods.reset(defaultFormValues);
+
+    navigate("/business/partner-registration/review-submit");
   };
 
   const isLastStep = activeStep === steps.length - 1;
+
+  const [searchParams] = useSearchParams();
+  const editIndex = searchParams.get("edit");
+
+  useEffect(() => {
+    if (editIndex !== null) {
+      const service = services[parseInt(editIndex, 10)];
+      if (service) {
+        methods.reset({
+          ...defaultFormValues,
+          ...service.data,
+        });
+      }
+    }
+  }, [editIndex, services, methods]);
 
   if (!CurrentStepComponent) {
     return (

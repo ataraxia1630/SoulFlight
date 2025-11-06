@@ -1,15 +1,26 @@
 async function upsertMany(_prisma, model, data, uniqueFields) {
   for (const item of data) {
     const where = {};
-    uniqueFields.forEach((field) => {
-      where[field] = item[field];
-    });
+    if (uniqueFields.length === 1) {
+      where[uniqueFields[0]] = item[uniqueFields[0]];
+    } else {
+      const compositeKey = uniqueFields.join("_");
+      where[compositeKey] = {};
+      for (const field of uniqueFields) {
+        where[compositeKey][field] = item[field];
+      }
+    }
 
-    await model.upsert({
-      where: { [`${uniqueFields.join("_")}`]: where },
-      update: {},
-      create: item,
-    });
+    const existing = await model.findUnique({ where }).catch(() => null);
+
+    if (existing) {
+      await model.update({
+        where,
+        data: item,
+      });
+    } else {
+      await model.create({ data: item });
+    }
   }
 }
 

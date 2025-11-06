@@ -6,4 +6,9 @@ export const defaultFormValues = {
   formattedAddress: "",
   tags: [],
   modelTag: "",
+  rooms: [],
+};
+
+export const defaultContextValues = {
+  services: [],
 };

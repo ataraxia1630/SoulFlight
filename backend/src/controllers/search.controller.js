@@ -1,15 +1,15 @@
-const SearchService = require("../services/search.service");
+const SearchService = require("../services/search/search.service");
 const catchAsync = require("../utils/catchAsync");
 const { success } = require("../utils/ApiResponse");
 
 const handleSearch = (searchFn) =>
   catchAsync(async (req, res) => {
-    const mode = req.query.mode || req.body.mode || "text";
+    const mode = req.body.mode || "text";
     let result = [];
 
     if (mode === "text") {
-      const { keyword, location, ...filters } = req.query;
-      result = await searchFn(keyword, location, filters);
+      const { keyword, location, priceMin, priceMax, guests, ...filters } = req.body;
+      result = await searchFn(keyword, location, priceMin, priceMax, guests, filters);
     } else if (mode === "voice" || mode === "image") {
       result = await SearchService.handleMediaSearch(mode, req.file.buffer, searchFn);
     }
@@ -26,7 +26,6 @@ const SearchController = {
   searchPlaces: handleSearch(SearchService.searchPlaces),
   searchTours: handleSearch(SearchService.searchTours),
   searchProviders: handleSearch(SearchService.searchProviders),
-  searchTags: handleSearch(SearchService.searchTags),
 };
 
 module.exports = SearchController;
