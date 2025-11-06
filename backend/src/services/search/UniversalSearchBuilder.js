@@ -47,8 +47,8 @@ class UniversalSearchBuilder {
         "title",
         "code",
         "description",
-        { service: { name: { contains: keyword, mode: "insensitive" } } },
-        { service: { location: { contains: keyword, mode: "insensitive" } } },
+        { Service: { name: { contains: keyword, mode: "insensitive" } } },
+        { Service: { location: { contains: keyword, mode: "insensitive" } } },
       ],
       keyword,
     );
@@ -135,12 +135,24 @@ class UniversalSearchBuilder {
           break;
         case "room":
         case "voucher":
-        case "menu":
           addLoc({
             service: { location: { contains: location, mode: "insensitive" } },
           });
           addLoc({
             service: {
+              Provider: {
+                province: { contains: location, mode: "insensitive" },
+              },
+            },
+          });
+          break;
+
+        case "menu":
+          addLoc({
+            Service: { location: { contains: location, mode: "insensitive" } },
+          });
+          addLoc({
+            Service: {
               Provider: {
                 province: { contains: location, mode: "insensitive" },
               },
