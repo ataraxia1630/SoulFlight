@@ -15,7 +15,7 @@ const LeftSidebar = () => {
   return (
     <List>
       {menu.map((item) => (
-        <ListItem button key={item.text}>
+        <ListItem key={item.text}>
           <ListItemIcon>{item.icon}</ListItemIcon>
           <ListItemText primary={item.text} />
         </ListItem>

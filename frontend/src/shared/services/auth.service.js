@@ -1,4 +1,6 @@
 import axios from "axios";
+import { useAuthStore } from "@/app/store";
+import api from "../utils/axiosInstance";
 
 const API_URL = `${import.meta.env.VITE_BASE_URL}/api/auth`;
 
@@ -89,23 +91,49 @@ const AuthService = {
   },
 
   login: async (username, password, rememberMe) => {
-    const response = await axios
+    await axios
       .post(`${API_URL}/login`, { username, password, rememberMe })
       .then((res) => {
-        return res.data;
+        const { access_token, refresh_token, user } = res.data.data;
+        useAuthStore.getState().login({
+          access_token,
+          refresh_token,
+          user,
+        });
       })
       .catch((error) => {
         console.error("Error logging in:", error);
         throw error;
       });
-    return response;
   },
 
   logout: async () => {
-    await axios.post(`${API_URL}/logout`).catch((error) => {
-      console.error("Error logging out:", error);
+    try {
+      await api.post("/api/auth/logout");
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      useAuthStore.getState().logout();
+      localStorage.clear();
+      window.location.href = "/login";
+    }
+  },
+
+  refreshToken: async (refreshToken) => {
+    try {
+      const response = await axios.post(`${API_URL}/refresh-token`, {
+        refresh_token: refreshToken,
+      });
+
+      const { access_token, refresh_token } = response.data.data;
+
+      useAuthStore.getState().updateTokens(access_token, refresh_token);
+
+      return response.data;
+    } catch (error) {
+      console.error("Refresh token failed:", error);
       throw error;
-    });
+    }
   },
 };
 

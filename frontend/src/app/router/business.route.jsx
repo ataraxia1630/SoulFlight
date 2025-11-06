@@ -6,11 +6,12 @@ import { FormDataProvider } from "@/features/business/context/FormDataContext";
 import BusinessHome from "@/features/business/pages/Home";
 import PartnerRegistrationLayout from "../../layouts/PartnerRegistrationLayout";
 import { createAuthRoutes } from "./auth.route";
+import ProtectedRoute from "./ProtectedRoute";
 
 const USER_TYPE = "business";
 
 const mainRoutes = (
-  <>
+  <Route element={<ProtectedRoute allowedRoles={["PROVIDER"]} />}>
     <Route path="business" element={<BusinessHome />} />
 
     <Route
@@ -26,7 +27,9 @@ const mainRoutes = (
       <Route path="fnb" element={<RegistrationWizard defaultModel="FnB" />} />
       <Route path="review-submit" element={<ReviewSubmitPage />} />
     </Route>
-  </>
+
+    {/* add routes */}
+  </Route>
 );
 
 const authRoutes = createAuthRoutes({
