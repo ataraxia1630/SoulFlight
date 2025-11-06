@@ -20,7 +20,7 @@ const SearchDialog = ({ open, onClose, activeField = "location", initialSearchPa
 
   const [searchParams, setSearchParams] = useState({
     location: initialSearchParams.location || "",
-    priceMin: initialSearchParams.checkIn || "0",
+    priceMin: initialSearchParams.checkIn || 0,
     priceMax: initialSearchParams.checkOut || "",
     guests: initialSearchParams.guests || 1,
   });
@@ -70,8 +70,9 @@ const SearchDialog = ({ open, onClose, activeField = "location", initialSearchPa
     }
 
     try {
-      // console.log(payload);
+      console.log(payload);
       const results = await SearchService.searchAll(payload);
+      console.log(results);
       navigate("/explore", { state: { results, searchParams: payload } });
       handleClose();
     } catch (error) {

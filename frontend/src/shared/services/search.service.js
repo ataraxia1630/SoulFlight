@@ -40,7 +40,7 @@ const SearchService = {
     const responses = await Promise.all(requests);
 
     return types.reduce((acc, type, i) => {
-      acc[`${type}s`] = responses[i].data || [];
+      acc[`${type}`] = responses[i]?.data || [];
       return acc;
     }, {});
   },

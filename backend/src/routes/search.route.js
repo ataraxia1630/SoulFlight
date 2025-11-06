@@ -3,18 +3,13 @@ const router = express.Router();
 const SearchController = require("../controllers/search.controller");
 const upload = require("../middlewares/multer.middleware");
 
-const createRoute = (path, handler) => {
-  router.get(path, upload.single("file"), handler);
-  router.post(path, upload.single("file"), handler);
-};
-
-createRoute("/services", SearchController.searchServices);
-createRoute("/vouchers", SearchController.searchVouchers);
-createRoute("/rooms", SearchController.searchRooms);
-createRoute("/menus", SearchController.searchMenus);
-createRoute("/tickets", SearchController.searchTickets);
-createRoute("/places", SearchController.searchPlaces);
-createRoute("/tours", SearchController.searchTours);
-createRoute("/providers", SearchController.searchProviders);
+router.post("/services", upload.single("file"), SearchController.searchServices);
+router.post("/vouchers", upload.single("file"), SearchController.searchVouchers);
+router.post("/rooms", upload.single("file"), SearchController.searchRooms);
+router.post("/menus", upload.single("file"), SearchController.searchMenus);
+router.post("/tickets", upload.single("file"), SearchController.searchTickets);
+router.post("/places", upload.single("file"), SearchController.searchPlaces);
+router.post("/tours", upload.single("file"), SearchController.searchTours);
+router.post("/providers", upload.single("file"), SearchController.searchProviders);
 
 module.exports = router;
