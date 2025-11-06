@@ -57,16 +57,15 @@ const ResultSection = ({ title, count, children, currentTab }) => {
           ))}
         </Box>
 
-        {totalPages > 1 && (
-          <>
-            currentTab·===·"all"·?·(
+        {totalPages > 1 &&
+          (currentTab === "all" ? (
             <CarouselDots
               totalDots={totalPages}
               currentIndex={currentPage}
               onDotClick={handleDotClick}
               categories={childrenArray}
             />
-            ) : (
+          ) : (
             <Pagination
               count={totalPages}
               page={currentPage + 1}
@@ -74,9 +73,7 @@ const ResultSection = ({ title, count, children, currentTab }) => {
               color="primary"
               size="large"
             />
-            )
-          </>
-        )}
+          ))}
       </Box>
     </Box>
   );

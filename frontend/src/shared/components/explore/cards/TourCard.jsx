@@ -48,7 +48,7 @@ const TourCard = ({ data }) => {
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
             <Schedule sx={{ fontSize: 16, color: "text.secondary" }} />
             <Typography variant="body2" sx={{ color: "text.secondary", fontSize: 13 }}>
-              {data.duration}
+              {`${data.duration} hours`}
             </Typography>
           </Box>
         )}
