@@ -1,5 +1,5 @@
+import { useAuthStore } from "@/app/store";
 import AuthService from "@/services/auth.service";
-import useAuthStore from "@/store/authStore";
 import api from "./axiosInstance";
 
 let isRefreshing = false;

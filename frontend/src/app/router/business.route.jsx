@@ -3,13 +3,13 @@ import RegistrationWizard from "@business/pages/PartnerRegistration/Registration
 import { Route } from "react-router-dom";
 import BusinessHome from "@/features/business/pages/Home";
 import { createAuthRoutes } from "./auth.route";
+import ProtectedRoute from "./ProtectedRoute";
 
 const USER_TYPE = "business";
 
 const mainRoutes = (
-  <>
+  <Route element={<ProtectedRoute allowedRoles={["PROVIDER"]} />}>
     <Route path="business" element={<BusinessHome />} />
-    {/* Add routes */}
     <Route path="business/partner-registration" element={<PartnerRegistration />} />
     <Route
       path="business/partner-registration/stay"
@@ -19,7 +19,8 @@ const mainRoutes = (
       path="business/partner-registration/fnb"
       element={<RegistrationWizard defaultModel="FnB" />}
     />
-  </>
+    {/* add routes */}
+  </Route>
 );
 
 const authRoutes = createAuthRoutes({

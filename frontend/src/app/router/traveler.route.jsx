@@ -1,14 +1,15 @@
 import { Route } from "react-router-dom";
 import TravelerHome from "@/features/traveler/pages/Home";
 import { createAuthRoutes } from "./auth.route";
+import ProtectedRoute from "./ProtectedRoute";
 
 const USER_TYPE = "traveler";
 
 const mainRoutes = (
-  <>
+  <Route element={<ProtectedRoute allowedRoles={["TRAVELER"]} />}>
     <Route path="traveler" element={<TravelerHome />} />
-    {/* Add routes */}
-  </>
+    {/* add routes */}
+  </Route>
 );
 
 const authRoutes = createAuthRoutes({
