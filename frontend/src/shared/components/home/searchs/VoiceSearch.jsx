@@ -8,60 +8,84 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
+import { useEffect } from "react";
 
 const VoiceSearch = ({
-  audioBlob,
-  setAudioBlob,
   isRecording,
   setIsRecording,
   recordingTime,
   setRecordingTime,
-  mediaRecorderRef,
-  streamRef,
   recordingTimerRef,
+  searchText,
+  setSearchText,
 }) => {
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      streamRef.current = stream;
+  const theme = useTheme();
 
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
+  // Khởi tạo Speech Recognition
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = SpeechRecognition ? new SpeechRecognition() : null;
 
-      const chunks = [];
-      mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunks, { type: "audio/webm" });
-        setAudioBlob(blob);
-        stream.getTracks().forEach((t) => {
-          t.stop();
-        });
-      };
-
-      mediaRecorder.start();
-      setIsRecording(true);
-      setRecordingTime(0);
-      recordingTimerRef.current = setInterval(() => setRecordingTime((t) => t + 1), 1000);
-    } catch {
-      alert("Can't access micro.");
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
+  const stopRecording = useCallback(() => {
+    if (recognition && isRecording) {
+      recognition.stop();
       setIsRecording(false);
       clearInterval(recordingTimerRef.current);
     }
-  };
+  }, [recognition, isRecording, setIsRecording, recordingTimerRef]);
+
+  useEffect(() => {
+    if (!recognition) return;
+
+    recognition.lang = "vi-VN";
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onresult = (event) => {
+      let transcript = "";
+      for (let i = 0; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      setSearchText(transcript);
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);
+      stopRecording();
+    };
+
+    recognition.onend = () => {
+      setIsRecording(false);
+      clearInterval(recordingTimerRef.current);
+    };
+
+    return () => {
+      if (isRecording) recognition.stop();
+    };
+  }, [recognition, isRecording, setSearchText, setIsRecording, stopRecording, recordingTimerRef]);
+
+  const startRecording = useCallback(async () => {
+    if (!recognition) {
+      alert("Don't support Speech Recognition");
+      return;
+    }
+
+    try {
+      setSearchText("");
+      recognition.start();
+      setIsRecording(true);
+      setRecordingTime(0);
+      recordingTimerRef.current = setInterval(() => setRecordingTime((t) => t + 1), 1000);
+    } catch (err) {
+      alert("Can't start record");
+      console.error(err);
+    }
+  }, [recognition, setSearchText, setIsRecording, setRecordingTime, recordingTimerRef]);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
-
-  const theme = useTheme();
 
   return (
     <Paper
@@ -80,7 +104,7 @@ const VoiceSearch = ({
         justifyContent: "center",
       }}
     >
-      {!isRecording && !audioBlob && (
+      {!isRecording && !searchText && (
         <Box>
           <Typography sx={{ mb: 2, fontSize: 14, color: "text.secondary" }}>
             Tap to start recording
@@ -115,7 +139,7 @@ const VoiceSearch = ({
               fontWeight: 600,
             }}
           >
-            Recording...
+            Listening...
           </Typography>
           <Box sx={{ mb: 2 }}>
             <LinearProgress
@@ -127,6 +151,19 @@ const VoiceSearch = ({
               {formatTime(recordingTime)}
             </Typography>
           </Box>
+          {searchText && (
+            <Typography
+              sx={{
+                mb: 2,
+                fontSize: 14,
+                color: "text.primary",
+                fontStyle: "italic",
+                maxWidth: 400,
+              }}
+            >
+              "{searchText}"
+            </Typography>
+          )}
           <IconButton
             onClick={stopRecording}
             sx={{
@@ -142,7 +179,7 @@ const VoiceSearch = ({
         </Box>
       )}
 
-      {audioBlob && !isRecording && (
+      {searchText && !isRecording && (
         <Box>
           <Typography
             sx={{
@@ -152,52 +189,49 @@ const VoiceSearch = ({
               fontWeight: 600,
             }}
           >
-            Recording saved ({formatTime(recordingTime)})
+            Recording: ({formatTime(recordingTime)})
           </Typography>
-          <Box
+          <Typography
             sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              mt: 2,
-              flexWrap: "wrap",
-              justifyContent: "center",
+              mb: 3,
+              fontSize: 16,
+              color: "text.primary",
+              fontWeight: 500,
+              maxWidth: 500,
             }}
           >
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => {
-                setAudioBlob(null);
-                setRecordingTime(0);
-              }}
-              sx={{
-                px: 3,
-                py: 1,
-                color: "primary.main",
+            "{searchText}"
+          </Typography>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => {
+              setSearchText("");
+              setRecordingTime(0);
+            }}
+            sx={{
+              px: 3,
+              py: 1,
+              color: "primary.main",
+              backgroundColor: "transparent",
+              border: "1px solid",
+              borderColor: "primary.main",
+              borderRadius: "25px",
+              fontWeight: 600,
+              "&:hover": {
                 backgroundColor: "transparent",
-                border: "1px solid",
-                borderColor: "primary.main",
-                borderRadius: "25px",
-                fontWeight: 600,
-                "&:hover": {
-                  backgroundColor: "transparent",
-                },
-              }}
-            >
-              Re-record
-            </Button>
-
-            <audio
-              src={URL.createObjectURL(audioBlob)}
-              controls
-              aria-label="Voice recording preview"
-              style={{ maxWidth: 260, borderRadius: 8 }}
-            >
-              <track kind="captions" label="No captions available" />
-            </audio>
-          </Box>
+              },
+            }}
+          >
+            Re-record
+          </Button>
         </Box>
+      )}
+
+      {!recognition && (
+        <Typography sx={{ color: "error.main", fontSize: 14 }}>
+          Don't support Speech-to-Text
+        </Typography>
       )}
     </Paper>
   );

@@ -56,12 +56,12 @@ const SearchDialog = ({ open, onClose, activeField = "location", initialSearchPa
 
     // Advaced search
     if (activeTab === 1) {
-      if (searchMode === "text" && searchText.trim()) {
+      if (searchMode === "voice" && searchText.trim()) {
+        payload.keyword = searchText.trim();
+        payload.mode = "voice";
+      } else if (searchMode === "text" && searchText.trim()) {
         payload.keyword = searchText.trim();
         payload.mode = "text";
-      } else if (searchMode === "voice" && audioBlob) {
-        payload.mode = "voice";
-        payload.file = audioBlob;
       } else if (searchMode === "image" && imageFile) {
         payload.mode = "image";
         payload.file = imageFile;
