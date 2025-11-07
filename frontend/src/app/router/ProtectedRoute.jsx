@@ -1,7 +1,7 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import useAuthStore from "@/app/store/authStore";
 
-const ProtectedRoute = ({ children, allowedRoles }) => {
+const ProtectedRoute = ({ allowedRoles }) => {
   const { user } = useAuthStore();
 
   if (!user) return <Navigate to="/login" />;
@@ -10,15 +10,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     return <Navigate to="/unauthorized" />;
   }
 
-  return children;
+  return <Outlet />;
 };
 
 export default ProtectedRoute;
-
-{
-  /* 
-<ProtectedRoute allowedRoles={['PROVIDER']}>
-  <ProviderDashboard />
-</ProtectedRoute>; 
-*/
-}
