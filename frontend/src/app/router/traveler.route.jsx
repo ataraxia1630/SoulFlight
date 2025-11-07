@@ -1,5 +1,6 @@
 import { Route } from "react-router-dom";
 import TravelerHome from "@/features/traveler/pages/Home";
+import ServiceCart from "../../features/traveler/pages/ServiceCart";
 import { createAuthRoutes } from "./auth.route";
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -9,6 +10,7 @@ const mainRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["TRAVELER"]} />}>
     <Route path="traveler" element={<TravelerHome />} />
     {/* add routes */}
+    <Route path="cart" element={<ServiceCart />} />
   </Route>
 );
 
