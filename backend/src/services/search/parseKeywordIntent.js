@@ -14,36 +14,19 @@ const parseKeywordIntent = (rawText) => {
     .replace(/^json\s+/i, "")
     .trim();
 
-  // nếu dùng AI thì trả về obj của AI
-  try {
-    const obj = JSON.parse(keyword);
-    if (obj.mode === "voice" || obj.mode === "image") {
-      return obj;
-    }
-  } catch (_e) {
-    console.error("Bug");
-  }
-
-  let query = keyword.trim();
-  let location = null;
-  let priceMin = null;
-  let priceMax = null;
-  let guests = null;
-  let pet_friendly = null;
-
   const knownLocations = [
     "An Giang",
     "Bắc Ninh",
     "Cà Mau",
     "Cao Bằng",
-    "TP. Cần Thơ",
-    "TP. Đà Nẵng",
+    "TP.Cần Thơ",
+    "TP.Đà Nẵng",
     "Đắk Lắk",
     "Điện Biên",
     "Đồng Nai",
     "Đồng Tháp",
     "Gia Lai",
-    "TP.Hà Nội",
+    "Hà Nội",
     "Hà Tĩnh",
     "TP.Hải Phòng",
     "TP.Hồ Chí Minh",
@@ -67,6 +50,57 @@ const parseKeywordIntent = (rawText) => {
     "Tuyên Quang",
     "Vĩnh Long",
   ];
+
+  const normalizeIntent = (intent) => {
+    if (!intent) return intent;
+    let q = intent.query?.trim() || "";
+
+    if (intent.location) {
+      const loc = intent.location.trim().toLowerCase();
+      if (
+        q.toLowerCase() === loc ||
+        q.toLowerCase().includes(loc) ||
+        loc.includes(q.toLowerCase())
+      ) {
+        q = "";
+      } else {
+        // Loại location khỏi query
+        const locRegex = new RegExp(loc, "ig");
+        q = q.replace(locRegex, "");
+      }
+    }
+
+    // Loại giá, số người, thú cưng ra khỏi query
+    q = q
+      .replace(/\b\d+(\.\d+)?\s*(k|triệu|vnd|đ)?\b/gi, "")
+      .replace(/\b(người|khách|guests?|pax)\b/gi, "")
+      .replace(/\b(thú cưng|pet|động vật|pet\s*friendly|pet\s*allowed)\b/gi, "")
+      .replace(/\b(ở|tại|in|at)\b/gi, "")
+      .replace(/\b(giá|dưới|trên|max|min|đến|từ)\b/gi, "")
+      .replace(/\s+/g, " ")
+      .trim();
+
+    intent.query = q;
+
+    return intent;
+  };
+
+  // Nếu là JSON từ AI
+  try {
+    const obj = JSON.parse(keyword);
+    if (obj.mode === "voice" || obj.mode === "image") {
+      return normalizeIntent(obj);
+    }
+  } catch (e) {
+    console.error("Bug: ", e);
+  }
+
+  let query = keyword.trim();
+  let location = null;
+  let priceMin = null;
+  let priceMax = null;
+  let guests = null;
+  let pet_friendly = null;
 
   // Price
   const priceMaxMatch = keyword.match(
@@ -131,7 +165,7 @@ const parseKeywordIntent = (rawText) => {
     query = query.replace(locationMatch[0], "").trim();
   }
 
-  // Nếu keyword trùng với 1 tỉnh đã biết mà chưa có location -> gán location
+  // Nếu keyword trùng 1 tỉnh đã biết mà chưa có location
   if (
     !location &&
     knownLocations.some((loc) => keyword.toLowerCase().includes(loc.toLowerCase()))
@@ -145,7 +179,7 @@ const parseKeywordIntent = (rawText) => {
     query = keyword;
   }
 
-  const intent = {
+  let intent = {
     query,
     location,
     priceMin,
@@ -153,6 +187,8 @@ const parseKeywordIntent = (rawText) => {
     guests,
     ...(pet_friendly !== null && { pet_friendly }),
   };
+
+  intent = normalizeIntent(intent);
 
   console.log("Parsed Intent:", intent);
   return intent;
