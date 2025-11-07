@@ -11,7 +11,9 @@ const handleSearch = (searchFn) =>
       const { keyword, location, priceMin, priceMax, guests, ...filters } = req.body;
       result = await searchFn(keyword, location, priceMin, priceMax, guests, filters);
     } else if (mode === "voice" || mode === "image") {
-      result = await SearchService.handleMediaSearch(mode, req.file.buffer, searchFn);
+      const buffer = req.file?.buffer;
+      const keyword = req.body.keyword;
+      result = await SearchService.handleMediaSearch(mode, buffer, searchFn, keyword);
     }
 
     res.json(success(result));

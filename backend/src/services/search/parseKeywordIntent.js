@@ -87,13 +87,11 @@ const parseKeywordIntent = (rawText) => {
 
   // Nếu là JSON từ AI
   try {
-    const obj = JSON.parse(keyword);
+    const obj = JSON.keyword;
     if (obj.mode === "voice" || obj.mode === "image") {
       return normalizeIntent(obj);
     }
-  } catch (e) {
-    console.error("Bug: ", e);
-  }
+  } catch (_e) {}
 
   let query = keyword.trim();
   let location = null;
@@ -159,7 +157,7 @@ const parseKeywordIntent = (rawText) => {
   }
 
   // location
-  const locationMatch = keyword.match(/(?:ở|tại|in|at)\s+([^\s,]+(?:\s+[^\s,]+)?)/i);
+  const locationMatch = keyword.match(/(?:ở|tại|đi|in|at|go)\s+([^\s,]+(?:\s+[^\s,]+)?)/i);
   if (locationMatch) {
     location = locationMatch[1].trim();
     query = query.replace(locationMatch[0], "").trim();

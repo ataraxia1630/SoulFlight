@@ -243,18 +243,22 @@ const SearchService = {
       DTO: SearchProviderDTO,
     }),
 
-  handleMediaSearch: async (mode, buffer, searchFn) => {
-    const base64 = buffer.toString("base64");
-    const mimeType = mode === "voice" ? "audio/webm" : "image/jpeg";
+  handleMediaSearch: async (mode, buffer, searchFn, keyword = null) => {
     const prompts = { voice: voicePrompt, image: imagePrompt };
 
-    const result = await defaultModel.generateContent([
-      prompts[mode],
-      { inlineData: { mimeType, data: base64 } },
-    ]);
+    let modelInput;
 
+    if (mode === "voice") {
+      modelInput = [prompts.voice, keyword];
+    } else if (mode === "image") {
+      const base64 = buffer.toString("base64");
+      const mimeType = "image/jpeg";
+      modelInput = [prompts.image, { inlineData: { mimeType, data: base64 } }];
+    }
+
+    const result = await defaultModel.generateContent(modelInput);
     const text = result.response.text().trim();
-    console.log("🎤 Media transcription:", text);
+    console.log(`${mode.toUpperCase()} AI output:`, text);
 
     return searchFn(text);
   },

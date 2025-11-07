@@ -56,9 +56,12 @@ class UniversalSearchBuilder {
 
   addUniversalForRoom(keyword) {
     return this.addUniversalCondition(
-      ["name", "description", { service: { name: {} } }, { service: { location: {} } }].map((f) =>
-        typeof f === "string" ? f : f,
-      ),
+      [
+        "name",
+        "description",
+        { service: { name: { contains: keyword, mode: "insensitive" } } },
+        { service: { location: { contains: keyword, mode: "insensitive" } } },
+      ],
       keyword,
     );
   }
