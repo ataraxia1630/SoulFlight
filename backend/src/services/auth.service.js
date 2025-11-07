@@ -169,6 +169,7 @@ const AuthService = {
         where: { email },
         include: {
           Traveler: true,
+          Provider: true,
         },
       });
       if (!user)
@@ -177,13 +178,13 @@ const AuthService = {
           ERROR_CODES.USER_NOT_FOUND.message,
           ERROR_CODES.USER_NOT_FOUND.code,
         );
-      if (user.Traveler)
+      if (user.Traveler?.length > 0)
         throw new AppError(
           ERROR_CODES.PROFILE_ALREADY_EXISTS.statusCode,
           ERROR_CODES.PROFILE_ALREADY_EXISTS.message,
           ERROR_CODES.PROFILE_ALREADY_EXISTS.code,
         );
-      if (user.Provider)
+      if (user.Provider?.length > 0)
         throw new AppError(
           ERROR_CODES.PROFILE_ALREADY_EXISTS.statusCode,
           "User is already registered as a provider",
@@ -220,7 +221,7 @@ const AuthService = {
     return await prisma.$transaction(async (tx) => {
       const user = await tx.user.findUnique({
         where: { email },
-        include: { Provider: true },
+        include: { Provider: true, Traveler: true },
       });
       if (!user)
         throw new AppError(
@@ -228,13 +229,13 @@ const AuthService = {
           ERROR_CODES.USER_NOT_FOUND.message,
           ERROR_CODES.USER_NOT_FOUND.code,
         );
-      if (user.Provider)
+      if (user.Provider?.length > 0)
         throw new AppError(
           ERROR_CODES.PROFILE_ALREADY_EXISTS.statusCode,
           ERROR_CODES.PROFILE_ALREADY_EXISTS.message,
           ERROR_CODES.PROFILE_ALREADY_EXISTS.code,
         );
-      if (user.Traveler)
+      if (user.Traveler?.length > 0)
         throw new AppError(
           ERROR_CODES.PROFILE_ALREADY_EXISTS.statusCode,
           "User is already registered as a traveler",
@@ -275,10 +276,12 @@ const AuthService = {
   login: async (username, password, remember = false) => {
     let existingUser = await prisma.user.findUnique({
       where: { email: username },
+      include: { Traveler: true, Provider: true },
     });
     if (!existingUser) {
       existingUser = await prisma.user.findUnique({
         where: { username },
+        include: { Traveler: true, Provider: true },
       });
     }
     if (!existingUser)
@@ -318,8 +321,8 @@ const AuthService = {
     await storeRefreshToken(existingUser.id, refresh_token, refreshTtlSeconds);
 
     let role = "UNVERIFIED";
-    if (existingUser.Traveler) role = "TRAVELER";
-    else if (existingUser.Provider) role = "PROVIDER";
+    if (existingUser.Traveler?.length > 0) role = "TRAVELER";
+    else if (existingUser.Provider?.length > 0) role = "PROVIDER";
     else if (existingUser.is_admin) role = "ADMIN";
 
     return {
@@ -446,8 +449,8 @@ const AuthService = {
       }
 
       let role = "UNVERIFIED";
-      if (user.Traveler) role = "TRAVELER";
-      if (user.Provider) role = "PROVIDER";
+      if (user.Traveler?.length > 0) role = "TRAVELER";
+      if (user.Provider?.length > 0) role = "PROVIDER";
       if (user.is_admin) role = "ADMIN";
 
       return {
