@@ -2,6 +2,7 @@ import { createBrowserRouter, createRoutesFromElements, Route } from "react-rout
 import AuthLayout from "@/layouts/AuthLayout";
 import ManagementLayout from "@/layouts/ManagementLayout";
 import TravelerLayout from "@/layouts/TravelerLayout";
+import ExplorePage from "@/shared/pages/ExplorePage";
 import HomePage from "@/shared/pages/HomePage";
 import LoginPage from "@/shared/pages/LoginPage";
 import App from "../App";
@@ -19,6 +20,7 @@ const router = createBrowserRouter(
 
       <Route element={<TravelerLayout />}>
         <Route index element={<HomePage />} />
+        <Route path="explore" element={<ExplorePage />} />
         {travelerRoutes.main}
       </Route>
 
