@@ -2,7 +2,6 @@ const { upsertMany } = require("./utils/upsertMany");
 
 const tours = [
   {
-    id: 1,
     name: "Mekong Delta Full Day Discovery",
     description: "Comprehensive tour of floating markets, villages, and traditional crafts",
     service_price: 850000,
@@ -18,7 +17,6 @@ const tours = [
     tourguide_id: 1,
   },
   {
-    id: 2,
     name: "Sunset River Cruise",
     description: "Romantic evening cruise with dinner on the Mekong River",
     service_price: 650000,
@@ -34,7 +32,6 @@ const tours = [
     tourguide_id: 2,
   },
   {
-    id: 3,
     name: "Cycling Village Tour",
     description: "Explore rural life by bicycle with stops at local homes",
     service_price: 450000,
@@ -50,7 +47,6 @@ const tours = [
     tourguide_id: 3,
   },
   {
-    id: 4,
     name: "Sam Mountain Spiritual Journey",
     description: "Visit temples and pagodas on sacred Sam Mountain",
     service_price: 380000,
@@ -66,7 +62,6 @@ const tours = [
     tourguide_id: 1,
   },
   {
-    id: 5,
     name: "Tra Su Forest Eco Tour",
     description: "Bird watching and nature exploration in cajuput forest",
     service_price: 520000,
@@ -82,7 +77,6 @@ const tours = [
     tourguide_id: 4,
   },
   {
-    id: 6,
     name: "Floating Market Morning Tour",
     description: "Early morning visit to bustling Cai Rang floating market",
     service_price: 420000,
@@ -98,7 +92,6 @@ const tours = [
     tourguide_id: 2,
   },
   {
-    id: 7,
     name: "Culinary Adventure Tour",
     description: "Food tasting tour through local markets and restaurants",
     service_price: 550000,
@@ -110,11 +103,10 @@ const tours = [
     start_date: null,
     end_date: null,
     status: "AVAILABLE",
-    service_id: 11, // fix typo 'sService' → 'service_id'
+    service_id: 11,
     tourguide_id: 5,
   },
   {
-    id: 8,
     name: "Floating Village Experience",
     description: "Visit fish farms and floating houses on the river",
     service_price: 380000,
@@ -130,7 +122,6 @@ const tours = [
     tourguide_id: 3,
   },
   {
-    id: 9,
     name: "Two-Day Mekong Explorer",
     description: "Extended tour covering multiple provinces with homestay",
     service_price: 1800000,
@@ -146,7 +137,6 @@ const tours = [
     tourguide_id: 1,
   },
   {
-    id: 10,
     name: "Photography Tour",
     description: "Capture the beauty of Mekong Delta with expert guidance",
     service_price: 680000,
@@ -166,7 +156,7 @@ const tours = [
 async function seedTours(prisma) {
   console.log("Seeding tours...");
 
-  await upsertMany(prisma, prisma.tour, tours, ["id"]);
+  await upsertMany(prisma, prisma.tour, tours, ["name", "description"]);
   console.log(`Seeded ${tours.length} tours`);
 }
 

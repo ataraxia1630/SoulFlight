@@ -26,11 +26,11 @@ async function main() {
   console.log("Starting seed...");
 
   // 1. Users (no dependencies)
-  await seedUsers(prisma);
+  const { providerUsers, travelerUsers } = await seedUsers(prisma);
 
   // 2. Providers & Travelers (depend on Users)
-  await seedProviders(prisma);
-  await seedTravelers(prisma);
+  await seedProviders(prisma, providerUsers);
+  await seedTravelers(prisma, travelerUsers);
 
   // 3. Service Types & Tags (no dependencies)
   await seedServiceTypes(prisma);

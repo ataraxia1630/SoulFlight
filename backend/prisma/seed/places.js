@@ -2,7 +2,6 @@ const { upsertMany } = require("./utils/upsertMany");
 
 const places = [
   {
-    id: 1,
     name: "Sam Mountain",
     description: "Sacred mountain with panoramic views of the Mekong Delta",
     image_url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
@@ -11,7 +10,6 @@ const places = [
     entry_fee: 50000,
   },
   {
-    id: 2,
     name: "Tra Su Cajuput Forest",
     description: "Beautiful mangrove forest and bird sanctuary",
     image_url: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e",
@@ -20,7 +18,6 @@ const places = [
     entry_fee: 100000,
   },
   {
-    id: 3,
     name: "Cai Rang Floating Market",
     description: "Largest floating market in the Mekong Delta",
     image_url: "https://images.unsplash.com/photo-1528127269322-539801943592",
@@ -29,7 +26,6 @@ const places = [
     entry_fee: 0,
   },
   {
-    id: 4,
     name: "Chau Doc Market",
     description: "Traditional Vietnamese market with local products",
     image_url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5",
@@ -38,7 +34,6 @@ const places = [
     entry_fee: 0,
   },
   {
-    id: 5,
     name: "Thoai Ngoc Hau Tomb",
     description: "Historical tomb of famous Vietnamese general",
     image_url: "https://images.unsplash.com/photo-1548013146-72479768bada",
@@ -47,7 +42,6 @@ const places = [
     entry_fee: 20000,
   },
   {
-    id: 6,
     name: "Ba Chua Xu Temple",
     description: "Ancient temple dedicated to the Lady of the Realm",
     image_url: "https://images.unsplash.com/photo-1548625149-fc4a29cf7092",
@@ -56,7 +50,6 @@ const places = [
     entry_fee: 0,
   },
   {
-    id: 7,
     name: "Mekong River",
     description: "Mighty river flowing through Southeast Asia",
     image_url: "https://images.unsplash.com/photo-1551244072-5d12893278ab",
@@ -65,7 +58,6 @@ const places = [
     entry_fee: 0,
   },
   {
-    id: 8,
     name: "Chau Doc Floating Village",
     description: "Traditional floating houses and fish farms",
     image_url: "https://images.unsplash.com/photo-1559628376-f3fe5f782a2e",
@@ -74,7 +66,6 @@ const places = [
     entry_fee: 30000,
   },
   {
-    id: 9,
     name: "Long Xuyen City",
     description: "Capital city of An Giang province",
     image_url: "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b",
@@ -83,7 +74,6 @@ const places = [
     entry_fee: 0,
   },
   {
-    id: 10,
     name: "Phu Chau Traditional Village",
     description: "Village preserving traditional Khmer culture",
     image_url: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b",
@@ -92,7 +82,6 @@ const places = [
     entry_fee: 40000,
   },
   {
-    id: 11,
     name: "Hội An Ancient Town",
     description:
       "Quaint riverside town, UNESCO heritage site with traditional houses and lantern-lit evenings",
@@ -102,7 +91,6 @@ const places = [
     entry_fee: 0,
   },
   {
-    id: 12,
     name: "Vịnh Hạ Long",
     description:
       "Iconic bay with thousands of limestone islands rising from turquoise water, natural wonder",
@@ -112,7 +100,6 @@ const places = [
     entry_fee: 250000,
   },
   {
-    id: 13,
     name: "Phong Nha-Kẻ Bàng National Park",
     description: "Massive karst cave system and jungle wilderness, ideal for adventurous tours",
     image_url: "https://images.unsplash.com/photo-1528127269322-539801943592",
@@ -121,7 +108,6 @@ const places = [
     entry_fee: 300000,
   },
   {
-    id: 14,
     name: "Đà Lạt City (Mountain Retreat)",
     description: "Highland city known for pine forests, cool climate, lakes and nature escapes",
     image_url: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e",
@@ -130,7 +116,6 @@ const places = [
     entry_fee: 0,
   },
   {
-    id: 15,
     name: "Ninh Bình – Tràng An Scenic Landscape",
     description: "River tour through caves & limestone formations, “Ha Long on land” experience",
     image_url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
@@ -142,7 +127,7 @@ const places = [
 
 async function seedPlaces(prisma) {
   console.log("Seeding places...");
-  await upsertMany(prisma, prisma.place, places, ["id"]);
+  await upsertMany(prisma, prisma.place, places, ["name", "address"]);
   console.log(`Seeded ${places.length} places`);
 }
 

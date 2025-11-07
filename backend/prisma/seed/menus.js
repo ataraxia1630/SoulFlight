@@ -3,14 +3,12 @@ const { upsertMany } = require("./utils/upsertMany");
 const menus = [
   // Pho Corner Central menus
   {
-    id: 1,
     name: "Traditional Pho Menu",
     description: "Authentic Vietnamese pho with various meat options",
     cover_url: "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43",
     service_id: 6,
   },
   {
-    id: 2,
     name: "Side Dishes & Appetizers",
     description: "Vietnamese spring rolls and appetizers",
     cover_url: "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb",
@@ -19,14 +17,12 @@ const menus = [
 
   // Pho Corner Bistro menus
   {
-    id: 3,
     name: "Fusion Dishes",
     description: "Modern Vietnamese cuisine with international twist",
     cover_url: "https://images.unsplash.com/photo-1504674900247-0877df9cc836",
     service_id: 7,
   },
   {
-    id: 4,
     name: "Premium Selection",
     description: "High-quality ingredients and special preparations",
     cover_url: "https://images.unsplash.com/photo-1515003197210-e0cd71810b5f",
@@ -35,14 +31,12 @@ const menus = [
 
   // Pho Corner Rooftop menus
   {
-    id: 5,
     name: "Fine Dining Menu",
     description: "Exquisite Vietnamese dishes for special occasions",
     cover_url: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0",
     service_id: 8,
   },
   {
-    id: 6,
     name: "Wine & Cocktails",
     description: "Carefully selected wines and signature cocktails",
     cover_url: "https://images.unsplash.com/photo-1470337458703-46ad1756a187",
@@ -51,14 +45,12 @@ const menus = [
 
   // Pho Corner Coffee menus
   {
-    id: 7,
     name: "Coffee Selection",
     description: "Traditional and modern Vietnamese coffee",
     cover_url: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
     service_id: 9,
   },
   {
-    id: 8,
     name: "Pastries & Desserts",
     description: "Fresh baked goods and sweet treats",
     cover_url: "https://images.unsplash.com/photo-1509440159596-0249088772ff",
@@ -67,14 +59,12 @@ const menus = [
 
   // Pho Corner Street Food menus
   {
-    id: 9,
     name: "Street Food Classics",
     description: "Popular Vietnamese street food favorites",
     cover_url: "https://images.unsplash.com/photo-1552566626-52f8b828add9",
     service_id: 10,
   },
   {
-    id: 10,
     name: "Quick Bites",
     description: "Fast and delicious snacks",
     cover_url: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38",
@@ -84,7 +74,7 @@ const menus = [
 
 async function seedMenus(prisma) {
   console.log("Seeding menus...");
-  await upsertMany(prisma, prisma.menu, menus, ["id"]);
+  await upsertMany(prisma, prisma.menu, menus, ["name", "service_id"]);
   console.log(`Seeded ${menus.length} menus`);
 }
 

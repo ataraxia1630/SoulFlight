@@ -3,7 +3,6 @@ const { upsertMany } = require("./utils/upsertMany");
 const services = [
   // Accommodation services (provider_id: 2)
   {
-    id: 1,
     name: "Sunrise Grand Hotel",
     description: "Luxury 5-star hotel in the heart of Saigon with rooftop pool and spa",
     location: "123 Nguyen Hue, District 1, HCMC",
@@ -12,7 +11,6 @@ const services = [
     provider_id: 2,
   },
   {
-    id: 2,
     name: "Sunrise Beach Resort",
     description: "Beachfront paradise with private beach access and water sports",
     location: "Bai Truong Beach, Phu Quoc",
@@ -21,7 +19,6 @@ const services = [
     provider_id: 2,
   },
   {
-    id: 3,
     name: "Sunrise Boutique Hotel",
     description: "Charming boutique hotel with traditional Vietnamese design",
     location: "45 Phan Boi Chau, Hoi An",
@@ -30,7 +27,6 @@ const services = [
     provider_id: 2,
   },
   {
-    id: 4,
     name: "Sunrise Mountain Lodge",
     description: "Peaceful mountain retreat with valley views",
     location: "Sapa, Lao Cai",
@@ -39,7 +35,6 @@ const services = [
     provider_id: 2,
   },
   {
-    id: 5,
     name: "Sunrise City Apartments",
     description: "Modern serviced apartments for extended stays",
     location: "District 2, HCMC",
@@ -50,7 +45,6 @@ const services = [
 
   // F&B services (provider_id: 4)
   {
-    id: 6,
     name: "Pho Corner Central",
     description: "Authentic Vietnamese pho with 50+ years of family recipe",
     location: "789 Le Loi, District 3, HCMC",
@@ -59,7 +53,6 @@ const services = [
     provider_id: 4,
   },
   {
-    id: 7,
     name: "Pho Corner Bistro",
     description: "Modern Vietnamese cuisine with traditional flavors",
     location: "12 Dong Khoi, District 1, HCMC",
@@ -68,7 +61,6 @@ const services = [
     provider_id: 4,
   },
   {
-    id: 8,
     name: "Pho Corner Rooftop",
     description: "Fine dining Vietnamese with stunning city views",
     location: "56 Nguyen Hue, District 1, HCMC",
@@ -77,7 +69,6 @@ const services = [
     provider_id: 4,
   },
   {
-    id: 9,
     name: "Pho Corner Coffee",
     description: "Specialty coffee shop with Vietnamese coffee culture",
     location: "23 Pasteur, District 1, HCMC",
@@ -86,7 +77,6 @@ const services = [
     provider_id: 4,
   },
   {
-    id: 10,
     name: "Pho Corner Street Food",
     description: "Authentic street food experience in cozy setting",
     location: "89 Bui Vien, District 1, HCMC",
@@ -97,7 +87,6 @@ const services = [
 
   // Tours & Activities (provider_id: 3)
   {
-    id: 11,
     name: "Mekong Delta Discovery",
     description: "Full-day tour exploring Cai Rang floating market and local villages",
     location: "Cần Thơ",
@@ -106,7 +95,6 @@ const services = [
     provider_id: 3,
   },
   {
-    id: 12,
     name: "Sunset River Cruise",
     description: "Romantic evening cruise on Mekong River with dinner and live music",
     location: "Bến Tre",
@@ -115,7 +103,6 @@ const services = [
     provider_id: 3,
   },
   {
-    id: 13,
     name: "Cycling Through Villages",
     description: "Explore rural Mekong life by bicycle with local guide",
     location: "Vĩnh Long",
@@ -126,7 +113,6 @@ const services = [
 
   // Attractions (provider_id: 3)
   {
-    id: 14,
     name: "Sam Mountain Experience",
     description: "Cable car ride and temple visits on sacred Sam Mountain",
     location: "Châu Đốc, An Giang",
@@ -135,7 +121,6 @@ const services = [
     provider_id: 3,
   },
   {
-    id: 15,
     name: "Tra Su Cajuput Forest",
     description: "Bird sanctuary and mangrove forest exploration in Tra Su",
     location: "Tịnh Biên, An Giang",
@@ -147,7 +132,7 @@ const services = [
 
 async function seedServices(prisma) {
   console.log("Seeding services...");
-  await upsertMany(prisma, prisma.service, services, ["id"]);
+  await upsertMany(prisma, prisma.service, services, ["name", "description"]);
   console.log(`Seeded ${services.length} services`);
 }
 
