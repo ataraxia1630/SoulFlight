@@ -297,20 +297,23 @@ model RoomFacility {
 }
 
 model Registration {
-  id          String             @id
-  provider_id Int
-  status      RegistrationStatus @default(PENDING)
-  metadata    Json
-  created_at  DateTime           @default(now())
-  updated_at  DateTime           @updatedAt
+  id                String             @id
+  provider_id       Int
+  status            RegistrationStatus @default(PENDING)
+  metadata          Json
+  created_at        DateTime           @default(now())
+  updated_at        DateTime           @updatedAt
+  approvalHistories ApprovalHistory[]
 }
 
 model ApprovalHistory {
-  id         Int         @id @default(autoincrement())
-  action     Action
-  by         ActionTaker
-  note       String?
-  created_at DateTime    @default(now())
+  id              Int          @id @default(autoincrement())
+  registration_id String
+  registraton     Registration @relation(fields: [registration_id], references: [id], onDelete: Cascade)
+  action          Action
+  by              ActionTaker
+  note            String?
+  created_at      DateTime     @default(now())
 }
 
 model Ticket {
