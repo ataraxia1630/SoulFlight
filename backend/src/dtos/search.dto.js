@@ -63,7 +63,7 @@ function SearchRoomDTO(rooms) {
       id: r.service.id,
       name: r.service.name,
       location: r.service.location,
-      rating: r.service.rating, // Fixed typo: ratin -> rating
+      rating: r.service.rating,
       tags:
         r.service.Tags?.map((serviceOnTag) => ({
           name: serviceOnTag.Tag?.name,

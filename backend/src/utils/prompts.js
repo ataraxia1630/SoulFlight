@@ -1,5 +1,5 @@
 const voicePrompt = `
-  Analyze speech (Vietnamese or English) and return JSON with travel intent.
+  Analyze sentences (Vietnamese or English) and return JSON with travel intent.
 
   Format:
   {
