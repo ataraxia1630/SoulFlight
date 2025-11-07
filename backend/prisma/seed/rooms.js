@@ -3,7 +3,6 @@ const { upsertMany } = require("./utils/upsertMany");
 const rooms = [
   // Sunrise Grand Hotel (service_id: 1)
   {
-    id: 1,
     service_id: 1,
     name: "Deluxe City View",
     description: "Spacious room with panoramic city views",
@@ -14,7 +13,6 @@ const rooms = [
     bed_number: 1,
   },
   {
-    id: 2,
     service_id: 1,
     name: "Executive Suite",
     description: "Luxurious suite with separate living area",
@@ -25,7 +23,6 @@ const rooms = [
     bed_number: 2,
   },
   {
-    id: 3,
     service_id: 1,
     name: "Presidential Suite",
     description: "Ultimate luxury with private balcony and butler service",
@@ -36,7 +33,6 @@ const rooms = [
     bed_number: 3,
   },
   {
-    id: 4,
     service_id: 1,
     name: "Superior Twin",
     description: "Comfortable room with two single beds",
@@ -49,7 +45,6 @@ const rooms = [
 
   // Sunrise Beach Resort (service_id: 2)
   {
-    id: 5,
     service_id: 2,
     name: "Ocean View Bungalow",
     description: "Private bungalow steps from the beach",
@@ -60,7 +55,6 @@ const rooms = [
     bed_number: 1,
   },
   {
-    id: 6,
     service_id: 2,
     name: "Beach Villa",
     description: "Luxury villa with private pool and beach access",
@@ -71,7 +65,6 @@ const rooms = [
     bed_number: 3,
   },
   {
-    id: 7,
     service_id: 2,
     name: "Garden Suite",
     description: "Tropical garden view with outdoor shower",
@@ -82,7 +75,6 @@ const rooms = [
     bed_number: 1,
   },
   {
-    id: 8,
     service_id: 2,
     name: "Family Cottage",
     description: "Spacious cottage perfect for families",
@@ -95,7 +87,6 @@ const rooms = [
 
   // Sunrise Boutique Hotel (service_id: 3)
   {
-    id: 9,
     service_id: 3,
     name: "Heritage Room",
     description: "Traditional Vietnamese design with modern comfort",
@@ -106,7 +97,6 @@ const rooms = [
     bed_number: 1,
   },
   {
-    id: 10,
     service_id: 3,
     name: "Deluxe Heritage",
     description: "Larger heritage room with balcony",
@@ -117,7 +107,6 @@ const rooms = [
     bed_number: 1,
   },
   {
-    id: 11,
     service_id: 3,
     name: "Family Suite",
     description: "Two-bedroom suite with living area",
@@ -128,7 +117,6 @@ const rooms = [
     bed_number: 3,
   },
   {
-    id: 12,
     service_id: 3,
     name: "Rooftop Loft",
     description: "Unique loft with private terrace",
@@ -141,7 +129,6 @@ const rooms = [
 
   // Sunrise Mountain Lodge (service_id: 4)
   {
-    id: 13,
     service_id: 4,
     name: "Valley View Room",
     description: "Cozy room with stunning valley views",
@@ -152,7 +139,6 @@ const rooms = [
     bed_number: 1,
   },
   {
-    id: 14,
     service_id: 4,
     name: "Mountain Cabin",
     description: "Rustic cabin with fireplace",
@@ -163,7 +149,6 @@ const rooms = [
     bed_number: 2,
   },
   {
-    id: 15,
     service_id: 4,
     name: "Luxury Mountain Suite",
     description: "Premium suite with panoramic windows",
@@ -174,7 +159,6 @@ const rooms = [
     bed_number: 2,
   },
   {
-    id: 16,
     service_id: 4,
     name: "Family Lodge",
     description: "Large lodge for family gatherings",
@@ -187,7 +171,6 @@ const rooms = [
 
   // Sunrise City Apartments (service_id: 5)
   {
-    id: 17,
     service_id: 5,
     name: "Studio Apartment",
     description: "Modern studio with kitchenette",
@@ -198,7 +181,6 @@ const rooms = [
     bed_number: 1,
   },
   {
-    id: 18,
     service_id: 5,
     name: "One Bedroom Apartment",
     description: "Fully equipped apartment with living room",
@@ -209,7 +191,6 @@ const rooms = [
     bed_number: 2,
   },
   {
-    id: 19,
     service_id: 5,
     name: "Two Bedroom Apartment",
     description: "Spacious apartment ideal for families",
@@ -221,7 +202,6 @@ const rooms = [
   },
 
   {
-    id: 20,
     service_id: 15,
     name: "Penthouse",
     description: "Luxury penthouse with city views",
@@ -235,7 +215,7 @@ const rooms = [
 
 async function seedRooms(prisma) {
   console.log("Seeding rooms...");
-  await upsertMany(prisma, prisma.room, rooms, ["id"]);
+  await upsertMany(prisma, prisma.room, rooms, ["service_id", "name"]);
   console.log(`Seeded ${rooms.length} rooms`);
 }
 
