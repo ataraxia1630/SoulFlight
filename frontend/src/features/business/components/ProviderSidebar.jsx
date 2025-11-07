@@ -1,3 +1,4 @@
+import AppRegistrationIcon from "@mui/icons-material/AppRegistration";
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -39,6 +40,11 @@ const ProviderSidebar = ({ open, onToggle }) => {
       text: t("sidebar.dashboard"),
       icon: <DashboardIcon />,
       path: "/business/dashboard",
+    },
+    {
+      text: t("sidebar.register"),
+      icon: <AppRegistrationIcon />,
+      path: "/business/partner-registration",
     },
     {
       text: t("sidebar.service"),

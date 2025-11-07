@@ -17,11 +17,14 @@ const LoginPage = () => {
     console.log("Login data:", formData);
     setLoading(true);
     try {
-      await AuthService.login(formData.email, formData.password, formData.rememberMe);
+      const role = await AuthService.login(formData.email, formData.password, formData.rememberMe);
       showAlert("Login successful!", "success");
       setTimeout(() => {
         setLoading(false);
-        navigate("/");
+        console.log(role);
+        if (role === "ADMIN") navigate("/admin");
+        else if (role === "PROVIDER") navigate("/business");
+        else navigate("/");
       }, 2000);
     } catch (error) {
       showAlert(error.response?.data?.message || "Invalid email or password!", "error");

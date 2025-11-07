@@ -90,6 +90,7 @@ const SearchService = {
       guests,
       filters,
       builderFn: (builder, intent) => {
+        builder.addUniversalForRoom(intent.query || keyword);
         builder.applyFilters(intent, "room");
         if (intent.pet_friendly === true) builder.where.AND.push({ pet_allowed: true });
       },

@@ -31,7 +31,9 @@
     "explore": "Khám phá",
     "trips": "Chuyến đi",
     "news": "Tin tức",
-    "contact": "Liên hệ"
+    "contact": "Liên hệ",
+    "profile": "Hồ sơ",
+    "settings": "Cài đặt"
   },
 
   "footer": {
@@ -60,7 +62,8 @@
     "payment": "Thanh toán",
     "assessment": "Đánh giá",
     "report": "Báo cáo",
-    "tag": "Nhãn"
+    "tag": "Nhãn",
+    "register": "Đăng ký dịch vụ"
   },
 
   "or": "HOẶC",

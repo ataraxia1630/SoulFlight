@@ -31,7 +31,9 @@
     "explore": "Explore",
     "trips": "My Trips",
     "news": "News",
-    "contact": "Contact"
+    "contact": "Contact",
+    "profile": "Profile",
+    "settings": "Settings"
   },
 
   "footer": {
@@ -60,7 +62,8 @@
     "payment": "Payment",
     "assessment": "Assessment",
     "report": "Report",
-    "tag": "Tag"
+    "tag": "Tag",
+    "register": "Register Service"
   },
 
   "or": "OR",

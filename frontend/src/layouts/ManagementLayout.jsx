@@ -1,3 +1,4 @@
+import AdminSidebar from "@admin/components/AdminSidebar";
 import ProviderSidebar, {
   DRAWER_WIDTH_CLOSE,
   DRAWER_WIDTH_OPEN,
@@ -5,12 +6,14 @@ import ProviderSidebar, {
 import { Box, Container, Toolbar } from "@mui/material";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
+import { useAuthStore } from "@/app/store";
 import Footer from "./Footer";
 import Header from "./Header";
 
 const ManagementLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const toggleSidebar = () => setSidebarOpen((prev) => !prev);
+  const { user } = useAuthStore();
 
   const drawerWidth = sidebarOpen ? DRAWER_WIDTH_OPEN : DRAWER_WIDTH_CLOSE;
 
@@ -22,8 +25,8 @@ const ManagementLayout = () => {
         bgcolor: "background.default",
       }}
     >
-      <ProviderSidebar open={sidebarOpen} onToggle={toggleSidebar} />
-
+      {user?.role === "PROVIDER" && <ProviderSidebar open={sidebarOpen} onToggle={toggleSidebar} />}
+      {user?.role === "ADMIN" && <AdminSidebar open={sidebarOpen} onToggle={toggleSidebar} />}
       <Box
         sx={{
           flexGrow: 1,

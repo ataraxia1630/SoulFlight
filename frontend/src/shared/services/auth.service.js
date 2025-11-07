@@ -91,7 +91,7 @@ const AuthService = {
   },
 
   login: async (username, password, rememberMe) => {
-    await axios
+    const role = await axios
       .post(`${API_URL}/login`, { username, password, rememberMe })
       .then((res) => {
         const { access_token, refresh_token, user } = res.data.data;
@@ -100,11 +100,13 @@ const AuthService = {
           refresh_token,
           user,
         });
+        return user.role;
       })
       .catch((error) => {
         console.error("Error logging in:", error);
         throw error;
       });
+    return role;
   },
 
   logout: async () => {

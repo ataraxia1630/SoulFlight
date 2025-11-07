@@ -87,7 +87,7 @@ const parseKeywordIntent = (rawText) => {
 
   // Nếu là JSON từ AI
   try {
-    const obj = JSON.keyword;
+    const obj = JSON.parse(keyword);
     if (obj.mode === "voice" || obj.mode === "image") {
       return normalizeIntent(obj);
     }

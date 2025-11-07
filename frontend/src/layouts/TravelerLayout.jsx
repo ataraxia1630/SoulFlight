@@ -2,6 +2,7 @@ import { Box, Container, Toolbar, useMediaQuery, useTheme } from "@mui/material"
 import LeftSidebar from "@traveler/components/LeftSidebar";
 import RightSidebar from "@traveler/components/RightSidebar";
 import { Outlet } from "react-router-dom";
+import { useAuthStore } from "@/app/store";
 import Footer from "./Footer";
 import Header from "./Header";
 
@@ -12,6 +13,7 @@ const TravelerLayout = () => {
   const theme = useTheme();
   const isMdUp = useMediaQuery(theme.breakpoints.up("md"));
   const isLgUp = useMediaQuery(theme.breakpoints.up("lg"));
+  const { user } = useAuthStore();
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -28,7 +30,7 @@ const TravelerLayout = () => {
             }}
           >
             <Toolbar />
-            <LeftSidebar />
+            {user?.role === "UNVERIFIED" && <LeftSidebar />}
           </Box>
         )}
 
@@ -63,7 +65,7 @@ const TravelerLayout = () => {
             }}
           >
             <Toolbar />
-            <RightSidebar />
+            {user?.role === "UNVERIFIED" && <RightSidebar />}
           </Box>
         )}
       </Box>
