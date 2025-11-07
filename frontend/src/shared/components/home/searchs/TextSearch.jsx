@@ -12,11 +12,11 @@ const TextSearch = ({ searchText, setSearchText }) => {
         multiline
         sx={{
           "& .MuiInputBase-root": {
-            minHeight: 220,
+            minHeight: 245,
             alignItems: "start",
           },
           "& textarea": {
-            minHeight: "220px !important",
+            minHeight: "245px !important",
             resize: "none",
           },
         }}

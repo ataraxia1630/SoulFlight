@@ -14,7 +14,7 @@ const voicePrompt = `
 
   Rules:
   - query: Extract main service/place type
-  - location: Vietnamese province (An Giang, Ninh Bình, Hà Nội)
+  - location: Vietnamese province (An Giang, Hà Nội, TP.Hồ Chí Minh, Đà Nẵng, Ninh Bình, etc.)
   - price: 
     VN: "dưới 1 triệu"→max:1000000, "từ 500k đến 2tr"→min:500000,max:2000000
     EN: "under 1 million"→max:1000000, "from 500k to 2m"→min:500000,max:2000000
