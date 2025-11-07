@@ -23,7 +23,7 @@ const ImageSearch = ({ imageFile, setImageFile }) => {
       elevation={0}
       sx={{
         p: 7,
-        minHeight: 250,
+        minHeight: 280,
         bgcolor: "background.input",
         borderRadius: 2,
         textAlign: "center",

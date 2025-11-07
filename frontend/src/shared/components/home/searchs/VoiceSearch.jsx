@@ -2,13 +2,17 @@ import { Mic, Stop } from "@mui/icons-material";
 import {
   Box,
   Button,
+  FormControl,
   IconButton,
   LinearProgress,
+  MenuItem,
   Paper,
+  Select,
+  Stack,
   Typography,
   useTheme,
 } from "@mui/material";
-import { useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const VoiceSearch = ({
   isRecording,
@@ -20,6 +24,7 @@ const VoiceSearch = ({
   setSearchText,
 }) => {
   const theme = useTheme();
+  const [language, setLanguage] = useState("vi-VN");
 
   // Khởi tạo Speech Recognition
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -36,7 +41,7 @@ const VoiceSearch = ({
   useEffect(() => {
     if (!recognition) return;
 
-    recognition.lang = "vi-VN";
+    recognition.lang = language;
     recognition.continuous = true;
     recognition.interimResults = true;
 
@@ -61,7 +66,15 @@ const VoiceSearch = ({
     return () => {
       if (isRecording) recognition.stop();
     };
-  }, [recognition, isRecording, setSearchText, setIsRecording, stopRecording, recordingTimerRef]);
+  }, [
+    recognition,
+    language,
+    isRecording,
+    setSearchText,
+    setIsRecording,
+    stopRecording,
+    recordingTimerRef,
+  ]);
 
   const startRecording = useCallback(async () => {
     if (!recognition) {
@@ -105,10 +118,24 @@ const VoiceSearch = ({
       }}
     >
       {!isRecording && !searchText && (
-        <Box>
-          <Typography sx={{ mb: 2, fontSize: 14, color: "text.secondary" }}>
-            Tap to start recording
+        <Stack spacing={1.5} alignItems="center">
+          <Typography sx={{ fontSize: 15, color: "text.secondary" }}>
+            Tap the mic to start recording
           </Typography>
+
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <Select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value)}
+              sx={{
+                borderRadius: 1,
+              }}
+            >
+              <MenuItem value="vi-VN">Tiếng Việt</MenuItem>
+              <MenuItem value="en-US">English</MenuItem>
+            </Select>
+          </FormControl>
+
           <IconButton
             onClick={startRecording}
             sx={{
@@ -116,17 +143,17 @@ const VoiceSearch = ({
               color: "text.contrast",
               width: 80,
               height: 80,
-              boxShadow: theme.shadows[3],
+              boxShadow: theme.shadows[4],
               transition: "all 0.3s ease",
               "&:hover": {
-                bgcolor: "primary.main",
-                boxShadow: theme.shadows[6],
+                bgcolor: "primary.dark",
+                boxShadow: theme.shadows[8],
               },
             }}
           >
             <Mic sx={{ fontSize: 40 }} />
           </IconButton>
-        </Box>
+        </Stack>
       )}
 
       {isRecording && (
