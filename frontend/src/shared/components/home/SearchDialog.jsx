@@ -84,8 +84,7 @@ const SearchDialog = ({ open, onClose, activeField = "location", initialSearchPa
   };
 
   const handleClose = () => {
-    if (isRecording && mediaRecorderRef.current) {
-      mediaRecorderRef.current.stop();
+    if (isRecording) {
       setIsRecording(false);
       clearInterval(recordingTimerRef.current);
     }
@@ -94,6 +93,14 @@ const SearchDialog = ({ open, onClose, activeField = "location", initialSearchPa
     setImageFile(null);
     setSearchMode("text");
     setRecordingTime(0);
+    setActiveTab(0);
+    setSearchParams({
+      location: "",
+      priceMin: 0,
+      priceMax: "",
+      guests: 1,
+    });
+
     onClose();
   };
 

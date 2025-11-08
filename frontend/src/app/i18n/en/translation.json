@@ -63,7 +63,8 @@
     "assessment": "Assessment",
     "report": "Report",
     "tag": "Tag",
-    "register": "Register Service"
+    "register": "Register Service",
+    "review_service": "Approve Service Registration"
   },
 
   "or": "OR",

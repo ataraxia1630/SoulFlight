@@ -5,6 +5,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PaymentIcon from "@mui/icons-material/Payment";
+import RateReviewIcon from "@mui/icons-material/RateReview";
 import RoomServiceIcon from "@mui/icons-material/RoomService";
 import TagIcon from "@mui/icons-material/Tag";
 import {
@@ -39,6 +40,11 @@ const AdminSidebar = ({ open, onToggle }) => {
       text: t("sidebar.dashboard"),
       icon: <DashboardIcon />,
       path: "/admin/dashboard",
+    },
+    {
+      text: t("sidebar.review_service"),
+      icon: <RateReviewIcon />,
+      path: "admin/partner-registration",
     },
     {
       text: t("sidebar.service"),

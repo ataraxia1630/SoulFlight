@@ -64,7 +64,14 @@ const VoiceSearch = ({
     };
 
     return () => {
-      if (isRecording) recognition.stop();
+      try {
+        if (recognition && isRecording) {
+          recognition.stop();
+        }
+        clearInterval(recordingTimerRef.current);
+      } catch (err) {
+        console.log("Cleanup error:", err);
+      }
     };
   }, [
     recognition,
@@ -83,11 +90,19 @@ const VoiceSearch = ({
     }
 
     try {
-      setSearchText("");
-      recognition.start();
-      setIsRecording(true);
-      setRecordingTime(0);
-      recordingTimerRef.current = setInterval(() => setRecordingTime((t) => t + 1), 1000);
+      recognition.stop();
+    } catch (_err) {
+      // Ignore error nếu không có gì đang chạy
+    }
+
+    try {
+      setTimeout(() => {
+        setSearchText("");
+        recognition.start();
+        setIsRecording(true);
+        setRecordingTime(0);
+        recordingTimerRef.current = setInterval(() => setRecordingTime((t) => t + 1), 1000);
+      }, 100);
     } catch (err) {
       alert("Can't start record");
       console.error(err);
