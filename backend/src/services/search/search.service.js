@@ -23,7 +23,7 @@ const SearchService = {
       guests,
       filters,
       builderFn: (builder, intent) => {
-        builder.addUniversalForService(intent.query || keyword);
+        builder.addQueryIfNoOtherFilters(intent, keyword, "service");
         builder.applyFilters(intent, "service");
       },
       prismaFn: (where) =>
@@ -62,7 +62,7 @@ const SearchService = {
       guests,
       filters,
       builderFn: (builder, intent) => {
-        builder.addUniversalForVoucher(intent.query || keyword);
+        builder.addQueryIfNoOtherFilters(intent, keyword, "voucher");
         builder.applyFilters(intent, "voucher");
       },
       prismaFn: (_where) =>
@@ -90,7 +90,7 @@ const SearchService = {
       guests,
       filters,
       builderFn: (builder, intent) => {
-        builder.addUniversalForRoom(intent.query || keyword);
+        builder.addQueryIfNoOtherFilters(intent, keyword, "room");
         builder.applyFilters(intent, "room");
         if (intent.pet_friendly === true) builder.where.AND.push({ pet_allowed: true });
       },
@@ -117,7 +117,7 @@ const SearchService = {
       guests,
       filters,
       builderFn: (builder, intent) => {
-        builder.addUniversalForMenu(intent.query || keyword);
+        builder.addQueryIfNoOtherFilters(intent, keyword, "menu");
         builder.applyFilters(intent, "menu");
       },
       prismaFn: (where) =>
@@ -142,7 +142,7 @@ const SearchService = {
       guests,
       filters,
       builderFn: (builder, intent) => {
-        builder.addUniversalForTicket(intent.query || keyword);
+        builder.addQueryIfNoOtherFilters(intent, keyword, "ticket");
         builder.applyFilters(intent, "ticket");
       },
       prismaFn: (where) =>
@@ -167,7 +167,7 @@ const SearchService = {
       guests,
       filters,
       builderFn: (builder, intent) => {
-        builder.addUniversalForPlace(intent.query || keyword);
+        builder.addQueryIfNoOtherFilters(intent, keyword, "place");
         builder.applyFilters(intent, "place");
       },
       prismaFn: (where) =>
@@ -202,7 +202,7 @@ const SearchService = {
       guests,
       filters,
       builderFn: (builder, intent) => {
-        builder.addUniversalForTour(intent.query || keyword);
+        builder.addQueryIfNoOtherFilters(intent, keyword, "tour");
         builder.applyFilters(intent, "tour");
       },
       prismaFn: (where) =>
@@ -228,7 +228,7 @@ const SearchService = {
       guests,
       filters,
       builderFn: (builder, intent) => {
-        builder.addUniversalForProvider(intent.query || keyword);
+        builder.addQueryIfNoOtherFilters(intent, keyword, "provider");
         builder.applyFilters(intent, "provider");
       },
       prismaFn: (where) =>

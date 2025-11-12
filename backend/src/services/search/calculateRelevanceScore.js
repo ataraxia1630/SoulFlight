@@ -4,36 +4,14 @@ const calculateRelevanceScore = (item, intent, entityType = "service") => {
   let score = 0;
   const { query, location, priceMin, priceMax, guests, pet_friendly } = intent;
 
-  // query relevance
-  const q = query?.toLowerCase()?.trim();
-  if (q) {
-    const textFields = [
-      item.name,
-      item.title,
-      item.description,
-      item.service?.name,
-      item.Service?.name,
-      item.Type?.name,
-      item.Place?.name,
-      item.Tags?.map((t) => t.Tag?.name).join(" "),
-      item.provider?.name,
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
+  const hasLocationFilter = location !== null && location !== undefined;
+  const hasPriceFilter = priceMin !== null || priceMax !== null;
+  const hasGuestsFilter = guests !== null && guests !== undefined;
+  const hasPetFilter = pet_friendly === true;
 
-    const similarity = stringSimilarity.compareTwoStrings(textFields, q);
+  const hasAnyFilter = hasLocationFilter || hasPriceFilter || hasGuestsFilter || hasPetFilter;
 
-    if (similarity > 0.85) score += 250;
-    else if (similarity > 0.6) score += 150;
-    else if (textFields.includes(q)) score += 100;
-    else if (q.split(" ").some((word) => textFields.includes(word))) score += 50;
-    else score += 20;
-  } else {
-    score += 10;
-  }
-
-  // location relevance
+  // location
   const loc = location?.toLowerCase()?.trim();
   if (loc) {
     const locFields = {
@@ -57,13 +35,12 @@ const calculateRelevanceScore = (item, intent, entityType = "service") => {
 
     const locSim = stringSimilarity.compareTwoStrings(locationText, loc);
 
-    if (locationText.includes(loc)) score += 200;
-    else if (locSim > 0.5) score += 100;
-    else score += 30;
+    if (locationText.includes(loc)) score += 300;
+    else if (locSim > 0.5) score += 150;
+    else score += 50;
   }
 
   // price
-  const hasPriceFilter = priceMin !== null || priceMax !== null;
   if (hasPriceFilter) {
     const min = parseFloat(priceMin) || 0;
     const max = parseFloat(priceMax) || Infinity;
@@ -81,20 +58,50 @@ const calculateRelevanceScore = (item, intent, entityType = "service") => {
     const itemPrice = priceByType[entityType]?.() ?? null;
 
     if (itemPrice !== null) {
-      if (itemPrice >= min && itemPrice <= max) score += 100;
-      else if (itemPrice < min * 1.5 && itemPrice > max / 1.5) score += 30;
+      if (itemPrice >= min && itemPrice <= max) score += 200;
+      else if (itemPrice < min * 1.5 && itemPrice > max / 1.5) score += 80;
+      else score += 20;
     }
   }
 
-  // guest (room)
-  if (entityType === "room" && guests !== null && item.max_adult_number) {
+  if (entityType === "room" && hasGuestsFilter && item.max_adult_number) {
     const guestCount = parseInt(guests, 10);
-    if (item.max_adult_number >= guestCount) score += 50;
+    if (item.max_adult_number >= guestCount) score += 150;
+    else score += 30;
   }
 
-  // pet (room)
-  if (entityType === "room" && pet_friendly === "true" && item.pet_allowed) {
-    score += 50;
+  if (entityType === "room" && hasPetFilter) {
+    if (item.pet_allowed) score += 200;
+    else score += 30;
+  }
+
+  const q = query?.toLowerCase()?.trim();
+  if (q) {
+    const textFields = [
+      item.name,
+      item.title,
+      item.description,
+      item.service?.name,
+      item.Service?.name,
+      item.Type?.name,
+      item.Place?.name,
+      item.Tags?.map((t) => t.Tag?.name).join(" "),
+      item.provider?.name,
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
+
+    const similarity = stringSimilarity.compareTwoStrings(textFields, q);
+
+    if (similarity > 0.85) score += 100;
+    else if (similarity > 0.6) score += 60;
+    else if (textFields.includes(q)) score += 40;
+    else if (q.split(" ").some((word) => textFields.includes(word))) score += 20;
+    else if (hasAnyFilter) score += 10;
+  } else {
+    if (hasAnyFilter) score += 50;
+    else score += 10;
   }
 
   return Math.max(score, 10);

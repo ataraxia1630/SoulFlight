@@ -4,7 +4,11 @@ class UniversalSearchBuilder {
   }
 
   addUniversalCondition(fields, keyword) {
-    if (!keyword?.trim() || !fields?.length) return this;
+    if (!fields?.length) return this;
+
+    if (!keyword?.trim()) {
+      return this;
+    }
 
     const orConditions = fields.map((field) => {
       if (typeof field === "string") return { [field]: { contains: keyword, mode: "insensitive" } };
@@ -12,6 +16,41 @@ class UniversalSearchBuilder {
     });
 
     this.where.AND.push({ OR: orConditions });
+    return this;
+  }
+
+  static hasNonQueryFilters(intent) {
+    return (
+      (intent.location !== null && intent.location !== undefined) ||
+      intent.priceMin !== null ||
+      intent.priceMax !== null ||
+      (intent.guests !== null && intent.guests !== undefined) ||
+      intent.pet_friendly === true
+    );
+  }
+
+  // Apply query nếu không có filter khác
+  addQueryIfNoOtherFilters(intent, keyword, entityType) {
+    const hasOtherFilters = UniversalSearchBuilder.hasNonQueryFilters(intent);
+
+    if (!hasOtherFilters && (intent.query || keyword)) {
+      const methodMap = {
+        service: "addUniversalForService",
+        voucher: "addUniversalForVoucher",
+        room: "addUniversalForRoom",
+        menu: "addUniversalForMenu",
+        ticket: "addUniversalForTicket",
+        place: "addUniversalForPlace",
+        tour: "addUniversalForTour",
+        provider: "addUniversalForProvider",
+      };
+
+      const method = methodMap[entityType];
+      if (method && this[method]) {
+        this[method](intent.query || keyword);
+      }
+    }
+
     return this;
   }
 
