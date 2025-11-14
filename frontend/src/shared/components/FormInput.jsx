@@ -1,5 +1,6 @@
 import { useTheme } from "@mui/material";
 import DateInput from "./input/DateInput";
+import PictureInput from "./input/PictureInput";
 import SelectInput from "./input/SelectInput";
 import TextInput from "./input/TextInput";
 
@@ -7,6 +8,7 @@ const inputComponents = {
   text: TextInput,
   date: DateInput,
   select: SelectInput,
+  picture: PictureInput,
 };
 
 const FormInput = ({
@@ -24,6 +26,22 @@ const FormInput = ({
   const theme = useTheme();
 
   const InputComponent = inputComponents[type] || TextInput;
+
+  if (type === "picture") {
+    return (
+      <PictureInput
+        value={value}
+        file={props.file}
+        label={label}
+        placeholder={placeholder}
+        helperText={helperText}
+        error={error}
+        onUrlChange={props.onUrlChange}
+        onFileChange={props.onFileChange}
+        {...props}
+      />
+    );
+  }
 
   return (
     <InputComponent

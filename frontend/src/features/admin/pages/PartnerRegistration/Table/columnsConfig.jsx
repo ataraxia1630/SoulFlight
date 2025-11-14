@@ -17,6 +17,7 @@ const columnConfig = [
     header_align: "left",
     cell_align: "left",
     bold: true,
+    search: true,
   },
   {
     id: "provider",
@@ -24,6 +25,7 @@ const columnConfig = [
     width: "30%",
     header_align: "left",
     cell_align: "left",
+    search: true,
   },
   {
     id: "service",
