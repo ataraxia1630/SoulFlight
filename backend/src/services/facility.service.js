@@ -31,7 +31,9 @@ const FacilityService = {
   },
 
   getAll: async () => {
-    const facilities = await prisma.facility.findMany();
+    const facilities = await prisma.facility.findMany({
+      orderBy: { updated_at: "desc" },
+    });
     return FacilityDTO.fromList(facilities);
   },
 

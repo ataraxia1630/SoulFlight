@@ -1,6 +1,6 @@
 import { Hotel, Pets } from "@mui/icons-material";
 import { Box, Card, CardContent, CardMedia, Chip, Typography } from "@mui/material";
-import formatPrice from "@/shared/utils/FormatPrice";
+import formatPrice from "@/shared/utils/formatPrice";
 
 const RoomCard = ({ data }) => {
   return (

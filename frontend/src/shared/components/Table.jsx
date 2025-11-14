@@ -1,6 +1,10 @@
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
   Box,
+  IconButton,
   InputAdornment,
   Table,
   TableBody,
@@ -10,23 +14,31 @@ import {
   TablePagination,
   TableRow,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useMemo, useState } from "react";
 
-export default function CustomTable({ columns, data }) {
+export default function CustomTable({ columns, data, onView, onEdit, onDelete }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState("");
 
   // Lọc dữ liệu theo search
+  const searchableFields = columns.filter((c) => c.search).map((c) => c.id);
+
   const filteredData = useMemo(() => {
     if (!searchTerm) return data;
     const lower = searchTerm.toLowerCase();
-    return data.filter(
-      (row) => row.id.toLowerCase().includes(lower) || row.provider.toLowerCase().includes(lower),
+
+    return data.filter((row) =>
+      searchableFields.some((field) =>
+        String(row[field] || "")
+          .toLowerCase()
+          .includes(lower),
+      ),
     );
-  }, [data, searchTerm]);
+  }, [data, searchTerm, searchableFields]);
 
   // Phân trang
   const paginatedData = useMemo(() => {
@@ -39,6 +51,64 @@ export default function CustomTable({ columns, data }) {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  const renderActions = (row) => {
+    const actions = [];
+
+    if (onView) {
+      actions.push(
+        <Tooltip key="view" title="View">
+          <IconButton
+            size="small"
+            onClick={() => onView(row)}
+            sx={{
+              color: "primary.main",
+              "&:hover": { backgroundColor: "rgba(30, 155, 205, 0.08)" },
+            }}
+          >
+            <VisibilityIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>,
+      );
+    }
+
+    if (onEdit) {
+      actions.push(
+        <Tooltip key="edit" title="Edit">
+          <IconButton
+            size="small"
+            onClick={() => onEdit(row)}
+            sx={{
+              color: "primary.main",
+              "&:hover": { backgroundColor: "rgba(30, 155, 205, 0.08)" },
+            }}
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>,
+      );
+    }
+
+    if (onDelete) {
+      actions.push(
+        <Tooltip key="delete" title="Delete">
+          <IconButton
+            size="small"
+            onClick={() => onDelete(row)}
+            sx={{
+              color: "error.main",
+              "&:hover": { backgroundColor: "rgba(239, 68, 68, 0.08)" },
+            }}
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>,
+      );
+    }
+
+    return <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>{actions}</Box>;
+  };
+
   return (
     <Box
       sx={{
@@ -113,6 +183,23 @@ export default function CustomTable({ columns, data }) {
                 >
                   {columns.map((column) => {
                     const globalIndex = page * rowsPerPage + index;
+
+                    if (column.id === "actions" && (onView || onEdit || onDelete)) {
+                      return (
+                        <TableCell
+                          key={column.id}
+                          align={column.cell_align || "center"}
+                          sx={{
+                            padding: "16px",
+                            borderBottom: "1px solid #F0F0F0",
+                            ...column.sx,
+                          }}
+                        >
+                          {renderActions(row)}
+                        </TableCell>
+                      );
+                    }
+
                     const value = column.id === "index" ? globalIndex : row[column.id];
                     const content = column.render ? column.render(value, row, globalIndex) : value;
 
@@ -126,12 +213,26 @@ export default function CustomTable({ columns, data }) {
                           ...column.sx,
                         }}
                       >
-                        <Typography
-                          variant="body2"
-                          sx={{ fontWeight: column.sx?.fontWeight || 400 }}
-                        >
-                          {content}
-                        </Typography>
+                        {column.is_picture ? (
+                          <Box
+                            component="img"
+                            src={content}
+                            alt={row.name}
+                            sx={{
+                              width: 40,
+                              height: 40,
+                              borderRadius: 1,
+                              objectFit: "cover",
+                            }}
+                          />
+                        ) : (
+                          <Typography
+                            variant="body2"
+                            sx={{ fontWeight: column.sx?.fontWeight || 400 }}
+                          >
+                            {content}
+                          </Typography>
+                        )}
                       </TableCell>
                     );
                   })}

@@ -22,8 +22,8 @@ const LoginPage = () => {
       setTimeout(() => {
         setLoading(false);
         console.log(role);
-        if (role === "ADMIN") navigate("/admin");
-        else if (role === "PROVIDER") navigate("/business");
+        if (role === "ADMIN") navigate("/admin/dashboard");
+        else if (role === "PROVIDER") navigate("/business/dashboard");
         else navigate("/");
       }, 2000);
     } catch (error) {

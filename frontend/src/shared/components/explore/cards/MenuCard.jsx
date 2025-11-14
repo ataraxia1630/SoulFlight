@@ -1,6 +1,6 @@
 import { MenuBook, Restaurant } from "@mui/icons-material";
 import { Box, Card, CardContent, CardMedia, Chip, Divider, Typography } from "@mui/material";
-import formatPrice from "@/shared/utils/FormatPrice";
+import formatPrice from "@/shared/utils/formatPrice";
 
 const MenuCard = ({ data }) => {
   return (
