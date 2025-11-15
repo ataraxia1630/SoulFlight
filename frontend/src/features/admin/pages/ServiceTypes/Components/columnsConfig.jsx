@@ -21,8 +21,8 @@ const columnConfig = [
     id: "description",
     label: "DESCRIPTION",
     width: "25%",
-    header_align: "center",
-    cell_align: "center",
+    header_align: "left",
+    cell_align: "left",
     search: true,
   },
   {
