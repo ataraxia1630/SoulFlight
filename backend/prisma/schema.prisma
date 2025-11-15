@@ -92,6 +92,7 @@ model Provider {
   updated_at     DateTime  @updatedAt
   user           User      @relation(fields: [id], references: [id])
   Services       Service[]
+  bookings       Booking[]
 }
 
 model Traveler {
@@ -103,6 +104,8 @@ model Traveler {
   created_at DateTime  @default(now())
   updated_at DateTime  @updatedAt
   user       User      @relation(fields: [id], references: [id])
+  cart       Cart?
+  bookings   Booking[] @relation("TravelerBookings")
 }
 
 model ServiceType {
@@ -339,7 +342,158 @@ model Voucher {
   valid_from       DateTime?
   valid_to         DateTime?
   is_global        Boolean   @default(false)
+  max_uses         Int?
+  used_count       Int       @default(0)
   created_at       DateTime  @default(now())
 
-  service Service? @relation(fields: [service_id], references: [id])
+  service  Service?  @relation(fields: [service_id], references: [id])
+  bookings Booking[]
+}
+
+model Cart {
+  id          Int      @id @default(autoincrement())
+  traveler_id Int
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  traveler Traveler   @relation(fields: [traveler_id], references: [id], onDelete: Cascade)
+  items    CartItem[]
+
+  @@unique([traveler_id]) // Mỗi user chỉ có 1 giỏ hàng
+}
+
+enum CartItemType {
+  ROOM
+  TOUR
+  TICKET
+  MENU_ITEM
+}
+
+model CartItem {
+  id            Int          @id @default(autoincrement())
+  cart_id       Int
+  item_type     CartItemType
+  item_id       Int // ID của Room, Tour, Ticket, MenuItem
+  quantity      Int          @default(1)
+  checkin_date  DateTime? // cho ROOM, TOUR
+  checkout_date DateTime? // cho ROOM
+  visit_date    DateTime? // cho TOUR, TICKET (ngày sử dụng)
+  note          String?
+
+  cart Cart @relation(fields: [cart_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([cart_id])
+  @@index([item_type, item_id])
+}
+
+enum BookingStatus {
+  PENDING // Chưa thanh toán
+  PAID // Đã thanh toán
+  IN_PROGRESS // Đang diễn ra
+  COMPLETED // Hoàn thành
+  CANCELLED // Hủy
+  REFUNDED // Hoàn tiền
+}
+
+model Booking {
+  id              String        @id @default(cuid())
+  traveler_id     Int
+  provider_id     Int
+  status          BookingStatus @default(PENDING)
+  total_amount    Decimal       @db.Decimal(12, 2)
+  discount_amount Decimal       @default(0) @db.Decimal(12, 2)
+  final_amount    Decimal       @db.Decimal(12, 2)
+  voucher_id      Int?
+  booking_date    DateTime      @default(now())
+  notes           String?
+
+  traveler Traveler      @relation("TravelerBookings", fields: [traveler_id], references: [id])
+  provider Provider      @relation(fields: [provider_id], references: [id])
+  voucher  Voucher?      @relation(fields: [voucher_id], references: [id])
+  items    BookingItem[]
+  payments Payment[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  reviews    Review[]
+
+  @@index([traveler_id])
+  @@index([provider_id])
+  @@index([status])
+}
+
+enum BookingItemType {
+  ROOM
+  TOUR
+  TICKET
+  MENU_ITEM
+}
+
+model BookingItem {
+  id            Int             @id @default(autoincrement())
+  booking_id    String
+  item_type     BookingItemType
+  item_id       Int // ID của Room/Tour/Ticket/MenuItem
+  quantity      Int
+  unit_price    Decimal         @db.Decimal(12, 2)
+  total_price   Decimal         @db.Decimal(12, 2)
+  checkin_date  DateTime?
+  checkout_date DateTime?
+  visit_date    DateTime?
+
+  booking Booking @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+
+  @@index([booking_id])
+  @@index([item_type, item_id])
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  CREDIT_CARD
+  MOMO
+  ZALOPAY
+  CASH
+  VNPAY
+  BLOCKCHAIN
+  GRANTED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+model Payment {
+  id             String        @id @default(cuid())
+  booking_id     String
+  amount         Decimal       @db.Decimal(12, 2)
+  method         PaymentMethod
+  status         PaymentStatus @default(PENDING)
+  transaction_id String? // Mã giao dịch từ cổng thanh toán
+  paid_at        DateTime?
+
+  booking Booking @relation(fields: [booking_id], references: [id], onDelete: Cascade)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([booking_id])
+  @@index([status])
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  booking_id String
+  rating     Int
+  comment    String?
+  created_at DateTime @default(now())
+
+  booking Booking @relation(fields: [booking_id], references: [id])
 }
