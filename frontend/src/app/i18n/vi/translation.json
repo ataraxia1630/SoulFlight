@@ -65,7 +65,8 @@
     "tag": "Nhãn",
     "register": "Đăng ký dịch vụ",
     "review_service": "Duyệt đăng ký dịch vụ",
-    "facilities": "Cơ sở vật chất"
+    "facilities": "Cơ sở vật chất",
+    "service_type": "Loại dịch vụ"
   },
 
   "or": "HOẶC",

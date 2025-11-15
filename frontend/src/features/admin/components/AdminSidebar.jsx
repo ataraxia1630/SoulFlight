@@ -1,5 +1,6 @@
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import CategoryIcon from "@mui/icons-material/Category";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
@@ -51,6 +52,11 @@ const AdminSidebar = ({ open, onToggle }) => {
       text: t("sidebar.facilities"),
       icon: <HandymanIcon />,
       path: "/admin/facilities",
+    },
+    {
+      text: t("sidebar.service_type"),
+      icon: <CategoryIcon />,
+      path: "/admin/service_type",
     },
     {
       text: t("sidebar.service"),
