@@ -59,6 +59,11 @@ const AdminSidebar = ({ open, onToggle }) => {
       path: "/admin/service_type",
     },
     {
+      text: t("sidebar.tag"),
+      icon: <TagIcon />,
+      path: "/admin/tag",
+    },
+    {
       text: t("sidebar.service"),
       icon: <RoomServiceIcon />,
       path: "/admin/service",
@@ -67,11 +72,6 @@ const AdminSidebar = ({ open, onToggle }) => {
       text: t("sidebar.voucher"),
       icon: <ConfirmationNumberIcon />,
       path: "/admin/voucher",
-    },
-    {
-      text: t("sidebar.tag"),
-      icon: <TagIcon />,
-      path: "/admin/tag",
     },
     {
       text: t("sidebar.payment"),

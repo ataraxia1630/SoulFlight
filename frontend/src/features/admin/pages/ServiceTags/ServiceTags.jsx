@@ -1,13 +1,13 @@
-import FacilityService from "@admin/services/facility.service";
+import ServiceTagService from "@admin/services/serviceTag.service";
 import { Alert, Box, CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import DeleteConfirmDialog from "@/shared/components/DeleteConfirmDialog";
 import PageHeaderWithAdd from "@/shared/components/PageHeaderWithAdd";
 import CustomTable from "@/shared/components/Table";
 import columnConfig from "./Components/columnsConfig";
-import FacilityDialog from "./Components/FacilityDialog";
+import ServiceTagDialog from "./Components/ServiceTagDialog";
 
-export default function Facility() {
+export default function ServiceTags() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,11 +18,11 @@ export default function Facility() {
   const [deletingItem, setDeletingItem] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
 
-  const loadFacilities = async () => {
+  const loadServiceTags = async () => {
     try {
       setLoading(true);
-      const facilities = await FacilityService.getAll();
-      setData(facilities);
+      const tags = await ServiceTagService.getAll();
+      setData(tags);
       setError(null);
     } catch (err) {
       setError("Không thể tải danh sách tiện ích. Vui lòng thử lại.");
@@ -32,9 +32,9 @@ export default function Facility() {
     }
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: loadFacilities stable, ignore warning
+  // biome-ignore lint/correctness/useExhaustiveDependencies: loadServiceTags stable, ignore warning
   useEffect(() => {
-    loadFacilities();
+    loadServiceTags();
   }, []);
 
   const handleOpenDialog = (item = null) => {
@@ -53,12 +53,12 @@ export default function Facility() {
     setActionLoading(true);
     try {
       if (editingItem) {
-        await FacilityService.update(editingItem.id, formData);
+        await ServiceTagService.update(editingItem.id, formData);
       } else {
-        await FacilityService.create(formData);
+        await ServiceTagService.create(formData);
       }
 
-      await loadFacilities();
+      await loadServiceTags();
       handleCloseDialog();
     } catch (err) {
       alert(editingItem ? "Cập nhật thất bại!" : "Thêm mới thất bại!");
@@ -70,8 +70,8 @@ export default function Facility() {
 
   const handleDelete = async () => {
     try {
-      await FacilityService.delete(deletingItem.id);
-      await loadFacilities();
+      await ServiceTagService.delete(deletingItem.id);
+      await loadServiceTags();
       setOpenDeleteDialog(false);
       setDeletingItem(null);
     } catch (err) {
@@ -108,7 +108,7 @@ export default function Facility() {
         }}
       />
 
-      <FacilityDialog
+      <ServiceTagDialog
         open={openDialog}
         onClose={handleCloseDialog}
         onSave={handleSave}

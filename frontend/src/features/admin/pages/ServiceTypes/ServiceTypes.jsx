@@ -1,12 +1,12 @@
-import PageHeaderWithAdd from "@admin/components/PageHeaderWithAdd";
 import ServiceTypeService from "@admin/services/serviceType.service";
 import { Alert, Box, CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
+import PageHeaderWithAdd from "@/shared/components/PageHeaderWithAdd";
 import CustomTable from "@/shared/components/Table";
 import columnConfig from "./Components/columnsConfig";
 import ServiceTypeDialog from "./Components/ServiceTypeDialog";
 
-export default function serviceTypes() {
+export default function ServiceTypes() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

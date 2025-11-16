@@ -24,7 +24,9 @@ function formatGroupTitle(key) {
 
 const ServiceTagService = {
   getAll: async () => {
-    return await prisma.serviceTag.findMany();
+    return await prisma.serviceTag.findMany({
+      orderBy: { updated_at: "desc" },
+    });
   },
 
   getByType: async ({ type, mode }) => {

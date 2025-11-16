@@ -3,6 +3,8 @@ class ServiceTagDTO {
     this.id = tag.id;
     this.name = tag.name;
     this.category = tag.category;
+    this.created_at = tag.created_at;
+    this.updated_at = tag.updated_at;
   }
 
   static fromModel(tag) {
