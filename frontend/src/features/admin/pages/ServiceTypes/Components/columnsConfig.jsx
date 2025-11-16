@@ -1,8 +1,7 @@
-import StatusChip from "./StatusChip";
+import { formatDate } from "@/shared/utils/formatDate";
 
 const columnConfig = [
   {
-    // có cái này để đánh STT
     id: "index",
     label: "NO.",
     width: "8%",
@@ -11,43 +10,35 @@ const columnConfig = [
     render: (index) => index + 1,
   },
   {
-    id: "id",
-    label: "APPLICANT ID",
+    id: "name",
+    label: "NAME",
     width: "15%",
-    header_align: "left",
-    cell_align: "left",
-    bold: true,
-    search: true,
-  },
-  {
-    id: "provider",
-    label: "PROVIDER",
-    width: "30%",
     header_align: "left",
     cell_align: "left",
     search: true,
   },
   {
-    id: "service",
-    label: "SERVICE",
-    width: "12%",
-    header_align: "center",
-    cell_align: "center",
+    id: "description",
+    label: "DESCRIPTION",
+    width: "25%",
+    header_align: "left",
+    cell_align: "left",
+    search: true,
   },
   {
-    id: "submitDate",
-    label: "SUBMIT DATE",
-    width: "15%",
-    header_align: "center",
-    cell_align: "center",
-  },
-  {
-    id: "status",
-    label: "STATUS",
+    id: "updated_at",
+    label: "UPDATED DATE",
     width: "20%",
     header_align: "center",
     cell_align: "center",
-    render: (value) => <StatusChip status={value} />,
+    render: (_value, row) => formatDate(row.updated_at),
+  },
+  {
+    id: "actions",
+    label: "ACTIONS",
+    width: "16%",
+    header_align: "center",
+    cell_align: "center",
   },
 ];
 

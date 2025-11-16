@@ -1,9 +1,11 @@
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import CategoryIcon from "@mui/icons-material/Category";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import DashboardIcon from "@mui/icons-material/Dashboard";
+import HandymanIcon from "@mui/icons-material/Handyman";
 import PaymentIcon from "@mui/icons-material/Payment";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import RoomServiceIcon from "@mui/icons-material/RoomService";
@@ -44,7 +46,22 @@ const AdminSidebar = ({ open, onToggle }) => {
     {
       text: t("sidebar.review_service"),
       icon: <RateReviewIcon />,
-      path: "admin/partner-registration",
+      path: "/admin/partner-registration",
+    },
+    {
+      text: t("sidebar.facilities"),
+      icon: <HandymanIcon />,
+      path: "/admin/facilities",
+    },
+    {
+      text: t("sidebar.service_type"),
+      icon: <CategoryIcon />,
+      path: "/admin/service_type",
+    },
+    {
+      text: t("sidebar.tag"),
+      icon: <TagIcon />,
+      path: "/admin/tag",
     },
     {
       text: t("sidebar.service"),
@@ -55,11 +72,6 @@ const AdminSidebar = ({ open, onToggle }) => {
       text: t("sidebar.voucher"),
       icon: <ConfirmationNumberIcon />,
       path: "/admin/voucher",
-    },
-    {
-      text: t("sidebar.tag"),
-      icon: <TagIcon />,
-      path: "/admin/tag",
     },
     {
       text: t("sidebar.payment"),

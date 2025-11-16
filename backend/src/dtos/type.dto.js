@@ -3,6 +3,7 @@ class ServiceTypeDTO {
     this.id = type.id;
     this.name = type.name;
     this.description = type.description;
+    this.updated_at = type.updated_at;
   }
 
   static fromModel(type) {

@@ -12,7 +12,7 @@ const USER_TYPE = "business";
 
 const mainRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["PROVIDER"]} />}>
-    <Route path="business" element={<BusinessHome />} />
+    <Route path="business/dashboard" element={<BusinessHome />} />
 
     <Route
       path="business/partner-registration"

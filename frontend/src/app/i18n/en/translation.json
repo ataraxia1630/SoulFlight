@@ -64,7 +64,9 @@
     "report": "Report",
     "tag": "Tag",
     "register": "Register Service",
-    "review_service": "Approve Service Registration"
+    "review_service": "Approve Service Registration",
+    "facilities": "Facilities",
+    "service_type": "Service Type"
   },
 
   "or": "OR",

@@ -1,6 +1,6 @@
 import { Explore, LocationOn, Schedule } from "@mui/icons-material";
 import { Box, Card, CardContent, Chip, Typography } from "@mui/material";
-import formatPrice from "@/shared/utils/FormatPrice";
+import formatPrice from "@/shared/utils/formatPrice";
 
 const TourCard = ({ data }) => {
   return (

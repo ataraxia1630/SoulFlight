@@ -1,6 +1,6 @@
 import { ConfirmationNumber, Place } from "@mui/icons-material";
 import { Box, Card, CardContent, CardMedia, Chip, Typography } from "@mui/material";
-import formatPrice from "@/shared/utils/FormatPrice";
+import formatPrice from "@/shared/utils/formatPrice";
 
 const TicketCard = ({ data }) => {
   return (
