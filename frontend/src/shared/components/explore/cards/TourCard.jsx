@@ -1,8 +1,8 @@
-import { Explore, LocationOn, Schedule } from "@mui/icons-material";
-import { Box, Card, CardContent, Chip, Typography } from "@mui/material";
+import { Explore, LocationOn, Schedule, ShoppingCart } from "@mui/icons-material";
+import { Box, Button, Card, CardContent, Chip, Typography } from "@mui/material";
 import formatPrice from "@/shared/utils/formatPrice";
 
-const TourCard = ({ data }) => {
+const TourCard = ({ data, onAddToCart }) => {
   return (
     <Card
       sx={{
@@ -130,6 +130,18 @@ const TourCard = ({ data }) => {
           <Typography variant="caption" sx={{ color: "text.secondary", fontSize: 12 }}>
             total package price
           </Typography>
+          <Button
+            variant="contained"
+            startIcon={<ShoppingCart />}
+            fullWidth
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddToCart?.(data);
+            }}
+            sx={{ mt: 2 }}
+          >
+            Add to Cart
+          </Button>
         </Box>
       </CardContent>
     </Card>

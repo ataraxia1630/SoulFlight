@@ -1,8 +1,17 @@
-import { MenuBook, Restaurant } from "@mui/icons-material";
-import { Box, Card, CardContent, CardMedia, Chip, Divider, Typography } from "@mui/material";
+import { MenuBook, Restaurant, ShoppingCart } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CardMedia,
+  Chip,
+  Divider,
+  Typography,
+} from "@mui/material";
 import formatPrice from "@/shared/utils/formatPrice";
 
-const MenuCard = ({ data }) => {
+const MenuCard = ({ data, onAddToCart }) => {
   return (
     <Card
       sx={{
@@ -125,6 +134,19 @@ const MenuCard = ({ data }) => {
             ))}
           </Box>
         )}
+
+        <Button
+          variant="contained"
+          startIcon={<ShoppingCart />}
+          fullWidth
+          onClick={(e) => {
+            e.stopPropagation();
+            onAddToCart?.(data);
+          }}
+          sx={{ mt: 2 }}
+        >
+          Add to Cart
+        </Button>
       </CardContent>
     </Card>
   );

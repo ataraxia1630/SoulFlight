@@ -1,8 +1,8 @@
-import { ConfirmationNumber, Place } from "@mui/icons-material";
-import { Box, Card, CardContent, CardMedia, Chip, Typography } from "@mui/material";
+import { ConfirmationNumber, Place, ShoppingCart } from "@mui/icons-material";
+import { Box, Button, Card, CardContent, CardMedia, Chip, Typography } from "@mui/material";
 import formatPrice from "@/shared/utils/formatPrice";
 
-const TicketCard = ({ data }) => {
+const TicketCard = ({ data, onAddToCart }) => {
   return (
     <Card
       sx={{
@@ -104,6 +104,18 @@ const TicketCard = ({ data }) => {
           <Typography variant="caption" sx={{ color: "text.secondary", fontSize: 12 }}>
             per ticket
           </Typography>
+          <Button
+            variant="contained"
+            startIcon={<ShoppingCart />}
+            fullWidth
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddToCart?.(data);
+            }}
+            sx={{ mt: 2 }}
+          >
+            Add to Cart
+          </Button>
         </Box>
       </CardContent>
     </Card>
