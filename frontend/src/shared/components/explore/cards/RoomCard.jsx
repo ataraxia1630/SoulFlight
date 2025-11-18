@@ -1,8 +1,8 @@
-import { Hotel, Pets } from "@mui/icons-material";
-import { Box, Card, CardContent, CardMedia, Chip, Typography } from "@mui/material";
+import { Hotel, Pets, ShoppingCart } from "@mui/icons-material";
+import { Box, Button, Card, CardContent, CardMedia, Chip, Typography } from "@mui/material";
 import formatPrice from "@/shared/utils/formatPrice";
 
-const RoomCard = ({ data }) => {
+const RoomCard = ({ data, onAddToCart }) => {
   return (
     <Card
       sx={{
@@ -130,6 +130,18 @@ const RoomCard = ({ data }) => {
           <Typography variant="caption" sx={{ color: "text.secondary", fontSize: 12 }}>
             per night
           </Typography>
+          <Button
+            variant="contained"
+            startIcon={<ShoppingCart />}
+            fullWidth
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddToCart?.(data);
+            }}
+            sx={{ mt: 2 }}
+          >
+            Add to Cart
+          </Button>
         </Box>
       </CardContent>
     </Card>
