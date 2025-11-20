@@ -9,7 +9,7 @@ const authMiddleware = async (req, _res, next) => {
       return next(
         new AppError(
           ERROR_CODES.UNAUTHORIZED.statusCode,
-          "No token provided",
+          ERROR_CODES.UNAUTHORIZED.message,
           ERROR_CODES.UNAUTHORIZED.code,
         ),
       );
@@ -20,7 +20,7 @@ const authMiddleware = async (req, _res, next) => {
       return next(
         new AppError(
           ERROR_CODES.UNAUTHORIZED.statusCode,
-          "Invalid token format",
+          ERROR_CODES.UNAUTHORIZED.message,
           ERROR_CODES.UNAUTHORIZED.code,
         ),
       );
