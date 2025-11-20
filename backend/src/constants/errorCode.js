@@ -260,6 +260,13 @@ const ERROR_CODES = {
     message: "Không tìm thấy phòng",
     code: "ROOM_NOT_FOUND",
   },
+
+  // authorize
+  UNAUTHORIZED: {
+    statusCode: 401,
+    message: "Không được phép truy cập",
+    code: "UNAUTHORIZED",
+  },
 };
 
 module.exports = { ERROR_CODES };
