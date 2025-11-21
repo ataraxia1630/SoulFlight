@@ -1,0 +1,119 @@
+const { BookingService } = require("../services/booking.service");
+const catchAsync = require("../utils/catchAsync");
+const ApiResponse = require("../utils/ApiResponse");
+const { BookingDTO } = require("../dtos/booking.dto");
+
+// ========== TRAVELER ==========
+const BookingController = {
+  getMyBookings: catchAsync(async (req, res) => {
+    const travelerId = req.user.id;
+    const { page = 1, limit = 10, status } = req.query;
+
+    const result = await BookingService.getBookingsByTraveler(travelerId, {
+      page: Number(page),
+      limit: Number(limit),
+      status,
+    });
+
+    res.status(200).json(
+      ApiResponse.success({
+        bookings: BookingDTO.fromList(result.bookings),
+        pagination: result.pagination,
+      }),
+    );
+  }),
+
+  getBookingDetail: catchAsync(async (req, res) => {
+    const travelerId = req.user.id;
+    const { bookingId } = req.params;
+
+    const booking = await BookingService.getBookingDetail(travelerId, bookingId);
+    res.status(200).json(ApiResponse.success(BookingDTO.fromModel(booking)));
+  }),
+
+  createFromCart: catchAsync(async (req, res) => {
+    const travelerId = req.user.id;
+    const { voucherCode } = req.body;
+
+    const booking = await BookingService.createBookingFromCart(travelerId, voucherCode);
+    res.status(201).json(
+      ApiResponse.success({
+        message: "Booking created successfully",
+        booking: BookingDTO.fromModel(booking),
+      }),
+    );
+  }),
+
+  cancelBooking: catchAsync(async (req, res) => {
+    const travelerId = req.user.id;
+    const { bookingId } = req.params;
+    const { reason } = req.body;
+
+    await BookingService.cancelBooking(travelerId, bookingId, reason);
+    res.status(200).json(ApiResponse.success({ message: "Booking cancelled successfully" }));
+  }),
+};
+
+// ========== PROVIDER ==========
+const ProviderBookingController = {
+  getProviderBookings: catchAsync(async (req, res) => {
+    const providerId = req.user.id;
+
+    const { page = 1, limit = 10, status, from, to } = req.query;
+    const result = await BookingService.getBookingsByProvider(providerId, {
+      page: Number(page),
+      limit: Number(limit),
+      status,
+      from,
+      to,
+    });
+
+    res.json(ApiResponse.success(result));
+  }),
+
+  getProviderBookingDetail: catchAsync(async (req, res) => {
+    const providerId = req.user.id;
+    const booking = await BookingService.getBookingForProvider(providerId, req.params.bookingId);
+    res.json(ApiResponse.success(BookingDTO.fromModel(booking)));
+  }),
+
+  updateBookingStatus: catchAsync(async (req, res) => {
+    const providerId = req.user.id;
+    const { bookingId } = req.params;
+    const { status, note } = req.body;
+
+    const booking = await BookingService.providerUpdateStatus(providerId, bookingId, status, note);
+    res.json(
+      ApiResponse.success({
+        message: "Booking status updated",
+        booking: BookingDTO.fromModel(booking),
+      }),
+    );
+  }),
+};
+
+// ========== ADMIN ==========
+const AdminBookingController = {
+  getAllBookings: catchAsync(async (req, res) => {
+    const filters = req.query;
+    const result = await BookingService.getAllBookingsAdmin(filters);
+    res.json(ApiResponse.success(result));
+  }),
+
+  getBookingDetail: catchAsync(async (req, res) => {
+    const booking = await BookingService.getBookingDetailAdmin(req.params.bookingId);
+    res.json(ApiResponse.success(BookingDTO.fromModel(booking)));
+  }),
+
+  forceUpdateStatus: catchAsync(async (req, res) => {
+    const { status, note } = req.body;
+    const booking = await BookingService.adminForceUpdateStatus(req.params.bookingId, status, note);
+    res.json(ApiResponse.success({ message: "Status forced updated", booking }));
+  }),
+};
+
+module.exports = {
+  BookingController,
+  ProviderBookingController,
+  AdminBookingController,
+};

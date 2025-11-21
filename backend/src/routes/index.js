@@ -13,6 +13,8 @@ const roomRoutes = require("./room.routes");
 const ticketRoutes = require("./ticket.routes");
 const searchRoutes = require("./search.route");
 const travelerRoutes = require("./traveler.routes");
+const cartRoutes = require("./cart.routes");
+const bookingRoutes = require("./booking.routes");
 
 function route(app) {
   app.use("/api/auth", authRoutes);
@@ -29,6 +31,8 @@ function route(app) {
   app.use("/api/ticket", ticketRoutes);
   app.use("/api/search", searchRoutes);
   app.use("/api/traveler", travelerRoutes);
+  app.use("/api/cart", cartRoutes);
+  app.use("/api/booking", bookingRoutes);
 
   // luôn để sau cùng
 
