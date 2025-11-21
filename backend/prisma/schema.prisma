@@ -183,6 +183,7 @@ model MenuItem {
   created_at  DateTime      @default(now())
   updated_at  DateTime      @updatedAt
   Menu        Menu          @relation(fields: [menu_id], references: [id])
+  cart_items  CartItem[]    @relation("CartItemToMenuItem")
 }
 
 model Tour {
@@ -205,6 +206,7 @@ model Tour {
   Service       Service       @relation(fields: [service_id], references: [id])
   TourPlace     TourPlace[]
   TourGuide     TourGuide?    @relation(fields: [tourguide_id], references: [id])
+  cart_items    CartItem[]    @relation("CartItemToTour")
 }
 
 model Place {
@@ -281,6 +283,7 @@ model Room {
 
   facilities RoomFacility[]
   images     Image[]        @relation("RoomImages")
+  cart_items CartItem[]     @relation("CartItemToRoom")
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -320,16 +323,17 @@ model ApprovalHistory {
 }
 
 model Ticket {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   service_id  Int
   name        String
   description String?
   price       Float
   place_id    Int
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
-  Service     Service  @relation(fields: [service_id], references: [id], onDelete: Cascade)
-  Place       Place    @relation(fields: [place_id], references: [id], onDelete: Cascade)
+  created_at  DateTime   @default(now())
+  updated_at  DateTime   @updatedAt
+  Service     Service    @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  Place       Place      @relation(fields: [place_id], references: [id], onDelete: Cascade)
+  cart_items  CartItem[] @relation("CartItemToTicket")
 }
 
 model Voucher {
@@ -373,14 +377,18 @@ model CartItem {
   id            Int          @id @default(autoincrement())
   cart_id       Int
   item_type     CartItemType
-  item_id       Int // ID của Room, Tour, Ticket, MenuItem
+  item_id       Int
   quantity      Int          @default(1)
   checkin_date  DateTime? // cho ROOM, TOUR
   checkout_date DateTime? // cho ROOM
   visit_date    DateTime? // cho TOUR, TICKET (ngày sử dụng)
   note          String?
 
-  cart Cart @relation(fields: [cart_id], references: [id], onDelete: Cascade)
+  cart      Cart?     @relation(fields: [cart_id], references: [id])
+  room      Room?     @relation("CartItemToRoom", fields: [item_id], references: [id], onDelete: Cascade, map: "fk_cartitem_room")
+  tour      Tour?     @relation("CartItemToTour", fields: [item_id], references: [id], onDelete: Cascade, map: "fk_cartitem_tour")
+  ticket    Ticket?   @relation("CartItemToTicket", fields: [item_id], references: [id], onDelete: Cascade, map: "fk_cartitem_ticket")
+  menu_item MenuItem? @relation("CartItemToMenuItem", fields: [item_id], references: [id], onDelete: Cascade, map: "fk_cartitem_menuitem")
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
