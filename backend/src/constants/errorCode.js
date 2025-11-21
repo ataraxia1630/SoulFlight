@@ -260,6 +260,23 @@ const ERROR_CODES = {
     message: "Không tìm thấy phòng",
     code: "ROOM_NOT_FOUND",
   },
+
+  // cart
+  CART_NOT_FOUND: {
+    message: "Cart not found",
+    statusCode: 404,
+    code: "CART_NOT_FOUND",
+  },
+  CART_ITEM_NOT_FOUND: {
+    message: "Cart item not found",
+    statusCode: 404,
+    code: "CART_ITEM_NOT_FOUND",
+  },
+  INVALID_CART_ITEM: {
+    message: "Invalid cart item data",
+    statusCode: 400,
+    code: "INVALID_CART_ITEM",
+  },
 };
 
 module.exports = { ERROR_CODES };
