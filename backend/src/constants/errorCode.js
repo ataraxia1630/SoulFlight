@@ -276,6 +276,12 @@ const ERROR_CODES = {
     message: "Invalid cart item data",
     statusCode: 400,
     code: "INVALID_CART_ITEM",
+    
+  // authorize
+  UNAUTHORIZED: {
+    statusCode: 401,
+    message: "Không được phép truy cập",
+    code: "UNAUTHORIZED",
   },
 };
 
