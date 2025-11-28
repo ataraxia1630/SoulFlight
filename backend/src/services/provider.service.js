@@ -2,20 +2,28 @@ const prisma = require("../configs/prisma");
 const CloudinaryService = require("./cloudinary.service");
 const AppError = require("../utils/AppError");
 const { ERROR_CODES } = require("../constants/errorCode");
-const { TravelerDTO } = require("../dtos/traveler.dto");
+const { ProviderDTO } = require("../dtos/provider.dto");
 
-const ALLOWED_TRAVELER_FIELDS = ["gender", "dob", "location", "avatar_url"];
+const ALLOWED_PROVIDER_FIELDS = [
+  "description",
+  "province",
+  "country",
+  "address",
+  "website_link",
+  "id_card",
+  "establish_year",
+];
 
 const ALLOWED_USER_FIELDS = ["name", "username", "phone", "status"];
 
-const TravelerService = {
+const ProviderService = {
   getMyProfile: async (userId) => {
     const result = await prisma.user.findUnique({
       where: { id: userId },
-      include: { Traveler: true },
+      include: { Provider: true },
     });
 
-    if (!result?.Traveler?.[0]) {
+    if (!result?.Provider?.[0]) {
       throw new AppError(
         ERROR_CODES.USER_NOT_FOUND.statusCode,
         ERROR_CODES.USER_NOT_FOUND.message,
@@ -23,25 +31,25 @@ const TravelerService = {
       );
     }
 
-    return TravelerDTO.fromModel(result.Traveler[0], result);
+    return ProviderDTO.fromModel(result.Provider[0], result);
   },
 
   getAll: async () => {
-    const usersWithTraveler = await prisma.user.findMany({
-      where: { Traveler: { some: {} } },
-      include: { Traveler: true },
+    const usersWithProvider = await prisma.user.findMany({
+      where: { Provider: { some: {} } },
+      include: { Provider: true },
       orderBy: { updated_at: "desc" },
     });
 
-    return TravelerDTO.fromList(usersWithTraveler);
+    return ProviderDTO.fromList(usersWithProvider);
   },
 
   updateProfile: async (userId, data, file) => {
-    const traveler = await prisma.traveler.findUnique({
+    const provider = await prisma.provider.findUnique({
       where: { id: userId },
     });
 
-    if (!traveler) {
+    if (!provider) {
       throw new AppError(
         ERROR_CODES.USER_NOT_FOUND.statusCode,
         ERROR_CODES.USER_NOT_FOUND.message,
@@ -49,26 +57,22 @@ const TravelerService = {
       );
     }
 
-    let avatarPublicId = traveler.avatar_url;
+    let logoPublicId = provider.logo_url;
 
     if (file) {
-      if (traveler.avatar_url) {
-        await CloudinaryService.deleteImage(traveler.avatar_url).catch(() => {});
+      if (provider.logo_url) {
+        await CloudinaryService.deleteImage(provider.logo_url).catch(() => {});
       }
       const uploadResult = await CloudinaryService.uploadSingle(file.buffer, {
-        folder: "avatars",
+        folder: "logos",
       });
-      avatarPublicId = uploadResult.public_id;
+      logoPublicId = uploadResult.public_id;
     }
 
-    const travelerUpdateData = Object.keys(data)
-      .filter((key) => ALLOWED_TRAVELER_FIELDS.includes(key))
+    const providerUpdateData = Object.keys(data)
+      .filter((key) => ALLOWED_PROVIDER_FIELDS.includes(key))
       .reduce((obj, key) => {
-        if (key === "dob" && data[key]) {
-          obj[key] = new Date(data[key]);
-        } else {
-          obj[key] = data[key] ?? undefined;
-        }
+        obj[key] = data[key] ?? undefined;
         return obj;
       }, {});
 
@@ -79,33 +83,33 @@ const TravelerService = {
         return obj;
       }, {});
 
-    if (avatarPublicId !== traveler.avatar_url) {
-      travelerUpdateData.avatar_url = avatarPublicId;
+    if (logoPublicId !== provider.logo_url) {
+      providerUpdateData.logo_url = logoPublicId;
     }
 
     if (
-      Object.keys(travelerUpdateData).length === 0 &&
+      Object.keys(providerUpdateData).length === 0 &&
       Object.keys(userUpdateData).length === 0 &&
       !file
     ) {
       const user = await prisma.user.findUnique({ where: { id: userId } });
-      return TravelerDTO.fromModel(traveler, user);
+      return ProviderDTO.fromModel(provider, user);
     }
 
     const now = new Date();
-    travelerUpdateData.updated_at = now;
+    providerUpdateData.updated_at = now;
     userUpdateData.updated_at = now;
 
-    const [updatedTraveler, updatedUser] = await prisma.$transaction([
-      prisma.traveler.update({
+    const [updatedProvider, updatedUser] = await prisma.$transaction([
+      prisma.provider.update({
         where: { id: userId },
-        data: travelerUpdateData,
+        data: providerUpdateData,
       }),
       prisma.user.update({ where: { id: userId }, data: userUpdateData }),
     ]);
 
-    return TravelerDTO.fromModel(updatedTraveler, updatedUser);
+    return ProviderDTO.fromModel(updatedProvider, updatedUser);
   },
 };
 
-module.exports = TravelerService;
+module.exports = ProviderService;
