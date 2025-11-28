@@ -89,7 +89,7 @@ export default function ServiceTags() {
   }
 
   return (
-    <Box sx={{ width: "100%", px: { xs: 3, sm: 4 } }}>
+    <Box sx={{ width: "100%", p: { xs: 2, sm: 3 } }}>
       <PageHeaderWithAdd title="Service Tag" onAdd={() => handleOpenDialog()} />
 
       {error && (

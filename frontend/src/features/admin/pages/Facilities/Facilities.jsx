@@ -89,7 +89,7 @@ export default function Facility() {
   }
 
   return (
-    <Box sx={{ width: "100%", px: { xs: 3, sm: 4 } }}>
+    <Box sx={{ width: "100%", p: { xs: 2, sm: 3 } }}>
       <PageHeaderWithAdd title="Facility" onAdd={() => handleOpenDialog()} />
 
       {error && (
