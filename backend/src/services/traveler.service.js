@@ -6,7 +6,7 @@ const { TravelerDTO } = require("../dtos/traveler.dto");
 
 const ALLOWED_TRAVELER_FIELDS = ["gender", "dob", "location", "avatar_url"];
 
-const ALLOWED_USER_FIELDS = ["name", "username", "phone", "status"];
+const ALLOWED_USER_FIELDS = ["name", "phone", "status"];
 
 const TravelerService = {
   getMyProfile: async (userId) => {

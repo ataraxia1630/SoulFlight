@@ -4,6 +4,7 @@ import ServiceTags from "@admin/pages/ServiceTags";
 import ServiceTypes from "@admin/pages/ServiceTypes";
 import { Route } from "react-router-dom";
 import AdminHome from "@/features/admin/pages/Home";
+import Traveler from "@/features/admin/pages/Traveler";
 import ProtectedRoute from "./ProtectedRoute";
 
 const adminRoutes = (
@@ -14,6 +15,7 @@ const adminRoutes = (
     <Route path="admin/facilities" element={<Facilities />} />
     <Route path="admin/service_type" element={<ServiceTypes />} />
     <Route path="admin/tag" element={<ServiceTags />} />
+    <Route path="admin/traveler" element={<Traveler />} />
   </Route>
 );
 

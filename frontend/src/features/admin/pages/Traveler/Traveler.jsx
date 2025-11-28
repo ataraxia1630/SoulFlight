@@ -1,41 +1,45 @@
-import FacilityService from "@admin/services/facility.service";
 import { Alert, Box, CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
-import DeleteConfirmDialog from "@/shared/components/DeleteConfirmDialog";
+import { useNavigate } from "react-router-dom";
 import PageHeaderWithAdd from "@/shared/components/PageHeaderWithAdd";
 import CustomTable from "@/shared/components/Table";
+import TravelerService from "@/shared/services/traveler.service";
 import columnConfig from "./Components/columnsConfig";
-import FacilityDialog from "./Components/FacilityDialog";
+import TravelerDialog from "./Components/TravelerDialog";
 
-export default function Facility() {
+export default function ServiceTags() {
+  const navigate = useNavigate();
+
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [openDialog, setOpenDialog] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
-  const [deletingItem, setDeletingItem] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
 
-  const loadFacilities = async () => {
+  const loadTraveler = async () => {
     try {
       setLoading(true);
-      const facilities = await FacilityService.getAll();
-      setData(facilities);
+      const traveler = await TravelerService.getAll();
+      setData(traveler);
       setError(null);
     } catch (err) {
-      setError("Không thể tải danh sách tiện ích. Vui lòng thử lại.");
+      setError("Không thể tải danh sách người dùng. Vui lòng thử lại.");
       console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: loadFacilities stable, ignore warning
+  // biome-ignore lint/correctness/useExhaustiveDependencies: loadServiceTags stable, ignore warning
   useEffect(() => {
-    loadFacilities();
+    loadTraveler();
   }, []);
+
+  const handleView = (row) => {
+    navigate(`/users/${row.id}`);
+  };
 
   const handleOpenDialog = (item = null) => {
     setEditingItem(item);
@@ -52,31 +56,14 @@ export default function Facility() {
 
     setActionLoading(true);
     try {
-      if (editingItem) {
-        await FacilityService.update(editingItem.id, formData);
-      } else {
-        await FacilityService.create(formData);
-      }
-
-      await loadFacilities();
+      await TravelerService.adminUpdateTraveler(editingItem.id, formData);
+      await loadTraveler();
       handleCloseDialog();
     } catch (err) {
-      alert(editingItem ? "Cập nhật thất bại!" : "Thêm mới thất bại!");
+      alert("Cập nhật thất bại!");
       console.error(err);
     } finally {
       setActionLoading(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      await FacilityService.delete(deletingItem.id);
-      await loadFacilities();
-      setOpenDeleteDialog(false);
-      setDeletingItem(null);
-    } catch (err) {
-      alert("Xóa thất bại!");
-      console.error(err);
     }
   };
 
@@ -90,7 +77,7 @@ export default function Facility() {
 
   return (
     <Box sx={{ width: "100%", p: { xs: 2, sm: 3 } }}>
-      <PageHeaderWithAdd title="Facility" onAdd={() => handleOpenDialog()} />
+      <PageHeaderWithAdd title="Traveler" />
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -102,25 +89,15 @@ export default function Facility() {
         columns={columnConfig}
         data={data}
         onEdit={handleOpenDialog}
-        onDelete={(item) => {
-          setDeletingItem(item);
-          setOpenDeleteDialog(true);
-        }}
+        onView={handleView}
       />
 
-      <FacilityDialog
+      <TravelerDialog
         open={openDialog}
         onClose={handleCloseDialog}
         onSave={handleSave}
         editingItem={editingItem}
         actionLoading={actionLoading}
-      />
-
-      <DeleteConfirmDialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-        onConfirm={handleDelete}
-        itemName={deletingItem?.name}
       />
     </Box>
   );
