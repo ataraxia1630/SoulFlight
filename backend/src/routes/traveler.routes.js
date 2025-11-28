@@ -17,6 +17,14 @@ router.put(
   TravelerController.updateProfile,
 );
 
+router.put(
+  "/:id",
+  authMiddleware,
+  upload.single("avatar"),
+  validate(updateTravelerProfileSchema),
+  TravelerController.adminUpdateProfile,
+);
+
 router.get("/", authMiddleware, TravelerController.getAll);
 
 module.exports = router;

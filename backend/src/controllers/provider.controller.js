@@ -1,26 +1,26 @@
 const catchAsync = require("../utils/catchAsync");
-const TravelerService = require("../services/traveler.service");
+const ProviderService = require("../services/provider.service");
 const { success } = require("../utils/ApiResponse");
 
 const TravelerController = {
   getMyProfile: catchAsync(async (req, res, _next) => {
-    const profile = await TravelerService.getMyProfile(req.user.id);
+    const profile = await ProviderService.getMyProfile(req.user.id);
     return res.status(200).json(success(profile));
   }),
 
   updateProfile: catchAsync(async (req, res, _next) => {
-    const profile = await TravelerService.updateProfile(req.user.id, req.body, req.file);
+    const profile = await ProviderService.updateProfile(req.user.id, req.body, req.file);
     return res.status(200).json(success(profile));
   }),
 
   adminUpdateProfile: catchAsync(async (req, res, _next) => {
-    const travelerId = parseInt(req.params.id, 10);
-    const profile = await TravelerService.updateProfile(travelerId, req.body, req.file);
+    const providerId = parseInt(req.params.id, 10);
+    const profile = await ProviderService.updateProfile(providerId, req.body, req.file);
     return res.status(200).json(success(profile));
   }),
 
   getAll: catchAsync(async (_req, res, _next) => {
-    const result = await TravelerService.getAll();
+    const result = await ProviderService.getAll();
     return res.status(200).json(success(result));
   }),
 };
