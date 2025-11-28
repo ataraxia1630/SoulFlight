@@ -261,6 +261,59 @@ const ERROR_CODES = {
     code: "ROOM_NOT_FOUND",
   },
 
+  // cart
+  CART_NOT_FOUND: {
+    message: "Cart not found",
+    statusCode: 404,
+    code: "CART_NOT_FOUND",
+  },
+  CART_ITEM_NOT_FOUND: {
+    message: "Cart item not found",
+    statusCode: 404,
+    code: "CART_ITEM_NOT_FOUND",
+  },
+  INVALID_CART_ITEM: {
+    message: "Invalid cart item data",
+    statusCode: 400,
+    code: "INVALID_CART_ITEM",
+  },
+
+  BOOKING_NOT_FOUND: {
+    message: "Booking not found",
+    statusCode: 404,
+    code: "BOOKING_NOT_FOUND",
+  },
+  CART_EMPTY: {
+    message: "Your cart is empty",
+    statusCode: 400,
+    code: "CART_EMPTY",
+  },
+  INVALID_VOUCHER: {
+    message: "Invalid or expired voucher code",
+    statusCode: 400,
+    code: "INVALID_VOUCHER",
+  },
+  VOUCHER_LIMIT_EXCEEDED: {
+    message: "This voucher has reached its usage limit",
+    statusCode: 400,
+    code: "VOUCHER_LIMIT_EXCEEDED",
+  },
+  CANNOT_CANCEL_BOOKING: {
+    message: "Cannot cancel booking in current status",
+    statusCode: 400,
+    code: "CANNOT_CANCEL_BOOKING",
+  },
+  BOOKING_FINALIZED: {
+    message: "Booking has been finalized and cannot be modified",
+    statusCode: 400,
+    code: "BOOKING_FINALIZED",
+  },
+  INVALID_STATUS_TRANSITION: {
+    message: "Invalid booking status transition",
+    statusCode: 400,
+    code: "INVALID_STATUS_TRANSITION",
+  },
+
   // authorize
   UNAUTHORIZED: {
     statusCode: 401,
