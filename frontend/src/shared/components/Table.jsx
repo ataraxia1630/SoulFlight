@@ -227,6 +227,7 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
                           />
                         ) : (
                           <Typography
+                            component="span"
                             variant="body2"
                             sx={{ fontWeight: column.sx?.fontWeight || 400 }}
                           >

@@ -7,6 +7,7 @@ import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import HandymanIcon from "@mui/icons-material/Handyman";
 import PaymentIcon from "@mui/icons-material/Payment";
+import PersonIcon from "@mui/icons-material/Person";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import RoomServiceIcon from "@mui/icons-material/RoomService";
 import TagIcon from "@mui/icons-material/Tag";
@@ -28,7 +29,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const DRAWER_WIDTH = 260;
-const DRAWER_WIDTH_COLLAPSED = 72;
+const DRAWER_WIDTH_COLLAPSED = 85;
 
 const AdminSidebar = ({ open, onToggle }) => {
   const navigate = useNavigate();
@@ -62,6 +63,11 @@ const AdminSidebar = ({ open, onToggle }) => {
       text: t("sidebar.tag"),
       icon: <TagIcon />,
       path: "/admin/tag",
+    },
+    {
+      text: t("sidebar.traveler"),
+      icon: <PersonIcon />,
+      path: "/admin/traveler",
     },
     {
       text: t("sidebar.service"),
