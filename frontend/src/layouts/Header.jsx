@@ -5,6 +5,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import {
   AppBar,
   Avatar,
@@ -304,6 +305,7 @@ const Header = ({ drawerWidth = 0, onToggleSidebar, showMenuIcon = false }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const navItems = ["home", "explore", "trips", "news", "contact"];
   const user = useAuthStore((state) => state.user);
+  const navigate = useNavigate();
 
   const handleLanguageChange = (e) => {
     i18n.changeLanguage(e.target.value);
@@ -311,6 +313,10 @@ const Header = ({ drawerWidth = 0, onToggleSidebar, showMenuIcon = false }) => {
 
   const toggleDrawer = () => {
     setIsDrawerOpen((prev) => !prev);
+  };
+
+  const handleCart = () => {
+    navigate("/cart");
   };
 
   return (
@@ -366,6 +372,17 @@ const Header = ({ drawerWidth = 0, onToggleSidebar, showMenuIcon = false }) => {
           {user?.role === "TRAVELER" && <DesktopNav navItems={navItems} t={t} theme={theme} />}
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+            {user?.role === "TRAVELER" && (
+              <ShoppingCartIcon
+                onClick={handleCart}
+                sx={{
+                  cursor: "pointer",
+                  "&:hover": {
+                    color: theme.palette.primary.main,
+                  },
+                }}
+              />
+            )}
             {user ? (
               <Box sx={{ display: { xs: "none", sm: "block" } }}>
                 <UserMenu user={user} t={t} />
