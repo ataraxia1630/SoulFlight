@@ -67,7 +67,8 @@
     "review_service": "Duyệt đăng ký dịch vụ",
     "facilities": "Cơ sở vật chất",
     "service_type": "Loại dịch vụ",
-    "traveler": "Người dùng"
+    "traveler": "Người dùng",
+    "provider": "Doanh nghiệp"
   },
 
   "or": "HOẶC",

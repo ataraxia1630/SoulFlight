@@ -1,5 +1,6 @@
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import BusinessIcon from "@mui/icons-material/Business";
 import CategoryIcon from "@mui/icons-material/Category";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -68,6 +69,11 @@ const AdminSidebar = ({ open, onToggle }) => {
       text: t("sidebar.traveler"),
       icon: <PersonIcon />,
       path: "/admin/traveler",
+    },
+    {
+      text: t("sidebar.provider"),
+      icon: <BusinessIcon />,
+      path: "/admin/business",
     },
     {
       text: t("sidebar.service"),

@@ -67,7 +67,8 @@
     "review_service": "Approve Service Registration",
     "facilities": "Facilities",
     "service_type": "Service Type",
-    "traveler": "Traveler"
+    "traveler": "Traveler",
+    "provider": "Provider"
   },
 
   "or": "OR",

@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PageHeaderWithAdd from "@/shared/components/PageHeaderWithAdd";
 import CustomTable from "@/shared/components/Table";
-import TravelerService from "@/shared/services/traveler.service";
+import ProviderService from "@/shared/services/provider.service";
 import columnConfig from "./Components/columnsConfig";
-import TravelerDialog from "./Components/TravelerDialog";
+import ProviderDialog from "./Components/ProviderDialog";
 
-export default function Traveler() {
+export default function Provider() {
   const navigate = useNavigate();
 
   const [data, setData] = useState([]);
@@ -18,11 +18,11 @@ export default function Traveler() {
   const [editingItem, setEditingItem] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
 
-  const loadTraveler = async () => {
+  const loadProvider = async () => {
     try {
       setLoading(true);
-      const traveler = await TravelerService.getAll();
-      setData(traveler);
+      const provider = await ProviderService.getAll();
+      setData(provider);
       setError(null);
     } catch (err) {
       setError("Không thể tải danh sách người dùng. Vui lòng thử lại.");
@@ -34,7 +34,7 @@ export default function Traveler() {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: loadServiceTags stable, ignore warning
   useEffect(() => {
-    loadTraveler();
+    loadProvider();
   }, []);
 
   const handleView = (row) => {
@@ -56,8 +56,8 @@ export default function Traveler() {
 
     setActionLoading(true);
     try {
-      await TravelerService.adminUpdateTraveler(editingItem.id, formData);
-      await loadTraveler();
+      await ProviderService.adminUpdateProvider(editingItem.id, formData);
+      await loadProvider();
       handleCloseDialog();
     } catch (err) {
       alert("Cập nhật thất bại!");
@@ -77,7 +77,7 @@ export default function Traveler() {
 
   return (
     <Box sx={{ width: "100%", p: { xs: 2, sm: 3 } }}>
-      <PageHeaderWithAdd title="Traveler" />
+      <PageHeaderWithAdd title="Provider" />
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -92,7 +92,7 @@ export default function Traveler() {
         onView={handleView}
       />
 
-      <TravelerDialog
+      <ProviderDialog
         open={openDialog}
         onClose={handleCloseDialog}
         onSave={handleSave}

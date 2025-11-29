@@ -1,5 +1,6 @@
 import Facilities from "@admin/pages/Facilities";
 import PartnerRegistration from "@admin/pages/PartnerRegistration";
+import Provider from "@admin/pages/Provider";
 import ServiceTags from "@admin/pages/ServiceTags";
 import ServiceTypes from "@admin/pages/ServiceTypes";
 import { Route } from "react-router-dom";
@@ -16,6 +17,7 @@ const adminRoutes = (
     <Route path="admin/service_type" element={<ServiceTypes />} />
     <Route path="admin/tag" element={<ServiceTags />} />
     <Route path="admin/traveler" element={<Traveler />} />
+    <Route path="admin/business" element={<Provider />} />
   </Route>
 );
 
