@@ -5,6 +5,7 @@ const redis = require("../configs/redis");
 const prisma = require("../configs/prisma");
 const AppError = require("../utils/AppError");
 const { ERROR_CODES } = require("../constants/errorCode");
+const CloudinaryService = require("../services/cloudinary.service");
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
@@ -334,6 +335,12 @@ const AuthService = {
         email: existingUser.email,
         role,
         name: existingUser.name,
+        avatar: existingUser.Traveler?.[0]?.avatar_url
+          ? CloudinaryService.generateUrl(existingUser.Traveler[0].avatar_url)
+          : null,
+        logo: existingUser.Provider?.[0]?.logo_url
+          ? CloudinaryService.generateUrl(existingUser.Provider[0].logo_url)
+          : null,
       },
     };
   },
