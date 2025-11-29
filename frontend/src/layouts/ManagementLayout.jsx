@@ -41,7 +41,7 @@ const ManagementLayout = () => {
           component="main"
           sx={{
             flex: 1,
-            pt: { xs: 3, lg: 5 },
+            pt: { xs: 1, lg: 2 },
             // px: { md: 19 },
             overflowY: "auto",
             overflowX: "hidden",
