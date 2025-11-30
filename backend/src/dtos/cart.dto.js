@@ -35,4 +35,4 @@ class CartDTO {
   }
 }
 
-module.exports = { CartDTO };
+module.exports = { CartDTO, CartItemDTO };

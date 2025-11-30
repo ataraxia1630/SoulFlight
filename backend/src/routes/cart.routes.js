@@ -7,7 +7,7 @@ const requiredRoles = require("../middlewares/role.middleware");
 
 const router = Router();
 
-router.use(authorize, requiredRoles(["TRAVELER"]));
+router.use(authorize, requiredRoles("TRAVELER"));
 
 router.get("/", CartController.getCart);
 router.post("/", validate(addToCartSchema), CartController.addToCart);

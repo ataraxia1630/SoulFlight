@@ -8,8 +8,9 @@ function success(data, message = "success", code = "SUCCESS", params = {}) {
   };
 }
 
-function error(message = "error", code = "ERROR", statusCode = 500, params = {}) {
+function error(message = "error", code = "ERROR", statusCode = 500, params = {}, originalUrl) {
   return {
+    originalUrl,
     success: false,
     message,
     code,

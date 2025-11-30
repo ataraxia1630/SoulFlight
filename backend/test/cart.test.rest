@@ -1,0 +1,94 @@
+### 1. Đăng nhập để lấy token (nếu chưa có)
+POST http://localhost:1601/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "jane_smith",
+  "password": "traveler123"
+}
+
+
+###
+
+@baseUrl = http://localhost:1601/api/cart
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NiwiZW1haWwiOiJqYW5lLnNtaXRoQGVtYWlsLmNvbSIsImlhdCI6MTc2NDQxMTk0MiwiZXhwIjoxNzY0NDE1NTQyfQ.OmoN88bqjE9to8IyKZeTNeBhO_dLygpi7bATNOyavnc
+
+GET {{baseUrl}}
+Authorization: Bearer {{token}}
+
+###
+
+POST {{baseUrl}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "itemType": "ROOM",
+  "itemId": 7,
+  "quantity": 1,
+  "checkinDate": "2025-12-20",
+  "checkoutDate": "2025-12-25"
+}
+
+###
+
+POST {{baseUrl}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "itemType": "TOUR",
+  "itemId": 3,
+  "quantity": 2,
+  "visitDate": "2025-12-28",
+  "note": "Tour Hà Giang 3N2Đ"
+}
+
+###
+
+POST {{baseUrl}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "itemType": "TICKET",
+  "itemId": 5,
+  "quantity": 4,
+  "visitDate": "2025-12-30"
+}
+
+###
+
+POST {{baseUrl}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "itemType": "MENU_ITEM",
+  "itemId": 12,
+  "quantity": 3,
+  "note": "Không hành, thêm ớt"
+}
+
+###
+
+### 7. Lấy lại giỏ hàng → kiểm tra đã thêm chưa
+GET {{baseUrl}}
+Authorization: Bearer {{token}}
+
+###
+
+DELETE {{baseUrl}}/item/123
+Authorization: Bearer {{token}}
+
+###
+
+### 9. Cập nhật số lượng item
+PUT {{baseUrl}}/item/123
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "quantity": 5,
+  "note": "Tăng lên 5 người"
+}
