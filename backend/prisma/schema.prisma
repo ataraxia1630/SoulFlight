@@ -64,18 +64,19 @@ enum Action {
 }
 
 model User {
-  id         Int        @id @default(autoincrement())
-  username   String     @unique
-  password   String
-  name       String
-  email      String     @unique
-  phone      String?    @unique
-  status     UserStatus @default(UNVERIFIED)
-  is_admin   Boolean    @default(false)
-  created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
-  Provider   Provider[]
-  Traveler   Traveler[]
+  id            Int            @id @default(autoincrement())
+  username      String         @unique
+  password      String
+  name          String
+  email         String         @unique
+  phone         String?        @unique
+  status        UserStatus     @default(UNVERIFIED)
+  is_admin      Boolean        @default(false)
+  created_at    DateTime       @default(now())
+  updated_at    DateTime       @updatedAt
+  Provider      Provider[]
+  Traveler      Traveler[]
+  notifications Notification[]
 }
 
 model Provider {
@@ -96,16 +97,17 @@ model Provider {
 }
 
 model Traveler {
-  id         Int       @id
+  id         Int        @id
   gender     Gender?
   dob        DateTime?
   location   String?
   avatar_url String?
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
-  user       User      @relation(fields: [id], references: [id])
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+  user       User       @relation(fields: [id], references: [id])
   cart       Cart?
-  bookings   Booking[] @relation("TravelerBookings")
+  bookings   Booking[]  @relation("TravelerBookings")
+  wishlists  Wishlist[]
 }
 
 model ServiceType {
@@ -137,6 +139,7 @@ model Service {
   Rooms       Room[]
   Tickets     Ticket[]
   Vouchers    Voucher[]
+  wishlists   Wishlist[]
 }
 
 model ServiceTag {
@@ -187,26 +190,40 @@ model MenuItem {
 }
 
 model Tour {
-  id            Int           @id @default(autoincrement())
-  name          String
-  description   String?
-  service_price Float
-  total_price   Float
-  duration      Float // in hours
-  is_recurring  Boolean       @default(false)
-  repeat_rule   String? // 'daily' | 'weekly' | 'monthly'
-  repeat_days   String[] // ['monday', 'friday'] nếu weekly
-  start_date    DateTime? // chỉ cần nếu là tour 1 lần
-  end_date      DateTime? // nếu tour kéo dài nhiều ngày
-  status        ServiceStatus @default(AVAILABLE)
-  service_id    Int
-  tourguide_id  Int?
-  created_at    DateTime      @default(now())
-  updated_at    DateTime      @updatedAt
-  Service       Service       @relation(fields: [service_id], references: [id])
-  TourPlace     TourPlace[]
-  TourGuide     TourGuide?    @relation(fields: [tourguide_id], references: [id])
-  cart_items    CartItem[]    @relation("CartItemToTour")
+  id             Int                @id @default(autoincrement())
+  name           String
+  description    String?
+  service_price  Float
+  total_price    Float
+  duration       Float // in hours
+  is_recurring   Boolean            @default(false)
+  repeat_rule    String? // 'daily' | 'weekly' | 'monthly'
+  repeat_days    String[] // ['monday', 'friday'] nếu weekly
+  start_date     DateTime? // chỉ cần nếu là tour 1 lần
+  end_date       DateTime? // nếu tour kéo dài nhiều ngày
+  status         ServiceStatus      @default(AVAILABLE)
+  service_id     Int
+  tourguide_id   Int?
+  created_at     DateTime           @default(now())
+  updated_at     DateTime           @updatedAt
+  Service        Service            @relation(fields: [service_id], references: [id])
+  TourPlace      TourPlace[]
+  TourGuide      TourGuide?         @relation(fields: [tourguide_id], references: [id])
+  cart_items     CartItem[]         @relation("CartItemToTour")
+  availabilities TourAvailability[]
+}
+
+model TourAvailability {
+  id               Int      @id @default(autoincrement())
+  tour_id          Int
+  date             DateTime @db.Date
+  available_slots  Int
+  max_participants Int
+  price_override   Float?
+
+  tour Tour @relation(fields: [tour_id], references: [id], onDelete: Cascade)
+
+  @@index([tour_id, date])
 }
 
 model Place {
@@ -270,25 +287,45 @@ model Facility {
 }
 
 model Room {
-  id                  Int     @id @default(autoincrement())
+  id                  Int           @id @default(autoincrement())
   service_id          Int
   name                String
   description         String?
-  price_per_night     Decimal @db.Decimal(10, 2)
+  price_per_night     Decimal       @db.Decimal(10, 2)
   max_children_number Int?
   max_adult_number    Int?
-  pet_allowed         Boolean @default(false)
+  pet_allowed         Boolean       @default(false)
   bed_number          Int
-  service             Service @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  room_number         String? // Số phòng thực tế
+  floor               Int? // Tầng
+  size_sqm            Float? // Diện tích m²
+  view_type           String? // "sea_view", "city_view", "garden_view"
+  status              ServiceStatus @default(AVAILABLE)
+  service             Service       @relation(fields: [service_id], references: [id], onDelete: Cascade)
 
   facilities RoomFacility[]
   images     Image[]        @relation("RoomImages")
   cart_items CartItem[]     @relation("CartItemToRoom")
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at     DateTime           @default(now())
+  updated_at     DateTime           @updatedAt
+  availabilities RoomAvailability[]
 
   @@index([service_id])
+}
+
+model RoomAvailability {
+  id              Int      @id @default(autoincrement())
+  room_id         Int
+  date            DateTime @db.Date
+  available_count Int // Số phòng còn trống
+  total_count     Int // Tổng số phòng loại này
+  price_override  Decimal? @db.Decimal(10, 2) // Giá đặc biệt cho ngày này
+
+  room Room @relation(fields: [room_id], references: [id], onDelete: Cascade)
+
+  @@unique([room_id, date])
+  @@index([room_id, date])
 }
 
 model RoomFacility {
@@ -323,17 +360,33 @@ model ApprovalHistory {
 }
 
 model Ticket {
-  id          Int        @id @default(autoincrement())
-  service_id  Int
-  name        String
-  description String?
-  price       Float
-  place_id    Int
-  created_at  DateTime   @default(now())
-  updated_at  DateTime   @updatedAt
-  Service     Service    @relation(fields: [service_id], references: [id], onDelete: Cascade)
-  Place       Place      @relation(fields: [place_id], references: [id], onDelete: Cascade)
-  cart_items  CartItem[] @relation("CartItemToTicket")
+  id             Int                  @id @default(autoincrement())
+  service_id     Int
+  name           String
+  description    String?
+  price          Float
+  place_id       Int
+  status         ServiceStatus        @default(AVAILABLE)
+  created_at     DateTime             @default(now())
+  updated_at     DateTime             @updatedAt
+  Service        Service              @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  Place          Place                @relation(fields: [place_id], references: [id], onDelete: Cascade)
+  cart_items     CartItem[]           @relation("CartItemToTicket")
+  availabilities TicketAvailability[]
+}
+
+model TicketAvailability {
+  id              Int      @id @default(autoincrement())
+  ticket_id       Int
+  date            DateTime @db.Date
+  available_count Int
+  max_count       Int? // null = không giới hạn
+  price_override  Float?
+
+  ticket Ticket @relation(fields: [ticket_id], references: [id], onDelete: Cascade)
+
+  @@unique([ticket_id, date])
+  @@index([ticket_id, date])
 }
 
 model Voucher {
@@ -505,4 +558,31 @@ model Review {
   created_at DateTime @default(now())
 
   booking Booking @relation(fields: [booking_id], references: [id])
+}
+
+model Wishlist {
+  id          Int      @id @default(autoincrement())
+  traveler_id Int
+  service_id  Int
+  created_at  DateTime @default(now())
+
+  traveler Traveler @relation(fields: [traveler_id], references: [id], onDelete: Cascade)
+  service  Service  @relation(fields: [service_id], references: [id], onDelete: Cascade)
+
+  @@unique([traveler_id, service_id])
+}
+
+model Notification {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  title      String
+  message    String
+  type       String
+  is_read    Boolean  @default(false)
+  related_id String? // booking_id, payment_id, etc.
+  created_at DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@index([user_id, is_read])
 }
