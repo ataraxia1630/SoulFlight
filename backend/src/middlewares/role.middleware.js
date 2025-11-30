@@ -13,7 +13,7 @@ const restrictTo = (...allowedRoles) => {
       );
     }
 
-    if (!allowedRoles.includes(req.user.role)) {
+    if (!allowedRoles.includes(req.user?.role)) {
       return next(
         new AppError(
           ERROR_CODES.FORBIDDEN.statusCode,

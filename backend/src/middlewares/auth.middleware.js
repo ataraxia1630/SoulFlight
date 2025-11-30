@@ -30,14 +30,22 @@ const authMiddleware = async (req, _res, next) => {
     try {
       payload = await AuthService.verifyAccessToken(token);
     } catch (error) {
-      return next(error);
+      if (error.name === "TokenExpiredError") {
+        return next(
+          new AppError(401, "Token đã hết hạn. Vui lòng đăng nhập lại.", "TOKEN_EXPIRED"),
+        );
+      }
+      if (error.name === "JsonWebTokenError") {
+        return next(new AppError(401, "Token không hợp lệ.", "INVALID_TOKEN"));
+      }
+      return next(new AppError(401, "Xác thực thất bại.", "AUTH_FAILED"));
     }
 
     req.user = payload;
 
     next();
-  } catch (error) {
-    next(error);
+  } catch (_error) {
+    next(new AppError(500, "Lỗi hệ thống xác thực", "AUTH_SYSTEM_ERROR"));
   }
 };
 
