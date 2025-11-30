@@ -6,21 +6,6 @@ const CartService = {
   getOrCreateCart: async (travelerId) => {
     let cart = await prisma.cart.findUnique({
       where: { traveler_id: travelerId },
-      include: { items: true },
-    });
-
-    if (!cart) {
-      cart = await prisma.cart.create({
-        data: { traveler_id: travelerId },
-        include: { items: true },
-      });
-    }
-    return cart;
-  },
-
-  getCartByTravelerId: async (travelerId) => {
-    const cart = await prisma.cart.findUnique({
-      where: { traveler_id: travelerId },
       include: {
         items: {
           include: {
@@ -33,43 +18,81 @@ const CartService = {
       },
     });
 
-    if (!cart)
-      throw new AppError(404, ERROR_CODES.CART_NOT_FOUND.message, ERROR_CODES.CART_NOT_FOUND.code);
+    if (!cart) {
+      cart = await prisma.cart.create({
+        data: { traveler_id: travelerId },
+        include: {
+          items: {
+            include: {
+              room: true,
+              tour: true,
+              ticket: true,
+              menu_item: true,
+            },
+          },
+        },
+      });
+    }
+    return cart;
+  },
 
-    // Tính giá động + gán details
-    const enrichedItems = await Promise.all(
-      cart.items.map(async (item) => {
-        let price = 0;
-        let details = null;
+  getCartByTravelerId: async (travelerId) => {
+    try {
+      const cart = await CartService.getOrCreateCart(travelerId);
 
-        if (item.item_type === "ROOM" && item.room) {
-          price = Number(item.room.price_per_night);
-          details = {
-            name: item.room.name,
-            serviceName: item.room.service.name,
-            image: item.room.images[0]?.url,
-          };
-        } else if (item.item_type === "TOUR" && item.tour) {
-          price = item.tour.service_price;
-          details = { name: item.tour.name, duration: item.tour.duration };
-        } else if (item.item_type === "TICKET" && item.ticket) {
-          price = item.ticket.price;
-          details = { name: item.ticket.name, place: item.ticket.place.name };
-        } else if (item.item_type === "MENU_ITEM" && item.menu_item) {
-          price = item.menu_item.price;
-          details = { name: item.menu_item.name, unit: item.menu_item.unit };
-        }
+      if (!cart.items || cart.items.length === 0) {
+        return { id: cart.id, traveler_id: cart.traveler_id, items: [] };
+      }
 
-        return {
-          ...item,
-          price,
-          total: price * item.quantity,
-          details,
-        };
-      }),
-    );
+      const enrichedItems = await Promise.all(
+        cart.items.map(async (item) => {
+          try {
+            let price = 0;
+            let details = { providerId: null, providerName: "Unknown" };
 
-    return { ...cart, items: enrichedItems };
+            if (item.item_type === "ROOM" && item.room) {
+              price = Number(item.room[0].price_per_night || 0);
+              details = {
+                providerId: item.room.service?.provider_id,
+                providerName: item.room.service?.Provider?.name || "Unknown",
+                name: item.room.name,
+                image: item.room.images?.[0]?.url,
+              };
+            }
+
+            return {
+              id: item.id,
+              item_type: item.item_type,
+              item_id: item.item_id,
+              quantity: item.quantity,
+              checkin_date: item.checkin_date,
+              checkout_date: item.checkout_date,
+              visit_date: item.visit_date,
+              note: item.note,
+              price,
+              total: price * item.quantity,
+              details,
+            };
+          } catch (itemError) {
+            console.error("Lỗi khi enrich item ID", item.id, ":", itemError);
+            return {
+              ...item,
+              price: 0,
+              total: 0,
+              details: { providerId: null, providerName: "Error" },
+            };
+          }
+        }),
+      );
+
+      return {
+        id: cart.id,
+        traveler_id: cart.traveler_id,
+        items: enrichedItems,
+      };
+    } catch (_error) {
+      throw new AppError(500, "Không thể tải giỏ hàng", "CART_LOAD_FAILED");
+    }
   },
 
   addToCart: async (travelerId, data) => {
