@@ -190,40 +190,28 @@ model MenuItem {
 }
 
 model Tour {
-  id             Int                @id @default(autoincrement())
-  name           String
-  description    String?
-  service_price  Float
-  total_price    Float
-  duration       Float // in hours
-  is_recurring   Boolean            @default(false)
-  repeat_rule    String? // 'daily' | 'weekly' | 'monthly'
-  repeat_days    String[] // ['monday', 'friday'] nếu weekly
-  start_date     DateTime? // chỉ cần nếu là tour 1 lần
-  end_date       DateTime? // nếu tour kéo dài nhiều ngày
-  status         ServiceStatus      @default(AVAILABLE)
-  service_id     Int
-  tourguide_id   Int?
-  created_at     DateTime           @default(now())
-  updated_at     DateTime           @updatedAt
-  Service        Service            @relation(fields: [service_id], references: [id])
-  TourPlace      TourPlace[]
-  TourGuide      TourGuide?         @relation(fields: [tourguide_id], references: [id])
-  cart_items     CartItem[]         @relation("CartItemToTour")
-  availabilities TourAvailability[]
-}
-
-model TourAvailability {
-  id               Int      @id @default(autoincrement())
-  tour_id          Int
-  date             DateTime @db.Date
-  available_slots  Int
-  max_participants Int
-  price_override   Float?
-
-  tour Tour @relation(fields: [tour_id], references: [id], onDelete: Cascade)
-
-  @@index([tour_id, date])
+  id                Int           @id @default(autoincrement())
+  name              String
+  description       String?
+  service_price     Float
+  total_price       Float
+  
+  start_time        DateTime      @default(now()) // Ngày, giờ bắt đầu
+  end_time          DateTime      @default(now()) // Ngày, giờ kết thúc
+  
+  max_participants  Int           @default(1)// Số người tối đa cho tour này
+  current_bookings  Int           @default(0) // Số người đã đặt
+  
+  status            ServiceStatus @default(AVAILABLE)
+  service_id        Int
+  tourguide_id      Int?
+  created_at        DateTime      @default(now())
+  updated_at        DateTime      @updatedAt
+  
+  Service           Service    @relation(fields: [service_id], references: [id])
+  TourPlace         TourPlace[]
+  TourGuide         TourGuide? @relation(fields: [tourguide_id], references: [id])
+  cart_items        CartItem[] @relation("CartItemToTour")
 }
 
 model Place {
@@ -292,24 +280,26 @@ model Room {
   name                String
   description         String?
   price_per_night     Decimal       @db.Decimal(10, 2)
+
+  total_rooms         Int           @default(1)
+
   max_children_number Int?
   max_adult_number    Int?
   pet_allowed         Boolean       @default(false)
   bed_number          Int
-  room_number         String? // Số phòng thực tế
   floor               Int? // Tầng
   size_sqm            Float? // Diện tích m²
   view_type           String? // "sea_view", "city_view", "garden_view"
   status              ServiceStatus @default(AVAILABLE)
+
   service             Service       @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  facilities          RoomFacility[]
+  images              Image[]        @relation("RoomImages")
+  cart_items          CartItem[]     @relation("CartItemToRoom")
 
-  facilities RoomFacility[]
-  images     Image[]        @relation("RoomImages")
-  cart_items CartItem[]     @relation("CartItemToRoom")
-
-  created_at     DateTime           @default(now())
-  updated_at     DateTime           @updatedAt
-  availabilities RoomAvailability[]
+  created_at          DateTime           @default(now())
+  updated_at          DateTime           @updatedAt
+  availabilities      RoomAvailability[]
 
   @@index([service_id])
 }
@@ -318,11 +308,11 @@ model RoomAvailability {
   id              Int      @id @default(autoincrement())
   room_id         Int
   date            DateTime @db.Date
+
   available_count Int // Số phòng còn trống
-  total_count     Int // Tổng số phòng loại này
   price_override  Decimal? @db.Decimal(10, 2) // Giá đặc biệt cho ngày này
 
-  room Room @relation(fields: [room_id], references: [id], onDelete: Cascade)
+  room            Room @relation(fields: [room_id], references: [id], onDelete: Cascade)
 
   @@unique([room_id, date])
   @@index([room_id, date])
