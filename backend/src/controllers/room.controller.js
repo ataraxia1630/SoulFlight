@@ -46,6 +46,35 @@ const RoomController = {
     await RoomService.delete(req.params.id);
     return res.json(success());
   }),
+
+  checkAvailability: catchAsync(async (req, res) => {
+    const { roomId } = req.params;
+    const { checkIn, checkOut, quantity = 1 } = req.query;
+
+    const room = await RoomService.checkAvailability(
+      roomId,
+      checkIn,
+      checkOut,
+      parseInt(quantity, 10),
+    );
+
+    return res.json(success(room));
+  }),
+
+  getAvailable: catchAsync(async (req, res) => {
+    const { serviceId } = req.params;
+    const { checkin, checkout, adults, children } = req.query;
+
+    const rooms = await RoomService.getAvailableRooms(
+      serviceId,
+      checkin,
+      checkout,
+      adults ? parseInt(adults, 10) : 1,
+      children ? parseInt(children, 10) : 0,
+    );
+
+    return res.json(success(rooms));
+  }),
 };
 
 module.exports = RoomController;

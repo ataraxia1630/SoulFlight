@@ -3,6 +3,8 @@ const AppError = require("../utils/AppError");
 const CloudinaryService = require("../services/cloudinary.service");
 const { ERROR_CODES } = require("../constants/errorCode");
 const { RoomDTO } = require("../dtos/room.dto");
+const { getDateRange } = require("../utils/date");
+const { generateAvailableRooms } = require("../utils/generateAvailableRooms");
 
 const MAX_IMAGES = 10;
 
@@ -108,7 +110,7 @@ const RoomService = {
     const { connectFacilities, service_id, ...roomData } = data;
 
     const room = await prisma.$transaction(async (tx) => {
-      return await tx.room.create({
+      const createdRoom = await tx.room.create({
         data: {
           ...roomData,
           price_per_night: parseFloat(roomData.price_per_night),
@@ -121,6 +123,15 @@ const RoomService = {
         },
         include: { facilities: { include: { facility: true } } },
       });
+
+      await generateAvailableRooms(
+        createdRoom.id,
+        createdRoom.total_rooms,
+        createdRoom.price_per_night,
+        tx,
+      );
+
+      return createdRoom;
     });
 
     if (files.length > 0) {
@@ -268,6 +279,101 @@ const RoomService = {
     });
 
     return null;
+  },
+
+  checkAvailability: async (roomId, checkIn, checkOut, quantity = 1) => {
+    const room = await prisma.room.findUnique({
+      where: { id: parseInt(roomId, 10) },
+      include: {
+        service: { select: { name: true } },
+        facilities: { include: { facility: true } },
+        images: {
+          where: { related_type: "Room" },
+          orderBy: { position: "asc" },
+        },
+      },
+    });
+
+    if (!room) {
+      throw new AppError(
+        ERROR_CODES.ROOM_NOT_FOUND.statusCode,
+        ERROR_CODES.ROOM_NOT_FOUND.message,
+        ERROR_CODES.ROOM_NOT_FOUND.code,
+      );
+    }
+
+    if (!checkIn || !checkOut) {
+      throw new AppError(
+        ERROR_CODES.MISSING_DATES.statusCode,
+        ERROR_CODES.MISSING_DATES.message,
+        ERROR_CODES.MISSING_DATES.code,
+      );
+    }
+
+    const dates = getDateRange(checkIn, checkOut);
+    const availabilities = await prisma.RoomAvailability.findMany({
+      where: { room_id: room.id, date: { in: dates } },
+      orderBy: { date: "asc" },
+    });
+
+    if (availabilities.length !== dates.length) {
+      return RoomDTO.withAvailability(room, {
+        available: false,
+        available_count: 0,
+        required_quantity: quantity,
+        nights: dates.length,
+        dates: [],
+      });
+    }
+
+    const details = availabilities.map((a) => ({
+      date: a.date,
+      available: a.available_count,
+      price_override: a.price_override ? parseFloat(a.price_override) : null,
+    }));
+
+    const minAvailable = Math.min(...availabilities.map((_a) => available_count));
+
+    return RoomDTO.withAvailability(room, {
+      available: minAvailable >= quantity,
+      available_count: minAvailable,
+      required_quantity: quantity,
+      nights: dates.length,
+      dates: details,
+    });
+  },
+
+  getAvailable: async (serviceId, checkIn, checkOut, adults = 1, children = 0) => {
+    const service_id = parseInt(serviceId, 10);
+    const rooms = await prisma.room.findMany({
+      where: { service_id },
+      include: {
+        service: { select: { name: true } },
+        facilities: { include: { facility: true } },
+        images: {
+          where: { related_type: "Room" },
+          orderBy: { position: "asc" },
+        },
+      },
+    });
+
+    const results = [];
+    const totalGuests = adults + children;
+
+    for (const room of rooms) {
+      const capacity = (room.max_adult_number || 2) + (room.max_children_number || 0);
+      if (totalGuests > capacity) continue;
+
+      try {
+        const avail = await checkRoomAvailability(room.id, checkIn, checkOut, 1);
+        if (avail.availability.available) {
+          results.push(avail);
+        }
+      } catch (_err) {}
+    }
+
+    results.sort((a, b) => a.availability.total_price - b.availability.total_price);
+    return results;
   },
 };
 

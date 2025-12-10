@@ -320,6 +320,13 @@ const ERROR_CODES = {
     message: "Không được phép truy cập",
     code: "UNAUTHORIZED",
   },
+
+  // missing dates
+  MISSING_DATES: {
+    statusCode: 400,
+    message: "Thiếu checkin hoặc checkout",
+    code: "MISSING_DATES",
+  },
 };
 
 module.exports = { ERROR_CODES };

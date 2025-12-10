@@ -16,4 +16,8 @@ router
   .put(upload.array("images", 10), validate(updateRoomSchema), RoomController.update)
   .delete(RoomController.delete);
 
+router.get("/:roomId/availability", RoomController.checkAvailability);
+
+router.get("/available", RoomController.getAvailable);
+
 module.exports = router;

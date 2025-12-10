@@ -6,7 +6,7 @@ async function updateServicePriceRange(prisma, serviceId) {
     where: { id: serviceId },
     include: {
       Rooms: { select: { price_per_night: true } },
-      Tour: { select: { service_price: true } },
+      Tours: { select: { service_price: true } },
       Tickets: { select: { price: true } },
       Menus: {
         select: {
@@ -19,10 +19,10 @@ async function updateServicePriceRange(prisma, serviceId) {
   if (!service) return;
 
   const prices = [
-    ...service.Rooms.map((r) => Number(r.price_per_night)),
-    ...service.Tour.map((t) => Number(t.service_price)),
-    ...service.Tickets.map((t) => Number(t.price)),
-    ...service.Menus.flatMap((m) => m.MenuItems.map((i) => Number(i.price))),
+    ...(service.Rooms ?? []).map((r) => Number(r.price_per_night)),
+    ...(service.Tours ?? []).map((t) => Number(t.service_price)),
+    ...(service.Tickets ?? []).map((t) => Number(t.price)),
+    ...(service.Menus ?? []).flatMap((m) => (m.MenuItems ?? []).map((i) => Number(i.price))),
   ].filter((p) => typeof p === "number" && p > 0);
 
   if (prices.length === 0) {
@@ -56,6 +56,7 @@ const prisma = base.$extends({
 
           if (!serviceId && model === "MenuItem") {
             const menuId = args.data?.menu_id || args.where?.menu_id || result?.menu_id;
+
             if (menuId) {
               const menu = await base.menu.findUnique({
                 where: { id: menuId },
