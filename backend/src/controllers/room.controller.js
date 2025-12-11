@@ -75,6 +75,18 @@ const RoomController = {
 
     return res.json(success(rooms));
   }),
+
+  getByService: catchAsync(async (req, res) => {
+    const { serviceId } = req.params;
+    const rooms = await RoomService.getByService(serviceId);
+    return res.json(success(rooms));
+  }),
+
+  getByProvider: catchAsync(async (req, res) => {
+    const { providerId } = req.params;
+    const rooms = await RoomService.getByProvider(providerId);
+    return res.json(success(rooms));
+  }),
 };
 
 module.exports = RoomController;

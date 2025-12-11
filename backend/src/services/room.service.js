@@ -373,6 +373,48 @@ const RoomService = {
 
     return results;
   },
+
+  getByService: async (serviceId) => {
+    const service_id = parseInt(serviceId, 10);
+
+    const rooms = await prisma.room.findMany({
+      where: { service_id },
+      include: {
+        service: { select: { name: true } },
+        facilities: { include: { facility: true } },
+        images: {
+          where: { related_type: "Room" },
+          orderBy: { position: "asc" },
+        },
+      },
+      orderBy: { price_per_night: "asc" },
+    });
+
+    return RoomDTO.fromList(rooms);
+  },
+
+  getByProvider: async (providerId) => {
+    const provider_id = parseInt(providerId, 10);
+
+    const rooms = await prisma.room.findMany({
+      where: {
+        service: {
+          provider_id: provider_id,
+        },
+      },
+      include: {
+        service: { select: { id: true, name: true } },
+        facilities: { include: { facility: true } },
+        images: {
+          where: { related_type: "Room" },
+          orderBy: { position: "asc" },
+        },
+      },
+      orderBy: { updated_at: "desc" },
+    });
+
+    return RoomDTO.fromList(rooms);
+  },
 };
 
 module.exports = RoomService;
