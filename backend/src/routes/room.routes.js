@@ -18,6 +18,6 @@ router
 
 router.get("/:roomId/availability", RoomController.checkAvailability);
 
-router.get("/available", RoomController.getAvailable);
+router.get("/available/:serviceId", RoomController.getAvailable);
 
 module.exports = router;

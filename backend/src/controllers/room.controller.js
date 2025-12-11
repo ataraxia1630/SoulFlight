@@ -63,12 +63,12 @@ const RoomController = {
 
   getAvailable: catchAsync(async (req, res) => {
     const { serviceId } = req.params;
-    const { checkin, checkout, adults, children } = req.query;
+    const { checkIn, checkOut, adults, children } = req.query;
 
-    const rooms = await RoomService.getAvailableRooms(
+    const rooms = await RoomService.getAvailable(
       serviceId,
-      checkin,
-      checkout,
+      checkIn,
+      checkOut,
       adults ? parseInt(adults, 10) : 1,
       children ? parseInt(children, 10) : 0,
     );

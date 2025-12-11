@@ -329,10 +329,9 @@ const RoomService = {
     const details = availabilities.map((a) => ({
       date: a.date,
       available: a.available_count,
-      price_override: a.price_override ? parseFloat(a.price_override) : null,
     }));
 
-    const minAvailable = Math.min(...availabilities.map((_a) => available_count));
+    const minAvailable = Math.min(...availabilities.map((a) => a.available_count));
 
     return RoomDTO.withAvailability(room, {
       available: minAvailable >= quantity,
@@ -365,14 +364,13 @@ const RoomService = {
       if (totalGuests > capacity) continue;
 
       try {
-        const avail = await checkRoomAvailability(room.id, checkIn, checkOut, 1);
+        const avail = await RoomService.checkAvailability(room.id, checkIn, checkOut, 1);
         if (avail.availability.available) {
           results.push(avail);
         }
       } catch (_err) {}
     }
 
-    results.sort((a, b) => a.availability.total_price - b.availability.total_price);
     return results;
   },
 };

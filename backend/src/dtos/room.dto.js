@@ -62,22 +62,14 @@ class RoomDTO {
   static withAvailability(room, availabilityData) {
     const dto = new RoomDTO(room);
 
-    const basePrice = dto.price_per_night;
-
     dto.availability = {
       available: availabilityData.available,
       available_count: availabilityData.available_count,
       required_quantity: availabilityData.required_quantity || 1,
       nights: availabilityData.nights,
-      total_price: availabilityData.dates.reduce((sum, d) => {
-        const price = d.price_override !== null ? d.price_override : basePrice;
-        return sum + price;
-      }, 0),
       date_range: availabilityData.dates.map((d) => ({
         date: d.date,
         available: d.available,
-        price: d.price_override !== null ? d.price_override : basePrice,
-        is_override: d.price_override !== null,
       })),
     };
 

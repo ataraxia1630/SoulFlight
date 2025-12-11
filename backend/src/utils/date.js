@@ -1,15 +1,20 @@
-const getDateRange = (checkin, checkout) => {
-  const start = new Date(checkin);
-  const end = new Date(checkout);
-  start.setHours(0, 0, 0, 0);
-  end.setHours(0, 0, 0, 0);
+const getDateRange = (checkIn, checkOut) => {
+  if (!checkIn || !checkOut) throw new Error("Thiếu ngày");
 
-  if (end <= start) throw new Error("checkout phải sau checkin");
+  const start = new Date(`${checkIn}T00:00:00.000Z`);
+  const end = new Date(`${checkOut}T00:00:00.000Z`);
+
+  if (Number.isNaN(start) || Number.isNaN(end)) throw new Error("Ngày không hợp lệ");
+  if (end <= start) throw new Error("Check-out phải sau check-in");
 
   const dates = [];
-  for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
-    dates.push(new Date(d));
+  const current = new Date(start);
+
+  while (current < end) {
+    dates.push(new Date(current));
+    current.setUTCDate(current.getUTCDate() + 1);
   }
+
   return dates;
 };
 
