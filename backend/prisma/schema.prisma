@@ -135,11 +135,11 @@ model Service {
   Provider    Provider       @relation(fields: [provider_id], references: [id])
   Tags        ServiceOnTag[]
   Menus       Menu[]
-  Tour        Tour[]
+  Tours        Tour[]
   Rooms       Room[]
   Tickets     Ticket[]
   Vouchers    Voucher[]
-  wishlists   Wishlist[]
+  Wishlists   Wishlist[]
 }
 
 model ServiceTag {
@@ -287,7 +287,6 @@ model Room {
   max_adult_number    Int?
   pet_allowed         Boolean       @default(false)
   bed_number          Int
-  floor               Int? // Tầng
   size_sqm            Float? // Diện tích m²
   view_type           String? // "sea_view", "city_view", "garden_view"
   status              ServiceStatus @default(AVAILABLE)
