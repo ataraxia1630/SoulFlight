@@ -1,15 +1,38 @@
 const prisma = require("../configs/prisma");
 const AppError = require("../utils/AppError");
 const { ERROR_CODES } = require("../constants/errorCode");
+const { PlaceDTO } = require("../dtos/place.dto");
+const { attachImages, attachImagesList } = require("../utils/attachImage");
+const { uploadImages, updateImageList } = require("../utils/imageHandler");
 
 const PlaceService = {
+  create: async (data, files = []) => {
+    const place = await prisma.place.create({ data });
+
+    if (files.length > 0) {
+      await uploadImages(place.id, files, "Place", "places");
+    }
+
+    const placeWithImages = await attachImages({
+      entity: place,
+      type: "Place",
+    });
+    return PlaceDTO.fromModel(placeWithImages);
+  },
+
   getAll: async () => {
-    return await prisma.place.findMany();
+    const places = await prisma.place.findMany();
+    const placesWithImages = await attachImagesList({
+      entities: places,
+      type: "Place",
+    });
+    return PlaceDTO.fromList(placesWithImages);
   },
 
   getById: async (id) => {
+    const placeId = parseInt(id, 10);
     const place = await prisma.place.findUnique({
-      where: { id },
+      where: { id: placeId },
     });
     if (!place) {
       throw new AppError(
@@ -18,42 +41,69 @@ const PlaceService = {
         ERROR_CODES.PLACE_NOT_FOUND.code,
       );
     }
-    return place;
+
+    const placeWithImages = await attachImages({
+      entity: place,
+      type: "Place",
+    });
+    return PlaceDTO.fromModel(placeWithImages);
   },
 
-  create: async (data) => {
-    const created = await prisma.place.create({
-      data,
-    });
-    return created;
-  },
-
-  update: async (id, data) => {
-    const updated = await prisma.place.update({
-      where: { id },
-      data,
-    });
-    if (!updated) {
+  update: async (id, data, files = [], imageUpdates = []) => {
+    const placeId = parseInt(id, 10);
+    const exists = await prisma.place.findUnique({ where: { id: placeId } });
+    if (!exists) {
       throw new AppError(
         ERROR_CODES.PLACE_NOT_FOUND.statusCode,
         ERROR_CODES.PLACE_NOT_FOUND.message,
         ERROR_CODES.PLACE_NOT_FOUND.code,
       );
     }
-    return updated;
+
+    await prisma.$transaction(async (tx) => {
+      await tx.place.update({ where: { id: placeId }, data });
+      if (imageUpdates.length > 0) {
+        await updateImageList(tx, placeId, "Place", imageUpdates);
+      }
+    });
+
+    if (files.length > 0) {
+      await uploadImages(placeId, files, "Place", "places");
+    }
+
+    const updated = await prisma.place.findUnique({ where: { id: placeId } });
+    const placeWithImages = await attachImages({
+      entity: updated,
+      type: "Place",
+    });
+
+    return PlaceDTO.fromModel(placeWithImages);
   },
 
   delete: async (id) => {
-    const deleted = await prisma.place.delete({
-      where: { id },
-    });
-    if (!deleted) {
+    const placeId = parseInt(id, 10);
+
+    const exists = await prisma.place.findUnique({ where: { id: placeId } });
+    if (!exists) {
       throw new AppError(
         ERROR_CODES.PLACE_NOT_FOUND.statusCode,
         ERROR_CODES.PLACE_NOT_FOUND.message,
         ERROR_CODES.PLACE_NOT_FOUND.code,
       );
     }
+
+    await prisma.$transaction(async (tx) => {
+      const images = await tx.image.findMany({
+        where: { related_id: placeId, related_type: "Place" },
+        select: { url: true },
+      });
+
+      if (images.length > 0) {
+        await CloudinaryService.deleteMultiple(images.map((i) => i.url));
+      }
+
+      await tx.place.delete({ where: { id: placeId } });
+    });
   },
 };
 

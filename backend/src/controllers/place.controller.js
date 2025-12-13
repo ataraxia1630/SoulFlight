@@ -1,32 +1,32 @@
-const catchAsync = require("../utils/catchAsync");
-const ApiResponse = require("../utils/ApiResponse");
 const { PlaceService } = require("../services/place.service");
-const { PlaceDTO } = require("../dtos/place.dto");
+const catchAsync = require("../utils/catchAsync");
+const { success } = require("../utils/ApiResponse");
 
 const PlaceController = {
-  getAll: catchAsync(async (req, res, _next) => {
-    const places = await PlaceService.getAll(req);
-    res.status(200).json(ApiResponse.success(PlaceDTO.fromList(places)));
+  create: catchAsync(async (req, res) => {
+    const place = await PlaceService.create(req.body, req.files || []);
+    res.status(201).json(success(place));
   }),
 
-  getById: catchAsync(async (req, res, _next) => {
-    const place = await PlaceService.getById(Number(req.params.id));
-    res.status(200).json(ApiResponse.success(PlaceDTO.fromModel(place)));
+  getAll: catchAsync(async (_req, res) => {
+    const places = await PlaceService.getAll();
+    res.json(success(places));
   }),
 
-  create: catchAsync(async (req, res, _next) => {
-    const place = await PlaceService.create(req.body);
-    res.status(201).json(ApiResponse.success(PlaceDTO.fromModel(place)));
+  getById: catchAsync(async (req, res) => {
+    const place = await PlaceService.getById(req.params.id);
+    res.json(success(place));
   }),
 
-  update: catchAsync(async (req, res, _next) => {
-    const place = await PlaceService.update(Number(req.params.id), req.body);
-    res.status(200).json(ApiResponse.success(PlaceDTO.fromModel(place)));
+  update: catchAsync(async (req, res) => {
+    const imageUpdates = req.body.imageActions ? JSON.parse(req.body.imageActions) : [];
+    const place = await PlaceService.update(req.params.id, req.body, req.files || [], imageUpdates);
+    res.json(success(place));
   }),
 
-  delete: catchAsync(async (req, res, _next) => {
-    await PlaceService.delete(Number(req.params.id));
-    res.status(204).json(ApiResponse.success());
+  delete: catchAsync(async (req, res) => {
+    await PlaceService.delete(req.params.id);
+    res.json(success());
   }),
 };
 
