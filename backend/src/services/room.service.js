@@ -4,7 +4,8 @@ const CloudinaryService = require("../services/cloudinary.service");
 const { ERROR_CODES } = require("../constants/errorCode");
 const { RoomDTO } = require("../dtos/room.dto");
 const { getDateRange } = require("../utils/date");
-const { generateAvailableRooms } = require("../utils/generateAvailableRooms");
+const { generateAvailable } = require("../utils/generateAvailable");
+const { attachImages, attachImagesList } = require("../utils/image");
 
 const MAX_IMAGES = 10;
 
@@ -124,7 +125,7 @@ const RoomService = {
         include: { facilities: { include: { facility: true } } },
       });
 
-      await generateAvailableRooms(
+      await generateAvailable(
         createdRoom.id,
         createdRoom.total_rooms,
         createdRoom.price_per_night,
@@ -142,42 +143,38 @@ const RoomService = {
       where: { id: room.id },
       include: {
         facilities: { include: { facility: true } },
-        images: {
-          where: { related_type: "Room" },
-          orderBy: { position: "asc" },
-        },
       },
     });
 
-    return RoomDTO.fromModel(fullRoom);
+    const roomWithImages = await attachImages({
+      entity: fullRoom,
+      type: "Room",
+    });
+
+    return RoomDTO.fromModel(roomWithImages);
   },
 
   getAll: async () => {
     const rooms = await prisma.room.findMany({
       include: {
         facilities: { include: { facility: true } },
-        images: {
-          where: { related_type: "Room" },
-          orderBy: { position: "asc" },
-        },
       },
       orderBy: { id: "asc" },
     });
 
-    return RoomDTO.fromList(rooms);
+    const roomsWithImages = await attachImagesList({
+      entities: rooms,
+      type: "Room",
+    });
+
+    return RoomDTO.fromList(roomsWithImages);
   },
 
   getOne: async (id) => {
     const roomId = parseInt(id, 10);
     const room = await prisma.room.findUnique({
       where: { id: roomId },
-      include: {
-        facilities: { include: { facility: true } },
-        images: {
-          where: { related_type: "Room" },
-          orderBy: { position: "asc" },
-        },
-      },
+      include: { facilities: { include: { facility: true } } },
     });
 
     if (!room) {
@@ -188,7 +185,12 @@ const RoomService = {
       );
     }
 
-    return RoomDTO.fromModel(room);
+    const roomWithImages = await attachImages({
+      entity: room,
+      type: "Room",
+    });
+
+    return RoomDTO.fromModel(roomWithImages);
   },
 
   update: async (id, data, files = [], imageUpdates = []) => {
@@ -245,14 +247,15 @@ const RoomService = {
       where: { id: roomId },
       include: {
         facilities: { include: { facility: true } },
-        images: {
-          where: { related_type: "Room" },
-          orderBy: { position: "asc" },
-        },
       },
     });
 
-    return RoomDTO.fromModel(fullRoom);
+    const roomWithImages = await attachImages({
+      entity: fullRoom,
+      type: "Room",
+    });
+
+    return RoomDTO.fromModel(roomWithImages);
   },
 
   delete: async (id) => {
@@ -287,11 +290,12 @@ const RoomService = {
       include: {
         service: { select: { name: true } },
         facilities: { include: { facility: true } },
-        images: {
-          where: { related_type: "Room" },
-          orderBy: { position: "asc" },
-        },
       },
+    });
+
+    const roomWithImages = await attachImages({
+      entity: room,
+      type: "Room",
     });
 
     if (!room) {
@@ -312,12 +316,12 @@ const RoomService = {
 
     const dates = getDateRange(checkIn, checkOut);
     const availabilities = await prisma.RoomAvailability.findMany({
-      where: { room_id: room.id, date: { in: dates } },
+      where: { room_id: roomWithImages.id, date: { in: dates } },
       orderBy: { date: "asc" },
     });
 
     if (availabilities.length !== dates.length) {
-      return RoomDTO.withAvailability(room, {
+      return RoomDTO.withAvailability(roomWithImages, {
         available: false,
         available_count: 0,
         required_quantity: quantity,
@@ -333,7 +337,7 @@ const RoomService = {
 
     const minAvailable = Math.min(...availabilities.map((a) => a.available_count));
 
-    return RoomDTO.withAvailability(room, {
+    return RoomDTO.withAvailability(roomWithImages, {
       available: minAvailable >= quantity,
       available_count: minAvailable,
       required_quantity: quantity,
@@ -349,17 +353,19 @@ const RoomService = {
       include: {
         service: { select: { name: true } },
         facilities: { include: { facility: true } },
-        images: {
-          where: { related_type: "Room" },
-          orderBy: { position: "asc" },
-        },
       },
+      orderBy: { price_per_night: "asc" },
+    });
+
+    const roomsWithImages = await attachImagesList({
+      entities: rooms,
+      type: "Room",
     });
 
     const results = [];
     const totalGuests = adults + children;
 
-    for (const room of rooms) {
+    for (const room of roomsWithImages) {
       const capacity = (room.max_adult_number || 2) + (room.max_children_number || 0);
       if (totalGuests > capacity) continue;
 
@@ -382,15 +388,16 @@ const RoomService = {
       include: {
         service: { select: { name: true } },
         facilities: { include: { facility: true } },
-        images: {
-          where: { related_type: "Room" },
-          orderBy: { position: "asc" },
-        },
       },
       orderBy: { price_per_night: "asc" },
     });
 
-    return RoomDTO.fromList(rooms);
+    const roomsWithImages = await attachImagesList({
+      entities: rooms,
+      type: "Room",
+    });
+
+    return RoomDTO.fromList(roomsWithImages);
   },
 
   getByProvider: async (providerId) => {
@@ -405,15 +412,16 @@ const RoomService = {
       include: {
         service: { select: { id: true, name: true } },
         facilities: { include: { facility: true } },
-        images: {
-          where: { related_type: "Room" },
-          orderBy: { position: "asc" },
-        },
       },
       orderBy: { updated_at: "desc" },
     });
 
-    return RoomDTO.fromList(rooms);
+    const roomsWithImages = await attachImagesList({
+      entities: rooms,
+      type: "Room",
+    });
+
+    return RoomDTO.fromList(roomsWithImages);
   },
 };
 

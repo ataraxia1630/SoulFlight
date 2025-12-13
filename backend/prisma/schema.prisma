@@ -218,12 +218,12 @@ model Place {
   id            Int         @id @default(autoincrement())
   name          String
   description   String?
-  image_url     String?
   address       String?
   opening_hours Json?
   entry_fee     Float?
   created_at    DateTime    @default(now())
   updated_at    DateTime    @updatedAt
+
   TourPlace     TourPlace[]
   Tickets       Ticket[]
 }
@@ -259,8 +259,6 @@ model Image {
   related_id   Int // ID of the related entity
   related_type String // e.g. 'Service', 'Menu', 'Place', etc.
 
-  room Room? @relation("RoomImages", fields: [related_id], references: [id], onDelete: Cascade)
-
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
@@ -293,7 +291,6 @@ model Room {
 
   service             Service       @relation(fields: [service_id], references: [id], onDelete: Cascade)
   facilities          RoomFacility[]
-  images              Image[]        @relation("RoomImages")
   cart_items          CartItem[]     @relation("CartItemToRoom")
 
   created_at          DateTime           @default(now())

@@ -1,4 +1,4 @@
-const generateAvailableRooms = async (roomId, totalRooms, pricePerNight, tx) => {
+const generateAvailable = async (roomId, totalRooms, pricePerNight, tx) => {
   const start = new Date();
   start.setHours(0, 0, 0, 0);
 
@@ -26,4 +26,4 @@ const generateAvailableRooms = async (roomId, totalRooms, pricePerNight, tx) => 
   }
 };
 
-module.exports = { generateAvailableRooms };
+module.exports = { generateAvailable };
