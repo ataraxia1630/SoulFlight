@@ -5,106 +5,8 @@ const { ERROR_CODES } = require("../constants/errorCode");
 const { RoomDTO } = require("../dtos/room.dto");
 const { getDateRange } = require("../utils/date");
 const { generateAvailable } = require("../utils/generateAvailable");
-const { attachImages, attachImagesList } = require("../utils/image");
-
-const MAX_IMAGES = 10;
-
-const uploadRoomImages = async (roomId, files) => {
-  const currentCount = await prisma.image.count({
-    where: { related_id: roomId, related_type: "Room" },
-  });
-
-  const remainingSlots = MAX_IMAGES - currentCount;
-  if (remainingSlots <= 0) {
-    throw new AppError(
-      ERROR_CODES.TOO_MANY_IMAGES.statusCode,
-      ERROR_CODES.TOO_MANY_IMAGES.message,
-      ERROR_CODES.TOO_MANY_IMAGES.code,
-    );
-  }
-
-  const filesToUpload = files.slice(0, remainingSlots);
-  if (filesToUpload.length < files.length) {
-    throw new AppError(
-      ERROR_CODES.TOO_MANY_IMAGES.statusCode,
-      ERROR_CODES.TOO_MANY_IMAGES.message,
-      ERROR_CODES.TOO_MANY_IMAGES.code,
-    );
-  }
-
-  const isFirstImage = currentCount === 0;
-
-  const uploadResults = await Promise.all(
-    filesToUpload.map((file) => CloudinaryService.uploadSingle(file.buffer, { folder: "rooms" })),
-  );
-
-  const imageData = uploadResults.map((result, i) => ({
-    url: result.public_id,
-    position: currentCount + i,
-    is_main: isFirstImage && i === 0,
-    related_id: roomId,
-    related_type: "Room",
-  }));
-
-  await prisma.image.createMany({
-    data: imageData,
-    skipDuplicates: true,
-  });
-
-  return uploadResults;
-};
-
-const updateImageList = async (tx, roomId, updates) => {
-  const toDelete = updates.filter((u) => u.delete === true && u.id);
-  if (toDelete.length > 0) {
-    const ids = toDelete.map((u) => u.id);
-
-    const images = await tx.image.findMany({
-      where: { id: { in: ids }, related_id: roomId, related_type: "Room" },
-      select: { url: true },
-    });
-    if (images.length > 0) {
-      await CloudinaryService.deleteMultiple(images.map((i) => i.url));
-    }
-
-    await tx.image.deleteMany({
-      where: { id: { in: ids } },
-    });
-  }
-
-  const toUpdate = updates.filter((u) => u.id && !u.delete);
-  if (toUpdate.length > 0) {
-    for (const u of toUpdate) {
-      await tx.image.update({
-        where: { id: u.id },
-        data: {
-          position: u.position ?? undefined,
-          is_main: u.is_main ?? undefined,
-        },
-      });
-    }
-  }
-
-  const hasMain = updates.some((u) => u.is_main === true);
-  if (!hasMain) {
-    const firstImage = await tx.image.findFirst({
-      where: { related_id: roomId, related_type: "Room" },
-      orderBy: { position: "asc" },
-      select: { id: true },
-    });
-
-    if (firstImage) {
-      await tx.image.updateMany({
-        where: { related_id: roomId, related_type: "Room" },
-        data: { is_main: false },
-      });
-      await tx.image.update({
-        where: { id: firstImage.id },
-        data: { is_main: true },
-      });
-    }
-  }
-};
+const { attachImages, attachImagesList } = require("../utils/attachImage");
+const { uploadImages, updateImageList } = require("../utils/imageHandler");
 
 const RoomService = {
   create: async (data, files = []) => {
@@ -136,7 +38,7 @@ const RoomService = {
     });
 
     if (files.length > 0) {
-      await uploadRoomImages(room.id, files);
+      await uploadImages(room.id, files, "Room", "rooms");
     }
 
     const fullRoom = await prisma.room.findUnique({
@@ -205,7 +107,13 @@ const RoomService = {
       );
     }
 
-    const { connectFacilities, disconnectFacilities, service_id, ...roomData } = data;
+    const {
+      connectFacilities,
+      disconnectFacilities,
+      imageActions: _imageActions,
+      service_id,
+      ...roomData
+    } = data;
 
     await prisma.$transaction(async (tx) => {
       const updateData = {
@@ -235,12 +143,12 @@ const RoomService = {
       });
 
       if (imageUpdates.length > 0) {
-        await updateImageList(tx, roomId, imageUpdates);
+        await updateImageList(tx, roomId, "Room", imageUpdates);
       }
     });
 
     if (files.length > 0) {
-      await uploadRoomImages(roomId, files);
+      await uploadImages(roomId, files, "Room", "rooms");
     }
 
     const fullRoom = await prisma.room.findUnique({
