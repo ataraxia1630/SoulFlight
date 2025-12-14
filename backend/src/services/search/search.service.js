@@ -35,7 +35,7 @@ const SearchService = {
             Tags: { include: { Tag: true } },
             Vouchers: { where: { valid_to: { gte: new Date() } } },
             Menus: { include: { MenuItems: true } },
-            Tour: {
+            Tours: {
               include: {
                 TourPlace: { include: { Place: true } },
                 TourGuide: true,
@@ -44,7 +44,6 @@ const SearchService = {
             Rooms: {
               include: {
                 facilities: { include: { facility: true } },
-                images: { orderBy: { position: "asc" } },
               },
             },
             Tickets: { include: { Place: true } },
@@ -102,7 +101,6 @@ const SearchService = {
               include: { Type: true, Tags: { include: { Tag: true } } },
             },
             facilities: { include: { facility: true } },
-            images: { orderBy: { position: "asc" } },
           },
         }),
       DTO: SearchRoomDTO,
