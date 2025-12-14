@@ -273,7 +273,7 @@ const TourService = {
 
     return {
       available: tour.available_slots >= quantity,
-      available_slots: tour.available_slots,
+      available_count: tour.available_slots,
       required_quantity: quantity,
       tour,
     };

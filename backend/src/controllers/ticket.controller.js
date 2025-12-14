@@ -1,31 +1,55 @@
 const TicketService = require("../services/ticket.service");
 const catchAsync = require("../utils/catchAsync");
-const ApiResponse = require("../utils/ApiResponse");
+const { success } = require("../utils/ApiResponse");
 
 const TicketController = {
-  create: catchAsync(async (req, res) => {
-    const ticket = await TicketService.create(req.body);
-    res.status(201).json(ApiResponse.success(ticket));
-  }),
-
   getAll: catchAsync(async (_req, res) => {
-    const tickets = await TicketService.getAll();
-    res.status(200).json(ApiResponse.success(tickets));
+    res.json(success(await TicketService.getAll()));
   }),
 
-  getOne: catchAsync(async (req, res) => {
-    const ticket = await TicketService.getOne(req.params.id);
-    res.status(200).json(ApiResponse.success(ticket));
+  getById: catchAsync(async (req, res) => {
+    res.json(success(await TicketService.getById(req.params.id)));
+  }),
+
+  getByService: catchAsync(async (req, res) => {
+    res.json(success(await TicketService.getByService(req.params.serviceId)));
+  }),
+
+  getByProvider: catchAsync(async (req, res) => {
+    res.json(success(await TicketService.getByProvider(req.params.providerId)));
+  }),
+
+  checkAvailability: catchAsync(async (req, res) => {
+    const { visitDate, quantity = 1 } = req.query;
+    const result = await TicketService.checkAvailability(
+      req.params.ticketId,
+      visitDate,
+      parseInt(quantity),
+    );
+    res.json(success(result));
+  }),
+
+  getAvailable: catchAsync(async (req, res) => {
+    const { visitDate, quantity = 1 } = req.query;
+    const result = await TicketService.getAvailable(
+      req.params.serviceId,
+      visitDate,
+      parseInt(quantity),
+    );
+    res.json(success(result));
+  }),
+
+  create: catchAsync(async (req, res) => {
+    res.json(success(await TicketService.create(req.body)));
   }),
 
   update: catchAsync(async (req, res) => {
-    const ticket = await TicketService.update(req.params.id, req.body);
-    res.status(200).json(ApiResponse.success(ticket));
+    res.json(success(await TicketService.update(req.params.id, req.body)));
   }),
 
   delete: catchAsync(async (req, res) => {
     await TicketService.delete(req.params.id);
-    res.status(200).json(ApiResponse.success());
+    res.json(success());
   }),
 };
 
