@@ -7,7 +7,6 @@ const createSchema = Joi.object({
   address: Joi.string().max(255).optional(),
   opening_hours: openingHoursSchema.optional(),
   entry_fee: Joi.number().min(0).optional(),
-  image_url: Joi.string().uri().optional(),
 });
 
 const updateSchema = Joi.object({
@@ -16,7 +15,6 @@ const updateSchema = Joi.object({
   address: Joi.string().max(255).optional(),
   opening_hours: openingHoursSchema.optional(),
   entry_fee: Joi.number().min(0).optional(),
-  image_url: Joi.string().uri().optional(),
 });
 
 module.exports = {
