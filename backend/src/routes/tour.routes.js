@@ -11,5 +11,9 @@ router.get("/:id", TourController.getById);
 router.post("/", validate(createSchema), TourController.create);
 router.put("/:id", validate(updateSchema), TourController.update);
 router.delete("/:id", TourController.delete);
+router.get("/service/:serviceId", TourController.getByService);
+router.get("/provider/:providerId", TourController.getByProvider);
+router.get("/:tourId/availability", TourController.checkAvailability);
+router.get("/available/:serviceId", TourController.getAvailable);
 
 module.exports = router;
