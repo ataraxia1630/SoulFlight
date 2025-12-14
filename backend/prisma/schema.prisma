@@ -97,17 +97,19 @@ model Provider {
 }
 
 model Traveler {
-  id         Int        @id
-  gender     Gender?
-  dob        DateTime?
-  location   String?
-  avatar_url String?
-  created_at DateTime   @default(now())
-  updated_at DateTime   @updatedAt
-  user       User       @relation(fields: [id], references: [id])
-  cart       Cart?
-  bookings   Booking[]  @relation("TravelerBookings")
-  wishlists  Wishlist[]
+  id                Int               @id
+  gender            Gender?
+  dob               DateTime?
+  location          String?
+  avatar_url        String?
+  created_at        DateTime          @default(now())
+  updated_at        DateTime          @updatedAt
+  user              User              @relation(fields: [id], references: [id])
+  cart              Cart?
+  bookings          Booking[]         @relation("TravelerBookings")
+  wishlists         Wishlist[]
+  itineraries       Itinerary[]
+  sharedItineraries SharedItinerary[]
 }
 
 model ServiceType {
@@ -135,7 +137,7 @@ model Service {
   Provider    Provider       @relation(fields: [provider_id], references: [id])
   Tags        ServiceOnTag[]
   Menus       Menu[]
-  Tours        Tour[]
+  Tours       Tour[]
   Rooms       Room[]
   Tickets     Ticket[]
   Vouchers    Voucher[]
@@ -190,42 +192,42 @@ model MenuItem {
 }
 
 model Tour {
-  id                Int           @id @default(autoincrement())
-  name              String
-  description       String?
-  service_price     Float
-  total_price       Float
-  
-  start_time        DateTime      @default(now()) // Ngày, giờ bắt đầu
-  end_time          DateTime      @default(now()) // Ngày, giờ kết thúc
-  
-  max_participants  Int           @default(1)// Số người tối đa cho tour này
-  current_bookings  Int           @default(0) // Số người đã đặt
-  
-  status            ServiceStatus @default(AVAILABLE)
-  service_id        Int
-  tourguide_id      Int?
-  created_at        DateTime      @default(now())
-  updated_at        DateTime      @updatedAt
-  
-  Service           Service    @relation(fields: [service_id], references: [id])
-  TourPlace         TourPlace[]
-  TourGuide         TourGuide? @relation(fields: [tourguide_id], references: [id])
-  cart_items        CartItem[] @relation("CartItemToTour")
+  id            Int     @id @default(autoincrement())
+  name          String
+  description   String?
+  service_price Float
+  total_price   Float
+
+  start_time DateTime @default(now()) // Ngày, giờ bắt đầu
+  end_time   DateTime @default(now()) // Ngày, giờ kết thúc
+
+  max_participants Int @default(1) // Số người tối đa cho tour này
+  current_bookings Int @default(0) // Số người đã đặt
+
+  status       ServiceStatus @default(AVAILABLE)
+  service_id   Int
+  tourguide_id Int?
+  created_at   DateTime      @default(now())
+  updated_at   DateTime      @updatedAt
+
+  Service    Service     @relation(fields: [service_id], references: [id])
+  TourPlace  TourPlace[]
+  TourGuide  TourGuide?  @relation(fields: [tourguide_id], references: [id])
+  cart_items CartItem[]  @relation("CartItemToTour")
 }
 
 model Place {
-  id            Int         @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   name          String
   description   String?
   address       String?
   opening_hours Json?
   entry_fee     Float?
-  created_at    DateTime    @default(now())
-  updated_at    DateTime    @updatedAt
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
-  TourPlace     TourPlace[]
-  Tickets       Ticket[]
+  TourPlace TourPlace[]
+  Tickets   Ticket[]
 }
 
 model TourPlace {
@@ -273,13 +275,13 @@ model Facility {
 }
 
 model Room {
-  id                  Int           @id @default(autoincrement())
-  service_id          Int
-  name                String
-  description         String?
-  price_per_night     Decimal       @db.Decimal(10, 2)
+  id              Int     @id @default(autoincrement())
+  service_id      Int
+  name            String
+  description     String?
+  price_per_night Decimal @db.Decimal(10, 2)
 
-  total_rooms         Int           @default(1)
+  total_rooms Int @default(1)
 
   max_children_number Int?
   max_adult_number    Int?
@@ -289,26 +291,26 @@ model Room {
   view_type           String? // "sea_view", "city_view", "garden_view"
   status              ServiceStatus @default(AVAILABLE)
 
-  service             Service       @relation(fields: [service_id], references: [id], onDelete: Cascade)
-  facilities          RoomFacility[]
-  cart_items          CartItem[]     @relation("CartItemToRoom")
+  service    Service        @relation(fields: [service_id], references: [id], onDelete: Cascade)
+  facilities RoomFacility[]
+  cart_items CartItem[]     @relation("CartItemToRoom")
 
-  created_at          DateTime           @default(now())
-  updated_at          DateTime           @updatedAt
-  availabilities      RoomAvailability[]
+  created_at     DateTime           @default(now())
+  updated_at     DateTime           @updatedAt
+  availabilities RoomAvailability[]
 
   @@index([service_id])
 }
 
 model RoomAvailability {
-  id              Int      @id @default(autoincrement())
-  room_id         Int
-  date            DateTime @db.Date
+  id      Int      @id @default(autoincrement())
+  room_id Int
+  date    DateTime @db.Date
 
   available_count Int // Số phòng còn trống
   price_override  Decimal? @db.Decimal(10, 2) // Giá đặc biệt cho ngày này
 
-  room            Room @relation(fields: [room_id], references: [id], onDelete: Cascade)
+  room Room @relation(fields: [room_id], references: [id], onDelete: Cascade)
 
   @@unique([room_id, date])
   @@index([room_id, date])
@@ -571,4 +573,143 @@ model Notification {
   user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id, is_read])
+}
+
+// ==================== AI ITINERARY PLANNING ====================
+
+enum ItineraryStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Itinerary {
+  id          String   @id @default(cuid())
+  traveler_id Int
+  traveler    Traveler @relation(fields: [traveler_id], references: [id], onDelete: Cascade)
+
+  title           String?
+  destination     String
+  start_date      DateTime
+  end_date        DateTime
+  budget          Float?
+  preferences     String[]
+  special_request String?
+
+  status          ItineraryStatus @default(DRAFT)
+  is_favorite     Boolean         @default(false)
+  cover_image_url String?
+
+  ai_summary       String?
+  ai_tips          String[]
+  budget_breakdown Json?
+
+  days        ItineraryDay[]
+  shared_with SharedItinerary[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([traveler_id])
+  @@index([status])
+  @@index([start_date])
+}
+
+model ItineraryDay {
+  id           String    @id @default(cuid())
+  itinerary_id String
+  itinerary    Itinerary @relation(fields: [itinerary_id], references: [id], onDelete: Cascade)
+
+  day_number Int
+  date       DateTime
+  theme      String?
+  notes      String?
+
+  activities ItineraryActivity[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@unique([itinerary_id, day_number])
+  @@index([itinerary_id])
+}
+
+enum ActivityType {
+  RESTAURANT
+  ATTRACTION
+  ACCOMMODATION
+  TRANSPORT
+  SHOPPING
+  ENTERTAINMENT
+  OTHER
+}
+
+enum ActivitySource {
+  AI_GENERATED
+  USER_ADDED
+  BOOKING_LINKED
+}
+
+model ItineraryActivity {
+  id     String       @id @default(cuid())
+  day_id String
+  day    ItineraryDay @relation(fields: [day_id], references: [id], onDelete: Cascade)
+
+  order         Int
+  time          String
+  duration      Int?
+  title         String
+  description   String?
+  exact_address String?
+  type          ActivityType
+  source        ActivitySource @default(AI_GENERATED)
+
+  latitude  Float?
+  longitude Float?
+
+  estimated_cost Float?
+  actual_cost    Float?
+  price_level    Int?
+
+  estimated_rating Float?
+  popular_times    String?
+  local_tips       String[]
+
+  photo_url       String?
+  photo_small_url String?
+  photographer    String?
+  photo_source    String?
+
+  cuisine String?
+  phone   String?
+  website String?
+
+  is_completed Boolean @default(false)
+  user_notes   String?
+  user_rating  Int?
+
+  cached_reviews Json?
+
+  booking_id String?
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([day_id])
+  @@index([type])
+}
+
+model SharedItinerary {
+  id           String    @id @default(cuid())
+  itinerary_id String
+  itinerary    Itinerary @relation(fields: [itinerary_id], references: [id], onDelete: Cascade)
+
+  shared_with_traveler_id Int
+  shared_with_traveler    Traveler @relation(fields: [shared_with_traveler_id], references: [id], onDelete: Cascade)
+
+  can_edit  Boolean  @default(false)
+  shared_at DateTime @default(now())
+
+  @@unique([itinerary_id, shared_with_traveler_id])
+  @@index([shared_with_traveler_id])
 }
