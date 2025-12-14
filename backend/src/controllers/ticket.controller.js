@@ -24,7 +24,7 @@ const TicketController = {
     const result = await TicketService.checkAvailability(
       req.params.ticketId,
       visitDate,
-      parseInt(quantity),
+      parseInt(quantity, 10),
     );
     res.json(success(result));
   }),
@@ -34,7 +34,7 @@ const TicketController = {
     const result = await TicketService.getAvailable(
       req.params.serviceId,
       visitDate,
-      parseInt(quantity),
+      parseInt(quantity, 10),
     );
     res.json(success(result));
   }),
