@@ -55,7 +55,11 @@ const updateImageList = async (tx, entityId, entityType, updates) => {
       select: { url: true },
     });
     if (images.length > 0) {
-      await CloudinaryService.deleteMultiple(images.map((i) => i.url));
+      try {
+        await CloudinaryService.deleteMultiple(images.map((i) => i.url));
+      } catch {
+        console.warn(`Image not in cloudinary`);
+      }
     }
     await tx.image.deleteMany({ where: { id: { in: ids } } });
   }
