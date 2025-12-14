@@ -4,27 +4,29 @@ const formatPrice = (price, currency = "VND", locale = "vi-VN") =>
   new Intl.NumberFormat(locale, { style: "currency", currency }).format(price);
 
 function SearchServiceDTO(services) {
-  return services.map((s) => ({
-    id: s.id,
-    name: s.name,
-    description: s.description || "",
-    location: s.location || "",
-    rating: s.rating,
-    type: s.Type?.name || "",
-    provider: {
-      name: s.Provider?.user?.name || `Provider ${s.provider_id}`,
-    },
-    price_range:
-      s.price_min && s.price_max
-        ? `${formatPrice(s.price_min)} - ${formatPrice(s.price_max)}`
-        : null,
-    tags:
-      s.Tags?.map((serviceOnTag) => ({
-        name: serviceOnTag.Tag?.name,
-        category: serviceOnTag.Tag?.category,
-      })) || [],
-    image: pickImage(s),
-  }));
+  return Promise.all(
+    services.map(async (s) => ({
+      id: s.id,
+      name: s.name,
+      description: s.description || "",
+      location: s.location || "",
+      rating: s.rating,
+      type: s.Type?.name || "",
+      provider: {
+        name: s.Provider?.user?.name || `Provider ${s.provider_id}`,
+      },
+      price_range:
+        s.price_min && s.price_max
+          ? `${formatPrice(s.price_min)} - ${formatPrice(s.price_max)}`
+          : null,
+      tags:
+        s.Tags?.map((serviceOnTag) => ({
+          name: serviceOnTag.Tag?.name,
+          category: serviceOnTag.Tag?.category,
+        })) || [],
+      image: await pickImage(s),
+    })),
+  );
 }
 
 function SearchVoucherDTO(vouchers) {

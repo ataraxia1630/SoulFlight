@@ -1,31 +1,43 @@
 const { MenuService } = require("../services/menu.service");
 const catchAsync = require("../utils/catchAsync");
-const ApiResponse = require("../utils/ApiResponse");
+const { success } = require("../utils/ApiResponse");
 
 const MenuController = {
-  getAll: catchAsync(async (_req, res, _next) => {
+  create: catchAsync(async (req, res) => {
+    const coverFile = req.file;
+    const menu = await MenuService.create(req.body, coverFile);
+    res.status(201).json(success(menu));
+  }),
+
+  getAll: catchAsync(async (_req, res) => {
     const menus = await MenuService.getAll();
-    res.status(200).json(ApiResponse.success(menus));
+    res.json(success(menus));
   }),
 
-  getById: catchAsync(async (req, res, _next) => {
-    const menu = await MenuService.getById(Number(req.params.id));
-    res.status(200).json(ApiResponse.success(menu));
+  getById: catchAsync(async (req, res) => {
+    const menu = await MenuService.getById(req.params.id);
+    res.json(success(menu));
   }),
 
-  create: catchAsync(async (req, res, _next) => {
-    const menu = await MenuService.create(req.body);
-    res.status(201).json(ApiResponse.success(menu));
+  update: catchAsync(async (req, res) => {
+    const coverFile = req.file;
+    const menu = await MenuService.update(req.params.id, req.body, coverFile);
+    res.json(success(menu));
   }),
 
-  update: catchAsync(async (req, res, _next) => {
-    const menu = await MenuService.update(Number(req.params.id), req.body);
-    res.status(200).json(ApiResponse.success(menu));
+  delete: catchAsync(async (req, res) => {
+    await MenuService.delete(req.params.id);
+    res.json(success());
   }),
 
-  delete: catchAsync(async (req, res, _next) => {
-    await MenuService.delete(Number(req.params.id));
-    res.status(204).json(ApiResponse.success());
+  getByService: catchAsync(async (req, res) => {
+    const menus = await MenuService.getByService(req.params.serviceId);
+    res.json(success(menus));
+  }),
+
+  getByProvider: catchAsync(async (req, res) => {
+    const menus = await MenuService.getByProvider(req.params.providerId);
+    res.json(success(menus));
   }),
 };
 
