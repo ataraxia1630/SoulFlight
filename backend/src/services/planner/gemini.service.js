@@ -1,9 +1,8 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { defaultModel } = require("../../configs/gemini");
 
 class GeminiService {
   constructor() {
-    this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    this.model = this.genAI.getGenerativeModel({ model: "gemini-pro" });
+    this.model = defaultModel;
   }
 
   async generateItinerary(userInput) {
