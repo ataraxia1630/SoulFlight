@@ -1,6 +1,7 @@
 import { Route } from "react-router-dom";
 import TravelerHome from "@/features/traveler/pages/Home";
 import Booking from "../../features/traveler/pages/Booking/Booking";
+import ItineraryPage from "../../features/traveler/pages/Planner/ItineraryPage";
 import ServiceCart from "../../features/traveler/pages/ServiceCart";
 import { createAuthRoutes } from "./auth.route";
 import ProtectedRoute from "./ProtectedRoute";
@@ -13,6 +14,7 @@ const mainRoutes = (
     {/* add routes */}
     <Route path="cart" element={<ServiceCart />} />
     <Route path="booking" element={<Booking />} />
+    <Route path="travel-planner" element={<ItineraryPage />} />
   </Route>
 );
 
