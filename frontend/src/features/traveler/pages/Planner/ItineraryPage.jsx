@@ -58,7 +58,6 @@ export default function ItineraryPage() {
   });
   const [showScrollTop, setShowScrollTop] = useState(false);
 
-  // Handle scroll
   useState(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 300);
@@ -71,19 +70,19 @@ export default function ItineraryPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Handle form submit
   const handleGenerateItinerary = async (formData) => {
     try {
-      const _result = await generateItinerary(formData);
+      const result = await generateItinerary(formData);
       enqueueSnackbar("Tạo lịch trình thành công! 🎉", { variant: "success" });
-      // Scroll to timeline
-      setTimeout(() => {
-        document.getElementById("itinerary-timeline")?.scrollIntoView({
-          behavior: "smooth",
-        });
-      }, 500);
+      console.log(result);
+      if (result?.id) {
+        navigate(`/itinerary/${result.id}`, { replace: true });
+      }
     } catch (error) {
       console.error("Generate itinerary error:", error);
+      enqueueSnackbar("Không thể tạo lịch trình. Vui lòng thử lại.", {
+        variant: "error",
+      });
     }
   };
 
