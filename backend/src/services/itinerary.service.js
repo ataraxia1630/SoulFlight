@@ -66,7 +66,7 @@ const ItineraryService = {
                 title: act.title,
                 exact_address: act.exactAddress,
                 description: act.description,
-                type: this.mapActivityType(act.type),
+                type: mapActivityType(act.type),
                 source: "AI_GENERATED",
                 latitude: act.coordinates?.lat,
                 longitude: act.coordinates?.lon,
