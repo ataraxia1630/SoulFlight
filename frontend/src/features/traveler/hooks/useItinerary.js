@@ -15,6 +15,7 @@ export const useItinerary = (itineraryId = null) => {
       try {
         const data = await itineraryAPI.getById(id);
         setItinerary(data);
+        return data;
       } catch (err) {
         setError(err.response?.data?.error || "Failed to load itinerary");
         enqueueSnackbar("Không thể tải lịch trình", { variant: "error" });
