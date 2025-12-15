@@ -1,9 +1,9 @@
 const { getMainImage } = require("./imageGetMain");
 
 async function pickImage(service) {
-  if (!service) {
-    return null;
-  }
+  if (!service) return null;
+
+  if (Object.hasOwn(service, "_mainImage")) return service._mainImage;
 
   if (service.Rooms?.length) {
     const roomId = service.Rooms[0].id;

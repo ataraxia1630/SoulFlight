@@ -156,11 +156,53 @@ const images = [
     related_id: 15,
     related_type: "Room",
   },
+  {
+    url: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4",
+    position: 0,
+    is_main: true,
+    related_id: 1, // Sam Mountain
+    related_type: "Place",
+  },
+  {
+    url: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e",
+    position: 0,
+    is_main: true,
+    related_id: 2, // Tra Su Cajuput Forest
+    related_type: "Place",
+  },
+  {
+    url: "https://images.unsplash.com/photo-1528127269322-539801943592",
+    position: 0,
+    is_main: true,
+    related_id: 3, // Cai Rang Floating Market
+    related_type: "Place",
+  },
+  {
+    url: "https://images.unsplash.com/photo-1555396273-367ea4eb4db5",
+    position: 0,
+    is_main: true,
+    related_id: 4, // Chau Doc Market
+    related_type: "Place",
+  },
+  {
+    url: "https://images.unsplash.com/photo-1548013146-72479768bada",
+    position: 0,
+    is_main: true,
+    related_id: 5, // Thoai Ngoc Hau Tomb
+    related_type: "Place",
+  },
+  {
+    url: "https://images.unsplash.com/photo-1548625149-fc4a29cf7092",
+    position: 0,
+    is_main: true,
+    related_id: 6, // Ba Chua Xu Temple
+    related_type: "Place",
+  },
 ];
 
 async function seedImages(prisma) {
   console.log("Seeding images...");
-  await upsertMany(prisma, prisma.image, images, ["url", "related_id"]);
+  await upsertMany(prisma, prisma.image, images, ["related_type", "related_id", "position"]);
   console.log(`Seeded ${images.length} images`);
 }
 
