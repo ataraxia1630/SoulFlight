@@ -32,9 +32,9 @@ export const useItinerary = (itineraryId = null) => {
       setError(null);
       try {
         const result = await itineraryAPI.generate(formData);
-        setItinerary(result.itinerary);
+        setItinerary(result);
         enqueueSnackbar("Tạo lịch trình thành công!", { variant: "success" });
-        return result.itinerary;
+        return result;
       } catch (err) {
         const errorMsg = err.response?.data?.error || "Failed to generate itinerary";
         setError(errorMsg);
