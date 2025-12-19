@@ -3,9 +3,9 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import ErrorState from "../components/explore/ErrorState";
 import ExploreHeader from "../components/explore/Header";
-import LoadingState from "../components/explore/LoadingState";
 import Results from "../components/explore/Results";
 import ExploreTabs from "../components/explore/Tabs";
+import LoadingState from "../components/LoadingState";
 import { mockExploreResults } from "./mockdata";
 
 export default function ExplorePage() {

@@ -50,6 +50,9 @@ async function main() {
   // 7. Rooms (depend on Services)
   await seedRooms(prisma);
 
+  // 12. Places (no dependencies)
+  await seedPlaces(prisma);
+
   // 8. Room-Facility associations (depend on Rooms & Facilities)
   await seedRoomFacilities(prisma);
 
@@ -61,9 +64,6 @@ async function main() {
 
   // 11. Menu Items (depend on Menus)
   await seedMenuItems(prisma);
-
-  // 12. Places (no dependencies)
-  await seedPlaces(prisma);
 
   // 13. Tour Guides (no dependencies)
   await seedTourGuides(prisma);

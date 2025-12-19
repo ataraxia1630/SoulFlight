@@ -1,14 +1,26 @@
 const prisma = require("../configs/prisma");
 const AppError = require("../utils/AppError");
 const { ERROR_CODES } = require("../constants/errorCode");
+const { ServiceDTO } = require("../dtos/service.dto");
 
 const ServiceService = {
   getAll: async () => {
-    return await prisma.service.findMany();
+    const services = await prisma.service.findMany({
+      include: {
+        Provider: { include: { user: true } },
+        Type: true,
+      },
+    });
+    return ServiceDTO.fromList(services);
   },
+
   getById: async (id) => {
     const service = await prisma.service.findUnique({
       where: { id: Number(id) },
+      include: {
+        Provider: { include: { user: true } },
+        Type: true,
+      },
     });
     if (!service) {
       throw new AppError(
@@ -17,11 +29,20 @@ const ServiceService = {
         ERROR_CODES.NOT_FOUND.code,
       );
     }
-    return service;
+    return ServiceDTO.fromModel(service);
   },
+
   create: async (serviceData) => {
-    return await prisma.service.create({ data: serviceData });
+    const service = await prisma.service.create({
+      data: serviceData,
+      include: {
+        Provider: { include: { user: true } },
+        Type: true,
+      },
+    });
+    return ServiceDTO.fromModel(service);
   },
+
   update: async (id, serviceData) => {
     const existingService = await prisma.service.findUnique({
       where: { id: Number(id) },
@@ -33,11 +54,17 @@ const ServiceService = {
         ERROR_CODES.NOT_FOUND.code,
       );
     }
-    return await prisma.service.update({
+    const service = await prisma.service.update({
       where: { id: Number(id) },
       data: serviceData,
+      include: {
+        Provider: { include: { user: true } },
+        Type: true,
+      },
     });
+    return ServiceDTO.fromModel(service);
   },
+
   delete: async (id) => {
     const existingService = await prisma.service.findUnique({
       where: { id: Number(id) },

@@ -117,7 +117,7 @@ const services = [
     description: "Cable car ride and temple visits on sacred Sam Mountain",
     location: "Châu Đốc, An Giang",
     rating: 4.6,
-    type_id: 4,
+    type_id: 5,
     provider_id: 3,
   },
   {
@@ -125,7 +125,7 @@ const services = [
     description: "Bird sanctuary and mangrove forest exploration in Tra Su",
     location: "Tịnh Biên, An Giang",
     rating: 4.8,
-    type_id: 4,
+    type_id: 5,
     provider_id: 3,
   },
 ];

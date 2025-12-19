@@ -32,7 +32,7 @@ const SearchService = {
   },
 
   searchAll: async (payload = {}) => {
-    const types = ["services", "rooms", "menus", "tickets", "tours"];
+    const types = ["services"];
     const requests = types.map((type) =>
       SearchService.search(type, payload).catch(() => ({ data: [] })),
     );
