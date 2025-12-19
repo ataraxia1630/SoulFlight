@@ -24,6 +24,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useSnackbar } from "notistack";
 import { useId, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import AddActivityDialog from "../../components/AddActivityDialog";
 import AlternativesDialog from "../../components/AlternativesDialog";
 import ItineraryForm from "../../components/ItineraryForm";
 import ItineraryTimeline from "../../components/ItineraryTimeline";
@@ -40,7 +41,7 @@ export default function ItineraryPage() {
   const { itinerary, loading, generateItinerary, updateItinerary, deleteItinerary, setItinerary } =
     useItinerary(id);
 
-  const { updateActivity, deleteActivity: deleteActivityAPI } = useActivity();
+  const { addActivity, updateActivity, deleteActivity: deleteActivityAPI } = useActivity();
 
   // Dialog states
   const [alternativesDialog, setAlternativesDialog] = useState({
@@ -52,6 +53,10 @@ export default function ItineraryPage() {
     activity: null,
   });
   const [editDialog, setEditDialog] = useState({ open: false, activity: null });
+  const [addActivityDialog, setAddActivityDialog] = useState({
+    open: false,
+    day: null,
+  });
   const [deleteConfirm, setDeleteConfirm] = useState({
     open: false,
     activity: null,
@@ -135,6 +140,36 @@ export default function ItineraryPage() {
 
   const handleActivityViewReviews = (activity) => {
     setReviewsDialog({ open: true, activity });
+  };
+
+  const handleActivityAdd = (day) => {
+    setAddActivityDialog({ open: true, day });
+  };
+
+  const handleAddActivitySubmit = async (activityData) => {
+    try {
+      const newActivity = await addActivity(addActivityDialog.day.id, activityData);
+
+      // Update local state - add new activity to the correct day
+      setItinerary((prev) => ({
+        ...prev,
+        days: prev.days.map((day) =>
+          day.id === addActivityDialog.day.id
+            ? {
+                ...day,
+                activities: [...day.activities, newActivity].sort((a, b) => {
+                  // Sort by time
+                  return a.time.localeCompare(b.time);
+                }),
+              }
+            : day,
+        ),
+      }));
+
+      setAddActivityDialog({ open: false, day: null });
+    } catch (error) {
+      console.error("Add activity error:", error);
+    }
   };
 
   const handleActivityToggleComplete = async (activity) => {
@@ -273,6 +308,7 @@ export default function ItineraryPage() {
                   onActivityReplace={handleActivityReplace}
                   onActivityViewReviews={handleActivityViewReviews}
                   onActivityToggleComplete={handleActivityToggleComplete}
+                  onActivityAdd={handleActivityAdd}
                 />
               </motion.div>
             )}
@@ -313,6 +349,13 @@ export default function ItineraryPage() {
         open={reviewsDialog.open}
         onClose={() => setReviewsDialog({ open: false, activity: null })}
         activity={reviewsDialog.activity}
+      />
+
+      <AddActivityDialog
+        open={addActivityDialog.open}
+        onClose={() => setAddActivityDialog({ open: false, day: null })}
+        onAdd={handleAddActivitySubmit}
+        dayNumber={addActivityDialog.day?.day_number}
       />
 
       {/* Edit Activity Dialog */}
