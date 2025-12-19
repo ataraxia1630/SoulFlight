@@ -1,9 +1,25 @@
-import { LocationOn, Star } from "@mui/icons-material";
-import { Box, Card, CardContent, CardMedia, Chip, Typography } from "@mui/material";
+import { Favorite, FavoriteBorder, LocationOn, Star } from "@mui/icons-material";
+import { Box, Card, CardContent, CardMedia, Chip, IconButton, Typography } from "@mui/material";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ServiceCard = ({ data }) => {
+  const navigate = useNavigate();
+  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  const handleClick = () => {
+    navigate(`/services/${data.id}`);
+  };
+
+  const handleWishlistClick = (e) => {
+    e.stopPropagation();
+    setIsWishlisted(!isWishlisted);
+    //Add API call to save wishlist state
+  };
+
   return (
     <Card
+      onClick={handleClick}
       sx={{
         height: "100%",
         display: "flex",
@@ -24,19 +40,50 @@ const ServiceCard = ({ data }) => {
           alt={data.name}
           sx={{ objectFit: "cover" }}
         />
-        {data.type && (
-          <Chip
-            label={data.type}
-            size="small"
+
+        <Box
+          sx={{
+            position: "absolute",
+            top: 12,
+            right: 12,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 1.2,
+          }}
+        >
+          {data.type && (
+            <Chip
+              label={data.type}
+              size="small"
+              sx={{
+                bgcolor: "white",
+                fontWeight: 600,
+              }}
+            />
+          )}
+
+          <IconButton
+            onClick={handleWishlistClick}
             sx={{
-              position: "absolute",
-              top: 12,
-              right: 12,
               bgcolor: "white",
-              fontWeight: 600,
+              boxShadow: 2,
+              "&:hover": {
+                bgcolor: "white",
+                transform: "scale(1.1)",
+              },
+              transition: "all 0.2s ease",
+              p: 0.5,
             }}
-          />
-        )}
+            size="small"
+          >
+            {isWishlisted ? (
+              <Favorite sx={{ color: "error.main", fontSize: 20 }} />
+            ) : (
+              <FavoriteBorder sx={{ color: "text.secondary", fontSize: 20 }} />
+            )}
+          </IconButton>
+        </Box>
       </Box>
 
       <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column", gap: 1.5 }}>

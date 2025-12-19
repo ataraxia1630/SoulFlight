@@ -4,47 +4,45 @@ import { useLocation } from "react-router-dom";
 import ErrorState from "../components/explore/ErrorState";
 import ExploreHeader from "../components/explore/Header";
 import Results from "../components/explore/Results";
-import ExploreTabs from "../components/explore/Tabs";
 import LoadingState from "../components/LoadingState";
 import { mockExploreResults } from "./mockdata";
 
 export default function ExplorePage() {
   const theme = useTheme();
   const { state } = useLocation();
+
+  // Lấy data từ state hoặc mock, fallback về rỗng nếu không có
   const results = state?.results || mockExploreResults;
   const searchParams = state?.searchParams || {};
 
-  const [tab, setTab] = useState("all");
+  // Chỉ lấy danh sách services
+  const servicesData = results?.services || [];
+
   const [loading] = useState(false);
   const [error] = useState(null);
-
-  const filtered = tab === "all" ? results : { [`${tab}s`]: results?.[`${tab}s`] || [] };
-
-  const totalResults = ["services", "rooms", "menus", "tickets", "tours"].reduce(
-    (sum, key) => sum + (results[key]?.length || 0),
-    0,
-  );
 
   return (
     <Box sx={{ minHeight: "100vh" }}>
       <Container>
+        {/* Header giữ nguyên để hiển thị bộ lọc */}
         <ExploreHeader
           location={searchParams.location || ""}
           priceMin={searchParams.priceMin || 0}
           priceMax={searchParams.priceMax || ""}
           guests={searchParams.guests || "1"}
-          totalResults={totalResults}
+          totalResults={servicesData.length} // Chỉ đếm services
           theme={theme}
         />
 
-        <ExploreTabs value={tab} onChange={(_, v) => setTab(v)} />
+        {/* Bỏ ExploreTabs */}
 
         {loading ? (
           <LoadingState />
         ) : error ? (
           <ErrorState message={error} />
         ) : (
-          <Results filtered={filtered} currentTab={tab} />
+          /* Truyền thẳng list services vào Results */
+          <Results services={servicesData} />
         )}
       </Container>
     </Box>
