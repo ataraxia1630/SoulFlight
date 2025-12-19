@@ -32,6 +32,7 @@ export const useItinerary = (itineraryId = null) => {
       setError(null);
       try {
         const result = await itineraryAPI.generate(formData);
+        console.log(result);
         setItinerary(result);
         enqueueSnackbar("Tạo lịch trình thành công!", { variant: "success" });
         return result;
@@ -96,6 +97,21 @@ export const useItinerary = (itineraryId = null) => {
 
 export const useActivity = () => {
   const { enqueueSnackbar } = useSnackbar();
+
+  const addActivity = useCallback(
+    async (dayId, activityData) => {
+      try {
+        const result = await activityAPI.add(dayId, activityData);
+        enqueueSnackbar("Đã thêm hoạt động", { variant: "success" });
+        console.log(result);
+        return result.activity;
+      } catch (err) {
+        enqueueSnackbar("Thêm hoạt động thất bại", { variant: "error" });
+        throw err;
+      }
+    },
+    [enqueueSnackbar],
+  );
 
   const updateActivity = useCallback(
     async (activityId, updates) => {
@@ -168,6 +184,7 @@ export const useActivity = () => {
   );
 
   return {
+    addActivity,
     updateActivity,
     deleteActivity,
     getAlternatives,

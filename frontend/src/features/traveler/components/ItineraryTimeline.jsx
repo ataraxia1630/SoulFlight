@@ -31,6 +31,7 @@ export default function ItineraryTimeline({
   onActivityReplace,
   onActivityViewReviews,
   onActivityToggleComplete,
+  onActivityAdd,
 }) {
   const [expandedDays, setExpandedDays] = useState(itinerary.days.map((_, idx) => idx === 0));
 
@@ -292,13 +293,13 @@ export default function ItineraryTimeline({
                       </AnimatePresence>
                     </Stack>
 
-                    {/* Add Activity Button */}
                     <Button
                       fullWidth
                       variant="outlined"
                       sx={{ mt: 2 }}
-                      onClick={() => {
-                        /* TODO: Implement add activity */
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onActivityAdd(day);
                       }}
                     >
                       + Thêm hoạt động
