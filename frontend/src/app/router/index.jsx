@@ -5,6 +5,7 @@ import TravelerLayout from "@/layouts/TravelerLayout";
 import ExplorePage from "@/shared/pages/ExplorePage";
 import HomePage from "@/shared/pages/HomePage";
 import LoginPage from "@/shared/pages/LoginPage";
+import ServiceDetailPage from "@/shared/pages/ServiceDetailPage";
 import App from "../App";
 import adminRoutes from "./admin.route";
 import businessRoutes from "./business.route";
@@ -21,6 +22,7 @@ const router = createBrowserRouter(
       <Route element={<TravelerLayout />}>
         <Route index element={<HomePage />} />
         <Route path="explore" element={<ExplorePage />} />
+        <Route path="/services/:id" element={<ServiceDetailPage />} />
         {travelerRoutes.main}
       </Route>
 
