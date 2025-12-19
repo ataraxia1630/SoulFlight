@@ -101,7 +101,7 @@ const MenusList = ({ menus }) => {
                         sx={{
                           width: 150,
                           minWidth: 150,
-                          height: 150,
+                          height: 160,
                           objectFit: "cover",
                         }}
                         image={item.image_thumbnail}
