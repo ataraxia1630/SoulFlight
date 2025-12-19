@@ -1,6 +1,7 @@
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import BookIcon from "@mui/icons-material/Book";
+import CardTravelIcon from "@mui/icons-material/CardTravel";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import RecommendIcon from "@mui/icons-material/Recommend";
 import {
   Avatar,
   alpha,
@@ -14,7 +15,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-
+import { useId } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/app/store";
 
@@ -23,6 +24,7 @@ const LeftSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const user = useAuthStore((state) => state.user);
+  const gradientId = useId();
 
   const menuItems = [
     {
@@ -32,9 +34,15 @@ const LeftSidebar = () => {
       subtitle: "Lưu giữ kỷ niệm",
     },
     {
-      text: "Gợi ý cho bạn",
-      path: "/suggestions",
-      icon: <RecommendIcon />,
+      text: "Lịch trình của tôi",
+      path: "/itineraries",
+      icon: <CardTravelIcon />,
+    },
+    {
+      text: "AI Travel Planner",
+      path: "/travel-planner",
+      icon: <AutoAwesomeIcon />,
+      isSpecial: true,
     },
   ];
 
@@ -100,36 +108,65 @@ const LeftSidebar = () => {
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
 
+          const geminiGradient = "linear-gradient(90deg, #4285F4 0%, #9B72CB 50%, #D96570 100%)";
+
           return (
-            <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
+            <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
               <ListItemButton
                 onClick={() => navigate(item.path)}
                 selected={isActive}
                 sx={{
                   borderRadius: 3,
                   minHeight: 56,
-                  transition: "all 0.2s",
-                  "&.Mui-selected": {
-                    bgcolor: alpha(theme.palette.primary.main, 0.1),
-                    color: "primary.main",
+                  transition: "all 0.3s ease",
+                  ...(item.isSpecial && {
+                    mx: 0.5,
+                    border: "1px solid",
+                    borderColor: alpha("#9B72CB", 0.2),
+                    background: alpha("#f0f4f9", 0.5),
                     "&:hover": {
-                      bgcolor: alpha(theme.palette.primary.main, 0.15),
+                      background: alpha("#f0f4f9", 0.8),
+                      transform: "scale(1.02)",
+                      boxShadow: "0 4px 12px rgba(155, 114, 203, 0.15)",
                     },
-                    "& .MuiListItemIcon-root": {
-                      color: "primary.main",
-                    },
-                  },
-                  "&:hover": {
-                    bgcolor: "action.hover",
+                  }),
+                  "&.Mui-selected": {
+                    bgcolor: item.isSpecial
+                      ? alpha("#9B72CB", 0.1)
+                      : alpha(theme.palette.primary.main, 0.1),
                   },
                 }}
               >
                 <ListItemIcon
                   sx={{
                     minWidth: 40,
-                    color: isActive ? "primary.main" : "text.secondary",
+                    ...(item.isSpecial
+                      ? {
+                          "& svg": {
+                            fill: `url(#${gradientId})`,
+                            filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.1))",
+                          },
+                        }
+                      : {
+                          color: isActive ? "primary.main" : "text.secondary",
+                        }),
                   }}
                 >
+                  {item.isSpecial && (
+                    <svg
+                      width="0"
+                      height="0"
+                      style={{ position: "absolute" }}
+                      aria-hidden="true"
+                      focusable="false"
+                    >
+                      <linearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop stopColor="#4285F4" offset="0%" />
+                        <stop stopColor="#9B72CB" offset="50%" />
+                        <stop stopColor="#DB4437" offset="100%" />
+                      </linearGradient>
+                    </svg>
+                  )}
                   {item.icon}
                 </ListItemIcon>
 
@@ -137,11 +174,19 @@ const LeftSidebar = () => {
                   primary={item.text}
                   secondary={item.subtitle}
                   primaryTypographyProps={{
-                    fontWeight: isActive ? 600 : 500,
+                    fontWeight: isActive || item.isSpecial ? 700 : 500,
                     fontSize: "14px",
+                    sx: item.isSpecial
+                      ? {
+                          background: geminiGradient,
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
+                          display: "inline-block",
+                        }
+                      : {},
                   }}
                   secondaryTypographyProps={{
-                    fontSize: "14px",
+                    fontSize: "12px",
                     sx: { mt: 0.5 },
                   }}
                 />
