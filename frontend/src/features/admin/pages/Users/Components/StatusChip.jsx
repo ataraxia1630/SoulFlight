@@ -5,32 +5,38 @@ const chipConfig = {
   UNVERIFIED: {
     bg: "#FFF3CD",
     text: "#EAB308",
+    label: "Chưa xác minh",
   },
   ACTIVE: {
     bg: "#D1F2F3",
     text: "#1ABFC3",
+    label: "Hoạt động",
   },
   LOCKED: {
     bg: "#FCEEEE",
     text: "#EB4335",
+    label: "Đã khóa",
   },
   DEFAULT: {
     bg: "#F0F0F0",
     text: "#555555",
+    label: "Không xác định",
   },
 };
 
 const CHIP_WIDTH = 120;
 
-const StyledChip = styled(Chip)(({ status }) => {
-  const { bg, text } = chipConfig[status] || { bg: "#E5E7EB", text: "#374151" };
+const StyledChip = styled(Chip, {
+  shouldForwardProp: (prop) => prop !== "status",
+})(({ status }) => {
+  const { bg, text } = chipConfig[status] || chipConfig.DEFAULT;
 
   return {
     backgroundColor: bg,
     color: text,
     fontWeight: 600,
     fontSize: "14px",
-    letterSpacing: "0.5px",
+    letterSpacing: "0.3px",
     height: 32,
     minWidth: CHIP_WIDTH,
     maxWidth: CHIP_WIDTH,
@@ -43,8 +49,9 @@ const StyledChip = styled(Chip)(({ status }) => {
 });
 
 function StatusChip({ status }) {
-  const displayStatus = status[0].toUpperCase() + status.substring(1).toLowerCase();
-  return <StyledChip label={displayStatus} status={status} />;
+  const { label } = chipConfig[status] || chipConfig.DEFAULT;
+
+  return <StyledChip label={label} status={status} />;
 }
 
 export default StatusChip;

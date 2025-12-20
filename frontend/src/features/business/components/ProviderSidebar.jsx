@@ -89,6 +89,24 @@ const ProviderSidebar = ({ open, onToggle }) => {
             width: open ? DRAWER_WIDTH : DRAWER_WIDTH_COLLAPSED,
             bgcolor: "background.paper",
             boxSizing: "border-box",
+
+            scrollbarWidth: "thin",
+            scrollbarColor: "#e0e0e0 transparent",
+
+            "&::-webkit-scrollbar": {
+              width: "5px",
+            },
+            "&::-webkit-scrollbar-track": {
+              background: "transparent",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#e0e0e0",
+              borderRadius: "20px",
+              border: "transparent",
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              backgroundColor: "#a0a0a0",
+            },
           },
         }}
       >

@@ -46,11 +46,13 @@ export default function TravelerDialog({ open, onClose, onSave, editingItem, act
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle sx={{ fontWeight: 600, color: "primary.main" }}>Edit Traveler</DialogTitle>
+      <DialogTitle sx={{ fontWeight: 600, color: "primary.main" }}>
+        Chỉnh Sửa Khách Du Lịch
+      </DialogTitle>
 
       <DialogContent>
         <FormInput
-          label="Name"
+          label="Tên"
           name="name"
           value={formData.name}
           onChange={handleChange}
@@ -69,7 +71,7 @@ export default function TravelerDialog({ open, onClose, onSave, editingItem, act
 
         <FormInput
           type="select"
-          label="Status"
+          label="Trạng thái"
           name="status"
           value={formData.status}
           onChange={handleChange}
@@ -85,7 +87,7 @@ export default function TravelerDialog({ open, onClose, onSave, editingItem, act
           onSave={handleSubmit}
           isLoading={actionLoading}
           isValid={true}
-          saveText="Update"
+          saveText="Cập nhật"
         />
       </DialogActions>
     </Dialog>

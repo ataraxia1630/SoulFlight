@@ -52,12 +52,12 @@ export default function FacilityDialog({ open, onClose, onSave, editingItem, act
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle sx={{ fontWeight: 600, color: "primary.main" }}>
-        {editingItem ? "Edit Facility" : "Add New Facility"}
+        {editingItem ? "Cập nhật cơ sở vật chất" : "Thêm cơ sở vật chất"}
       </DialogTitle>
       <DialogContent>
         <FormInput
           fullWidth
-          label="Name"
+          label="Tên"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           margin="normal"
@@ -86,7 +86,7 @@ export default function FacilityDialog({ open, onClose, onSave, editingItem, act
           onSave={handleSave}
           isLoading={actionLoading}
           isValid={hasValidData()}
-          saveText="Add"
+          saveText="Thêm"
           editing={!!editingItem}
         />
       </DialogActions>

@@ -1,9 +1,9 @@
-import FacilityService from "@admin/services/facility.service";
 import { Alert, Box, CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import DeleteConfirmDialog from "@/shared/components/DeleteConfirmDialog";
 import PageHeaderWithAdd from "@/shared/components/PageHeaderWithAdd";
 import CustomTable from "@/shared/components/Table";
+import FacilityService from "@/shared/services/facility.service";
 import columnConfig from "./Components/columnsConfig";
 import FacilityDialog from "./Components/FacilityDialog";
 
@@ -90,7 +90,7 @@ export default function Facility() {
 
   return (
     <Box sx={{ width: "100%", p: { xs: 2, sm: 3 } }}>
-      <PageHeaderWithAdd title="Facility" onAdd={() => handleOpenDialog()} />
+      <PageHeaderWithAdd title="Cơ Sở Vật Chất" onAdd={() => handleOpenDialog()} />
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
