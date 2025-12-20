@@ -24,9 +24,21 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Lọc dữ liệu theo search
-  const searchableFields = columns.filter((c) => c.search).map((c) => c.id);
+  const searchPlaceholder = useMemo(() => {
+    const searchableLabels = columns.filter((c) => c.search).map((c) => c.label);
 
+    if (searchableLabels.length > 0) {
+      return `Tìm kiếm theo ${searchableLabels.join(", ").toLowerCase()}...`;
+    }
+    return "Tìm kiếm...";
+  }, [columns]);
+
+  // Lấy ID để thực hiện logic filter bên dưới
+  const searchableFields = useMemo(() => {
+    return columns.filter((c) => c.search).map((c) => c.id);
+  }, [columns]);
+
+  // Lọc dữ liệu theo search
   const filteredData = useMemo(() => {
     if (!searchTerm) return data;
     const lower = searchTerm.toLowerCase();
@@ -57,7 +69,7 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
 
     if (onView) {
       actions.push(
-        <Tooltip key="view" title="View">
+        <Tooltip key="view" title="Xem chi tiết">
           <IconButton
             size="small"
             onClick={() => onView(row)}
@@ -74,7 +86,7 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
 
     if (onEdit) {
       actions.push(
-        <Tooltip key="edit" title="Edit">
+        <Tooltip key="edit" title="Chỉnh sửa">
           <IconButton
             size="small"
             onClick={() => onEdit(row)}
@@ -91,7 +103,7 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
 
     if (onDelete) {
       actions.push(
-        <Tooltip key="delete" title="Delete">
+        <Tooltip key="delete" title="Xóa">
           <IconButton
             size="small"
             onClick={() => onDelete(row)}
@@ -124,7 +136,7 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
       <TextField
         fullWidth
         size="small"
-        placeholder="Search..."
+        placeholder={searchPlaceholder}
         value={searchTerm}
         onChange={(e) => {
           setSearchTerm(e.target.value);
@@ -167,7 +179,7 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
             {paginatedData.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={columns.length} align="center" sx={{ py: 4 }}>
-                  <Typography color="text.secondary">No data found</Typography>
+                  <Typography color="text.secondary">Không tìm thấy dữ liệu</Typography>
                 </TableCell>
               </TableRow>
             ) : (
@@ -252,7 +264,7 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
         rowsPerPage={rowsPerPage}
         onRowsPerPageChange={handleChangeRowsPerPage}
         rowsPerPageOptions={[5, 10, 25]}
-        labelRowsPerPage="Rows per page:"
+        labelRowsPerPage="Số hàng mỗi trang:"
         sx={{
           mt: 2,
           ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows": {

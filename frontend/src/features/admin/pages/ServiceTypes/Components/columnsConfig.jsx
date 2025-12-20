@@ -3,7 +3,7 @@ import { formatDate } from "@/shared/utils/formatDate";
 const columnConfig = [
   {
     id: "index",
-    label: "NO.",
+    label: "STT",
     width: "8%",
     header_align: "center",
     cell_align: "center",
@@ -11,7 +11,7 @@ const columnConfig = [
   },
   {
     id: "name",
-    label: "NAME",
+    label: "TÊN",
     width: "15%",
     header_align: "left",
     cell_align: "left",
@@ -19,7 +19,7 @@ const columnConfig = [
   },
   {
     id: "description",
-    label: "DESCRIPTION",
+    label: "MÔ TẢ",
     width: "25%",
     header_align: "left",
     cell_align: "left",
@@ -27,7 +27,7 @@ const columnConfig = [
   },
   {
     id: "updated_at",
-    label: "UPDATED DATE",
+    label: "NGÀY CẬP NHẬT",
     width: "20%",
     header_align: "center",
     cell_align: "center",
@@ -35,7 +35,7 @@ const columnConfig = [
   },
   {
     id: "actions",
-    label: "ACTIONS",
+    label: "HÀNH ĐỘNG",
     width: "16%",
     header_align: "center",
     cell_align: "center",

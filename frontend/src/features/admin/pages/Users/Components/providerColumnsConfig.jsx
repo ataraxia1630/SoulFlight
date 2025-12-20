@@ -3,7 +3,7 @@ import StatusChip from "./StatusChip";
 const columnConfig = [
   {
     id: "index",
-    label: "NO.",
+    label: "STT",
     width: "8%",
     header_align: "center",
     cell_align: "center",
@@ -11,7 +11,7 @@ const columnConfig = [
   },
   {
     id: "name",
-    label: "Provider",
+    label: "NHÀ CUNG CẤP",
     width: "20%",
     header_align: "left",
     cell_align: "left",
@@ -19,21 +19,23 @@ const columnConfig = [
   },
   {
     id: "email",
-    label: "Email",
+    label: "EMAIL",
     width: "20%",
     header_align: "left",
     cell_align: "left",
+    search: true,
   },
   {
     id: "address",
-    label: "Address",
+    label: "ĐỊA CHỈ",
     width: "25%",
     header_align: "left",
     cell_align: "left",
+    search: true,
   },
   {
     id: "status",
-    label: "STATUS",
+    label: "TRẠNG THÁI",
     width: "20%",
     header_align: "center",
     cell_align: "center",
@@ -41,7 +43,7 @@ const columnConfig = [
   },
   {
     id: "actions",
-    label: "ACTIONS",
+    label: "HÀNH ĐỘNG",
     width: "16%",
     header_align: "center",
     cell_align: "center",

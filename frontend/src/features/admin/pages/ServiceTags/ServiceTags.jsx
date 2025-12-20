@@ -1,9 +1,9 @@
-import ServiceTagService from "@admin/services/serviceTag.service";
 import { Alert, Box, CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import DeleteConfirmDialog from "@/shared/components/DeleteConfirmDialog";
 import PageHeaderWithAdd from "@/shared/components/PageHeaderWithAdd";
 import CustomTable from "@/shared/components/Table";
+import ServiceTagService from "@/shared/services/serviceTag.service";
 import columnConfig from "./Components/columnsConfig";
 import ServiceTagDialog from "./Components/ServiceTagDialog";
 
@@ -90,7 +90,7 @@ export default function ServiceTags() {
 
   return (
     <Box sx={{ width: "100%", p: { xs: 2, sm: 3 } }}>
-      <PageHeaderWithAdd title="Service Tag" onAdd={() => handleOpenDialog()} />
+      <PageHeaderWithAdd title="Tag Dịch Vụ" onAdd={() => handleOpenDialog()} />
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
