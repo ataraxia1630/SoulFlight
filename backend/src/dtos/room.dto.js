@@ -16,8 +16,10 @@ class RoomDTO {
     this.view_type = room.view_type || null;
     this.status = room.status;
 
-    this.service_id = room.service_id;
-    this.service_name = room.service_name;
+    this.service_id = room.service?.id || null;
+    this.service_name = room.service?.name || null;
+
+    this.provider_name = room.service?.Provider?.user?.name || null;
 
     this.facilities = room.facilities.map((rf) => FacilityDTO.fromModel(rf.facility));
 

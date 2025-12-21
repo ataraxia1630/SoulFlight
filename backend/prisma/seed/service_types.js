@@ -14,11 +14,8 @@ const serviceTypes = [
     description: "Guided tours, excursions, and adventure activities",
   },
   {
-    name: "transport",
-    description: "Theme parks, museums, historical sites, and tourist spots",
-  },
-  {
     name: "leisure",
+    description: "Các hoạt động giải trí, thư giãn và nghỉ ngơi",
   },
 ];
 

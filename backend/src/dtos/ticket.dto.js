@@ -9,6 +9,7 @@ class TicketDTO {
     this.status = ticket.status;
     this.service_id = ticket.service_id;
     this.service_name = ticket.Service?.name || null;
+    this.provider_name = ticket.Service?.Provider?.user?.name || null;
     this.place_id = ticket.place_id;
 
     this.place = ticket.Place

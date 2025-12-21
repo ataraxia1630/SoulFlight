@@ -6,7 +6,13 @@ const { attachImagesList } = require("../utils/attachImage");
 
 // lấy ảnh từ place
 const commonInclude = {
-  Service: { select: { id: true, name: true } },
+  Service: {
+    include: {
+      Provider: {
+        include: { user: true },
+      },
+    },
+  },
   TourGuide: true,
   TourPlace: {
     include: {

@@ -1,5 +1,6 @@
 import Facilities from "@admin/pages/Facilities";
 import PartnerRegistration from "@admin/pages/PartnerRegistration";
+import Services from "@admin/pages/Services";
 import ServiceTags from "@admin/pages/ServiceTags";
 import ServiceTypes from "@admin/pages/ServiceTypes";
 import Users from "@admin/pages/Users";
@@ -16,6 +17,7 @@ const adminRoutes = (
     <Route path="admin/service_type" element={<ServiceTypes />} />
     <Route path="admin/tag" element={<ServiceTags />} />
     <Route path="admin/user" element={<Users />} />
+    <Route path="admin/service" element={<Services />} />
   </Route>
 );
 
