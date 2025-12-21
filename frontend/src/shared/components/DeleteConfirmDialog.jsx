@@ -10,15 +10,15 @@ import {
 export default function DeleteConfirmDialog({ open, onClose, onConfirm, itemName }) {
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle sx={{ fontWeight: 600 }}>Confirm Delete</DialogTitle>
+      <DialogTitle sx={{ fontWeight: 600, color: "red" }}>Xác Nhận Xóa</DialogTitle>
       <DialogContent>
         <Typography>
-          Are you sure you want to delete <strong>{itemName}</strong>?
+          Bạn có chắc chắn muốn xóa <strong>{itemName}</strong>?
         </Typography>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={onClose} sx={{ textTransform: "none" }}>
-          Cancel
+          Hủy
         </Button>
         <Button
           onClick={onConfirm}
@@ -26,7 +26,7 @@ export default function DeleteConfirmDialog({ open, onClose, onConfirm, itemName
           color="error"
           sx={{ textTransform: "none" }}
         >
-          Delete
+          Xóa
         </Button>
       </DialogActions>
     </Dialog>

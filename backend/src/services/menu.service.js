@@ -4,13 +4,24 @@ const CloudinaryService = require("../services/cloudinary.service");
 const { ERROR_CODES } = require("../constants/errorCode");
 const { MenuDTO } = require("../dtos/menu.dto");
 
+const menuInclude = {
+  Service: {
+    include: {
+      Provider: {
+        include: {
+          user: true,
+        },
+      },
+    },
+  },
+  MenuItems: true,
+};
+
 const MenuService = {
   getAll: async () => {
     const menus = await prisma.menu.findMany({
-      include: {
-        Service: { select: { name: true } },
-        MenuItems: true,
-      },
+      include: menuInclude,
+      orderBy: { updated_at: "desc" },
     });
     return MenuDTO.fromList(menus);
   },
@@ -18,10 +29,7 @@ const MenuService = {
   getById: async (id) => {
     const menu = await prisma.menu.findUnique({
       where: { id: parseInt(id, 10) },
-      include: {
-        Service: { select: { name: true } },
-        MenuItems: true,
-      },
+      include: menuInclude,
     });
     if (!menu) {
       return new AppError(
@@ -36,10 +44,7 @@ const MenuService = {
   getByService: async (serviceId) => {
     const menus = await prisma.menu.findMany({
       where: { service_id: parseInt(serviceId, 10) },
-      include: {
-        Service: { select: { name: true } },
-        MenuItems: true,
-      },
+      include: menuInclude,
     });
     return MenuDTO.fromList(menus);
   },
@@ -47,10 +52,7 @@ const MenuService = {
   getByProvider: async (providerId) => {
     const menus = await prisma.menu.findMany({
       where: { Service: { provider_id: parseInt(providerId, 10) } },
-      include: {
-        Service: { select: { name: true } },
-        MenuItems: true,
-      },
+      include: menuInclude,
     });
     return MenuDTO.fromList(menus);
   },
@@ -70,10 +72,7 @@ const MenuService = {
         service_id: parseInt(data.service_id, 10),
         cover_url: coverPublicId,
       },
-      include: {
-        Service: { select: { name: true } },
-        MenuItems: true,
-      },
+      include: menuInclude,
     });
 
     return MenuDTO.fromModel(menu);
@@ -111,10 +110,7 @@ const MenuService = {
         ...data,
         cover_url: coverPublicId,
       },
-      include: {
-        Service: { select: { name: true } },
-        MenuItems: true,
-      },
+      include: menuInclude,
     });
 
     return MenuDTO.fromModel(updated);
@@ -146,9 +142,7 @@ const MenuService = {
           }
         }
       }
-      await tx.menuItem.deleteMany({
-        where: { menu_id: menuId },
-      });
+      await tx.menuItem.deleteMany({ where: { menu_id: menuId } });
 
       if (menu.cover_url) {
         try {
@@ -157,9 +151,7 @@ const MenuService = {
           console.warn(`Image not in cloudinary`);
         }
       }
-      await tx.menu.delete({
-        where: { id: menuId },
-      });
+      await tx.menu.delete({ where: { id: menuId } });
     });
 
     return { message: "Menu and all its items deleted successfully" };

@@ -58,7 +58,10 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
     return filteredData.slice(start, start + rowsPerPage);
   }, [filteredData, page, rowsPerPage]);
 
-  const handleChangePage = (_, newPage) => setPage(newPage);
+  const handleChangePage = (_, newPage) => {
+    setPage(newPage);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -231,8 +234,8 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
                             src={content}
                             alt={row.name}
                             sx={{
-                              width: 40,
-                              height: 40,
+                              width: 55,
+                              height: 55,
                               borderRadius: 1,
                               objectFit: "cover",
                             }}
@@ -265,6 +268,7 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
         onRowsPerPageChange={handleChangeRowsPerPage}
         rowsPerPageOptions={[5, 10, 25]}
         labelRowsPerPage="Số hàng mỗi trang:"
+        labelDisplayedRows={({ from, to, count }) => `${from}-${to} trong ${count}`}
         sx={{
           mt: 2,
           ".MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows": {
