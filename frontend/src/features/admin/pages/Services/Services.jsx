@@ -1,70 +1,193 @@
 import { Alert, Box, Tab, Tabs } from "@mui/material";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import DeleteConfirmDialog from "@/shared/components/DeleteConfirmDialog";
 import LoadingState from "@/shared/components/LoadingState";
 import PageHeaderWithAdd from "@/shared/components/PageHeaderWithAdd";
 import CustomTable from "@/shared/components/Table";
 import MenuService from "@/shared/services/menu.service";
+import ReviewService from "@/shared/services/review.service";
 import RoomService from "@/shared/services/room.service";
+import ServiceService from "@/shared/services/service.service";
 import TicketService from "@/shared/services/ticket.service";
 import TourService from "@/shared/services/tour.service";
-import { menuColumns, roomColumns, ticketColumns, tourColumns } from "./Components/columnsConfig";
 
+import { menuColumns, roomColumns, ticketColumns, tourColumns } from "./Components/columnsConfig";
 import MenuDetailDialog from "./Components/MenuDetailDialog";
 import RoomDetailDialog from "./Components/RoomDetailDialog";
 import TicketDetailDialog from "./Components/TicketDetailDialog";
 import TourDetailDialog from "./Components/TourDetailDialog";
 
-function CustomTabPanel(props) {
-  const { children, value, index, ...other } = props;
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`service-tabpanel-${index}`}
-      aria-labelledby={`service-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
-    </div>
-  );
-}
-
-const ErrorAlert = ({ message }) => (
-  <Alert severity="error" sx={{ mb: 2 }}>
-    {message}
-  </Alert>
-);
-
 const extractData = (res) => {
   if (Array.isArray(res)) return res;
-  if (res && Array.isArray(res.data)) return res.data;
-  if (res && Array.isArray(res.items)) return res.items;
-  return [];
+  return res?.data || res?.items || [];
 };
 
-const tabStyle = (currentValue, index) => ({
+const tabStyle = (currentValue, tabId) => ({
   textTransform: "none",
   fontSize: "1rem",
-  fontWeight: currentValue === index ? 700 : 500,
-  color: currentValue === index ? "primary.main" : "text.secondary",
+  fontWeight: currentValue === tabId ? 700 : 500,
+  color: currentValue === tabId ? "primary.main" : "text.secondary",
   transition: "0.3s",
   mb: 0.5,
 });
 
 const STORAGE_KEY = "services_active_tab";
 
+const BaseTabContent = ({ title, serviceAPI, columns, DetailDialog }) => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const [deleteItem, setDeleteItem] = useState(null);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const [viewItem, setViewItem] = useState(null);
+  const [relatedService, setRelatedService] = useState(null);
+  const [relatedReviews, setRelatedReviews] = useState([]);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+
+  const loadData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await serviceAPI.getAll();
+      setData(extractData(res));
+    } catch {
+      setError(`Không thể tải danh sách ${title}.`);
+    } finally {
+      setLoading(false);
+    }
+  }, [serviceAPI, title]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const handleView = async (item) => {
+    setViewItem(item);
+    setLoadingDetail(true);
+    try {
+      if (item.service_id) {
+        const [serviceRes, reviewsRes] = await Promise.all([
+          ServiceService.getById(item.service_id),
+          ReviewService.getByService(item.service_id),
+        ]);
+        setRelatedService(serviceRes.data);
+        setRelatedReviews(extractData(reviewsRes));
+      }
+    } catch (err) {
+      console.error("Lỗi khi tải chi tiết:", err);
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
+
+  const handleCloseView = () => {
+    setViewItem(null);
+    setRelatedService(null);
+    setRelatedReviews([]);
+  };
+
+  const handleConfirmDelete = async () => {
+    try {
+      await serviceAPI.delete(deleteItem.id);
+      loadData();
+      setOpenDeleteDialog(false);
+    } catch {
+      alert("Xóa thất bại!");
+    }
+  };
+
+  if (loading) return <LoadingState />;
+
+  return (
+    <>
+      <PageHeaderWithAdd title={title} />
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
+      <CustomTable
+        columns={columns}
+        data={data}
+        onView={handleView}
+        onDelete={(item) => {
+          setDeleteItem(item);
+          setOpenDeleteDialog(true);
+        }}
+      />
+
+      <DeleteConfirmDialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        onConfirm={handleConfirmDelete}
+        itemName={deleteItem?.name}
+      />
+
+      <DetailDialog
+        key={viewItem ? `detail-${viewItem.id}` : "detail-closed"}
+        open={!!viewItem}
+        onClose={handleCloseView}
+        data={viewItem}
+        service={relatedService}
+        provider={relatedService?.provider}
+        reviews={relatedReviews}
+        loading={loadingDetail}
+      />
+    </>
+  );
+};
+
 export default function Services() {
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState("tour");
+
+  const tabsConfig = useMemo(
+    () => [
+      {
+        id: "tour",
+        label: "Tour",
+        title: "Tour",
+        api: TourService,
+        cols: tourColumns,
+        dialog: TourDetailDialog,
+      },
+      {
+        id: "leisure",
+        label: "Leisure",
+        title: "Ticket",
+        api: TicketService,
+        cols: ticketColumns,
+        dialog: TicketDetailDialog,
+      },
+      {
+        id: "fnb",
+        label: "FnB",
+        title: "FnB",
+        api: MenuService,
+        cols: menuColumns,
+        dialog: MenuDetailDialog,
+      },
+      {
+        id: "stay",
+        label: "Stay",
+        title: "Stay",
+        api: RoomService,
+        cols: roomColumns,
+        dialog: RoomDetailDialog,
+      },
+    ],
+    [],
+  );
 
   useEffect(() => {
     const savedTab = localStorage.getItem(STORAGE_KEY);
-    if (savedTab !== null) {
-      setTabValue(Number(savedTab));
+    if (savedTab && tabsConfig.some((tab) => tab.id === savedTab)) {
+      setTabValue(savedTab);
     }
-  }, []);
+  }, [tabsConfig]);
 
-  const handleTabChange = (_event, newValue) => {
+  const handleTabChange = (_, newValue) => {
     setTabValue(newValue);
     localStorage.setItem(STORAGE_KEY, newValue);
   };
@@ -77,306 +200,28 @@ export default function Services() {
           onChange={handleTabChange}
           variant="scrollable"
           scrollButtons="auto"
-          sx={{
-            "& .MuiTabs-indicator": {
-              height: 3,
-              borderRadius: "3px 3px 0 0",
-              bgcolor: "primary.main",
-            },
-          }}
+          sx={{ "& .MuiTabs-indicator": { height: 3, borderRadius: "3px 3px 0 0" } }}
         >
-          <Tab label="Tour" sx={tabStyle(tabValue, 0)} />
-          <Tab label="Leisure" sx={tabStyle(tabValue, 1)} />
-          <Tab label="FnB" sx={tabStyle(tabValue, 2)} />
-          <Tab label="Stay" sx={tabStyle(tabValue, 3)} />
+          {tabsConfig.map((tab) => (
+            <Tab key={tab.id} value={tab.id} label={tab.label} sx={tabStyle(tabValue, tab.id)} />
+          ))}
         </Tabs>
       </Box>
 
-      <CustomTabPanel value={tabValue} index={0}>
-        <TourTabContent />
-      </CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={1}>
-        <TicketTabContent />
-      </CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={2}>
-        <MenuTabContent />
-      </CustomTabPanel>
-      <CustomTabPanel value={tabValue} index={3}>
-        <RoomTabContent />
-      </CustomTabPanel>
+      {tabsConfig.map(
+        (tab) =>
+          tabValue === tab.id && (
+            <Box key={tab.id} sx={{ pt: 3 }}>
+              {" "}
+              <BaseTabContent
+                title={tab.title}
+                serviceAPI={tab.api}
+                columns={tab.cols}
+                DetailDialog={tab.dialog}
+              />
+            </Box>
+          ),
+      )}
     </Box>
   );
 }
-
-const TourTabContent = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const [deleteItem, setDeleteItem] = useState(null);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-
-  const [viewItem, setViewItem] = useState(null);
-
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await TourService.getAll();
-      setData(extractData(res));
-    } catch (err) {
-      setError("Không thể tải danh sách Tour.");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  const handleClickDelete = (item) => {
-    setDeleteItem(item);
-    setOpenDeleteDialog(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!deleteItem) return;
-    try {
-      await TourService.delete(deleteItem.id);
-      await loadData();
-      setOpenDeleteDialog(false);
-      setDeleteItem(null);
-    } catch {
-      alert("Xóa thất bại");
-    }
-  };
-
-  if (loading) return <LoadingState />;
-
-  return (
-    <>
-      <PageHeaderWithAdd title="Tour" />
-      {error && <ErrorAlert message={error} />}
-      <CustomTable
-        columns={tourColumns}
-        data={data}
-        onView={(row) => setViewItem(row)}
-        onDelete={handleClickDelete}
-      />
-
-      <DeleteConfirmDialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-        onConfirm={handleConfirmDelete}
-        itemName={deleteItem?.name}
-      />
-
-      <TourDetailDialog open={!!viewItem} data={viewItem} onClose={() => setViewItem(null)} />
-    </>
-  );
-};
-
-const TicketTabContent = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const [deleteItem, setDeleteItem] = useState(null);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-
-  const [viewItem, setViewItem] = useState(null);
-
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await TicketService.getAll();
-      setData(extractData(res));
-    } catch (err) {
-      setError("Không thể tải danh sách Ticket.");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  const handleClickDelete = (item) => {
-    setDeleteItem(item);
-    setOpenDeleteDialog(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!deleteItem) return;
-    try {
-      await TicketService.delete(deleteItem.id);
-      await loadData();
-      setOpenDeleteDialog(false);
-      setDeleteItem(null);
-    } catch {
-      alert("Xóa thất bại!");
-    }
-  };
-
-  if (loading) return <LoadingState />;
-
-  return (
-    <>
-      <PageHeaderWithAdd title="Ticket" />
-      {error && <ErrorAlert message={error} />}
-      <CustomTable
-        columns={ticketColumns}
-        data={data}
-        onView={(row) => setViewItem(row)}
-        onDelete={handleClickDelete}
-      />
-      <DeleteConfirmDialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-        onConfirm={handleConfirmDelete}
-        itemName={deleteItem?.name}
-      />
-
-      <TicketDetailDialog open={!!viewItem} data={viewItem} onClose={() => setViewItem(null)} />
-    </>
-  );
-};
-
-const MenuTabContent = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const [deleteItem, setDeleteItem] = useState(null);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-
-  const [viewItem, setViewItem] = useState(null);
-
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await MenuService.getAll();
-      setData(extractData(res));
-    } catch (err) {
-      setError("Không thể tải danh sách Menu.");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  const handleClickDelete = (item) => {
-    setDeleteItem(item);
-    setOpenDeleteDialog(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!deleteItem) return;
-    try {
-      await MenuService.delete(deleteItem.id);
-      await loadData();
-      setOpenDeleteDialog(false);
-      setDeleteItem(null);
-    } catch {
-      alert("Xóa thất bại!");
-    }
-  };
-
-  if (loading) return <LoadingState />;
-
-  return (
-    <>
-      <PageHeaderWithAdd title="FnB" />
-      {error && <ErrorAlert message={error} />}
-      <CustomTable
-        columns={menuColumns}
-        data={data}
-        onView={(row) => setViewItem(row)}
-        onDelete={handleClickDelete}
-      />
-      <DeleteConfirmDialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-        onConfirm={handleConfirmDelete}
-        itemName={deleteItem?.name}
-      />
-
-      <MenuDetailDialog open={!!viewItem} data={viewItem} onClose={() => setViewItem(null)} />
-    </>
-  );
-};
-
-const RoomTabContent = () => {
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const [deleteItem, setDeleteItem] = useState(null);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-
-  const [viewItem, setViewItem] = useState(null);
-
-  const loadData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const res = await RoomService.getAll();
-      setData(extractData(res));
-    } catch (err) {
-      setError("Không thể tải danh sách Room.");
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  const handleClickDelete = (item) => {
-    setDeleteItem(item);
-    setOpenDeleteDialog(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!deleteItem) return;
-    try {
-      await RoomService.delete(deleteItem.id);
-      await loadData();
-      setOpenDeleteDialog(false);
-      setDeleteItem(null);
-    } catch {
-      alert("Xóa thất bại!");
-    }
-  };
-
-  if (loading) return <LoadingState />;
-
-  return (
-    <>
-      <PageHeaderWithAdd title="Stay" />
-      {error && <ErrorAlert message={error} />}
-      <CustomTable
-        columns={roomColumns}
-        data={data}
-        onView={(row) => setViewItem(row)}
-        onDelete={handleClickDelete}
-      />
-      <DeleteConfirmDialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-        onConfirm={handleConfirmDelete}
-        itemName={deleteItem?.name}
-      />
-
-      <RoomDetailDialog open={!!viewItem} data={viewItem} onClose={() => setViewItem(null)} />
-    </>
-  );
-};
