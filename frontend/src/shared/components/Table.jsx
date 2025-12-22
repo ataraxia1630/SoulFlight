@@ -234,8 +234,8 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
                             src={content}
                             alt={row.name}
                             sx={{
-                              width: 55,
-                              height: 55,
+                              width: 60,
+                              height: 60,
                               borderRadius: 1,
                               objectFit: "cover",
                             }}

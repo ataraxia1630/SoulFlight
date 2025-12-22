@@ -9,6 +9,7 @@ import {
   Divider,
   Typography,
 } from "@mui/material";
+import { useAuthStore } from "@/app/store";
 import formatPrice from "@/shared/utils/FormatPrice";
 
 const unitTranslation = {
@@ -30,6 +31,8 @@ const unitTranslation = {
 };
 
 const MenusList = ({ menus }) => {
+  const { user } = useAuthStore();
+
   if (!menus || menus.length === 0) {
     return (
       <Box sx={{ textAlign: "center", py: 4 }}>
@@ -199,29 +202,31 @@ const MenusList = ({ menus }) => {
                           </Typography>
                         </Typography>
 
-                        <Box sx={{ display: "flex", gap: 1 }}>
-                          <Button
-                            variant="outlined"
-                            size="small"
-                            startIcon={<AddShoppingCart />}
-                            disabled={!isAvailable}
-                            onClick={() => console.log("Add to cart", item.id)}
-                            sx={{ textTransform: "none", fontWeight: 600 }}
-                          >
-                            Thêm vào giỏ
-                          </Button>
+                        {user?.role === "TRAVELER" && (
+                          <Box sx={{ display: "flex", gap: 1 }}>
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              startIcon={<AddShoppingCart />}
+                              disabled={!isAvailable}
+                              onClick={() => console.log("Add to cart", item.id)}
+                              sx={{ textTransform: "none", fontWeight: 600 }}
+                            >
+                              Thêm vào giỏ
+                            </Button>
 
-                          <Button
-                            variant="contained"
-                            size="small"
-                            disableElevation
-                            disabled={!isAvailable}
-                            onClick={() => console.log("Order now", item.id)}
-                            sx={{ textTransform: "none", fontWeight: 600 }}
-                          >
-                            Đặt ngay
-                          </Button>
-                        </Box>
+                            <Button
+                              variant="contained"
+                              size="small"
+                              disableElevation
+                              disabled={!isAvailable}
+                              onClick={() => console.log("Order now", item.id)}
+                              sx={{ textTransform: "none", fontWeight: 600 }}
+                            >
+                              Đặt ngay
+                            </Button>
+                          </Box>
+                        )}
                       </Box>
                     </Box>
                   </Card>

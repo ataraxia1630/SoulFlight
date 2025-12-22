@@ -10,10 +10,13 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { useAuthStore } from "@/app/store";
 import formatPrice from "@/shared/utils/FormatPrice";
 import { formatDateTime, getDurationText } from "@/shared/utils/formatDate";
 
 const ToursList = ({ tours }) => {
+  const { user } = useAuthStore();
+
   if (!tours || tours.length === 0) {
     return (
       <Box sx={{ textAlign: "center", py: 4 }}>
@@ -178,90 +181,99 @@ const ToursList = ({ tours }) => {
                   </Typography>
                 ) : (
                   <Stack spacing={2}>
-                    {tour.places.map((place, index) => (
-                      <Box
-                        key={place.place_id || index}
-                        sx={{
-                          display: "flex",
-                          gap: 2,
-                          p: 2,
-                          bgcolor: "grey.50",
-                          borderRadius: 2,
-                          border: "1px solid",
-                          borderColor: "grey.200",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Avatar
-                          src={place.image ? place.image : ""}
-                          variant="rounded"
+                    {tour.places.map((place, index) => {
+                      const mainImage =
+                        place.images?.find((img) => img.is_main) || place.images?.[0];
+
+                      return (
+                        <Box
+                          key={place.place_id || index}
                           sx={{
-                            width: 80,
-                            height: 80,
-                            bgcolor: "primary.light",
-                            color: "primary.contrastText",
-                            fontWeight: "bold",
-                            fontSize: "16px",
+                            display: "flex",
+                            gap: 2,
+                            p: 2,
+                            bgcolor: "grey.50",
+                            borderRadius: 2,
+                            border: "1px solid",
+                            borderColor: "grey.200",
+                            alignItems: "center",
                           }}
                         >
-                          {index + 1}
-                        </Avatar>
+                          <Avatar
+                            src={mainImage?.url || ""}
+                            variant="rounded"
+                            sx={{
+                              width: 100,
+                              height: 100,
+                              bgcolor: "primary.light",
+                              color: "primary.contrastText",
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                            }}
+                          >
+                            {index + 1}
+                          </Avatar>
 
-                        <Box sx={{ flex: 1 }}>
-                          <Typography variant="body1" fontWeight={600}>
-                            {place.name}
-                          </Typography>
-                          {place.start_time && (
-                            <Typography
-                              variant="caption"
-                              color="primary"
-                              fontWeight="bold"
-                              fontSize="12px"
-                            >
-                              {place.start_time}
-                              {place.end_time ? ` - ${place.end_time}` : ""}
+                          <Box sx={{ flex: 1 }}>
+                            <Typography variant="body1" fontWeight={600}>
+                              {place.name}
                             </Typography>
-                          )}
-                          <Typography variant="body2" color="text.secondary">
-                            {place.description}
-                          </Typography>
+
+                            {place.start_time && (
+                              <Typography
+                                variant="caption"
+                                color="primary"
+                                fontWeight="bold"
+                                fontSize="12px"
+                              >
+                                {place.start_time}
+                                {place.end_time ? ` - ${place.end_time}` : ""}
+                              </Typography>
+                            )}
+
+                            <Typography variant="body2" color="text.secondary">
+                              {place.description}
+                            </Typography>
+                          </Box>
                         </Box>
-                      </Box>
-                    ))}
+                      );
+                    })}
                   </Stack>
                 )}
               </Box>
 
-              <Box
-                sx={{
-                  mt: 3,
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: 2,
-                  flexWrap: "wrap",
-                }}
-              >
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  startIcon={<AddShoppingCart />}
-                  disabled={!isAvailable}
-                  onClick={() => console.log("Add to cart:", tour.id)}
-                  sx={{ textTransform: "none", fontWeight: 600 }}
+              {user?.role === "TRAVELER" && (
+                <Box
+                  sx={{
+                    mt: 3,
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    gap: 2,
+                    flexWrap: "wrap",
+                  }}
                 >
-                  Thêm vào giỏ
-                </Button>
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    startIcon={<AddShoppingCart />}
+                    disabled={!isAvailable}
+                    onClick={() => console.log("Add to cart:", tour.id)}
+                    sx={{ textTransform: "none", fontWeight: 600 }}
+                  >
+                    Thêm vào giỏ
+                  </Button>
 
-                <Button
-                  variant="contained"
-                  color="primary"
-                  disabled={!isAvailable}
-                  onClick={() => console.log("Book now:", tour.id)}
-                  sx={{ textTransform: "none", fontWeight: 600 }}
-                >
-                  {isAvailable ? "Đặt tour ngay" : "Đã hết / Ngưng"}
-                </Button>
-              </Box>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={!isAvailable}
+                    onClick={() => console.log("Book now:", tour.id)}
+                    sx={{ textTransform: "none", fontWeight: 600 }}
+                  >
+                    {isAvailable ? "Đặt tour ngay" : "Đã hết / Ngưng"}
+                  </Button>
+                </Box>
+              )}
             </CardContent>
           </Card>
         );

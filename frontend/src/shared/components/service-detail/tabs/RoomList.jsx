@@ -23,10 +23,12 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import { useAuthStore } from "@/app/store";
 import formatPrice from "@/shared/utils/FormatPrice";
 
 const RoomsList = ({ rooms }) => {
   const [openImageObj, setOpenImageObj] = useState(null);
+  const { user } = useAuthStore();
 
   const handleOpenImage = (imgUrl) => {
     setOpenImageObj(imgUrl);
@@ -298,28 +300,30 @@ const RoomsList = ({ rooms }) => {
                 </Stack>
               </CardContent>
 
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  alignItems: "center",
-                  p: 2,
-                  pt: 0,
-                  gap: 2,
-                }}
-              >
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={<AddShoppingCart />}
-                  disabled={!isAvailable}
+              {user?.role === "TRAVELER" && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                    p: 2,
+                    pt: 0,
+                    gap: 2,
+                  }}
                 >
-                  Thêm vào giỏ
-                </Button>
-                <Button variant="contained" size="small" disabled={!isAvailable}>
-                  {isAvailable ? "Đặt phòng" : "Hết phòng"}
-                </Button>
-              </Box>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<AddShoppingCart />}
+                    disabled={!isAvailable}
+                  >
+                    Thêm vào giỏ
+                  </Button>
+                  <Button variant="contained" size="small" disabled={!isAvailable}>
+                    {isAvailable ? "Đặt phòng" : "Hết phòng"}
+                  </Button>
+                </Box>
+              )}
             </Box>
           </Card>
         );

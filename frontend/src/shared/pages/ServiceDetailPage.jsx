@@ -2,6 +2,7 @@ import { ArrowBack, Favorite, FavoriteBorder, Share } from "@mui/icons-material"
 import { Box, Button, Container, Grid, IconButton } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useAuthStore } from "@/app/store";
 import LoadingState from "../components/LoadingState.jsx";
 import EmptyState from "../components/service-detail/EmptyState";
 import ProviderCard from "../components/service-detail/ProviderCard";
@@ -16,6 +17,7 @@ import TourService from "../services/tour.service.js";
 
 const ServiceDetailPage = () => {
   const { id } = useParams();
+  const { user } = useAuthStore();
 
   const [service, setService] = useState(null);
   const [rooms, setRooms] = useState([]);
@@ -117,18 +119,20 @@ const ServiceDetailPage = () => {
           <Button startIcon={<ArrowBack />} onClick={handleBack} sx={{ color: "text.primary" }}>
             Quay lại
           </Button>
-          <Box>
-            <IconButton
-              onClick={() => setIsFavorite(!isFavorite)}
-              sx={{ color: isFavorite ? "error.main" : "text.secondary" }}
-            >
-              {isFavorite ? <Favorite /> : <FavoriteBorder />}
-            </IconButton>
+          {user?.role === "TRAVELER" && (
+            <Box>
+              <IconButton
+                onClick={() => setIsFavorite(!isFavorite)}
+                sx={{ color: isFavorite ? "error.main" : "text.secondary" }}
+              >
+                {isFavorite ? <Favorite /> : <FavoriteBorder />}
+              </IconButton>
 
-            <IconButton sx={{ color: "text.secondary" }}>
-              <Share />
-            </IconButton>
-          </Box>
+              <IconButton sx={{ color: "text.secondary" }}>
+                <Share />
+              </IconButton>
+            </Box>
+          )}
         </Box>
 
         <Grid>

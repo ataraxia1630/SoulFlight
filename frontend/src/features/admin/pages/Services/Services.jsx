@@ -1,6 +1,5 @@
 import { Alert, Box, Tab, Tabs } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import DeleteConfirmDialog from "@/shared/components/DeleteConfirmDialog";
 import LoadingState from "@/shared/components/LoadingState";
 import PageHeaderWithAdd from "@/shared/components/PageHeaderWithAdd";
@@ -10,6 +9,11 @@ import RoomService from "@/shared/services/room.service";
 import TicketService from "@/shared/services/ticket.service";
 import TourService from "@/shared/services/tour.service";
 import { menuColumns, roomColumns, ticketColumns, tourColumns } from "./Components/columnsConfig";
+
+import MenuDetailDialog from "./Components/MenuDetailDialog";
+import RoomDetailDialog from "./Components/RoomDetailDialog";
+import TicketDetailDialog from "./Components/TicketDetailDialog";
+import TourDetailDialog from "./Components/TourDetailDialog";
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -48,11 +52,21 @@ const tabStyle = (currentValue, index) => ({
   mb: 0.5,
 });
 
+const STORAGE_KEY = "services_active_tab";
+
 export default function Services() {
   const [tabValue, setTabValue] = useState(0);
 
+  useEffect(() => {
+    const savedTab = localStorage.getItem(STORAGE_KEY);
+    if (savedTab !== null) {
+      setTabValue(Number(savedTab));
+    }
+  }, []);
+
   const handleTabChange = (_event, newValue) => {
     setTabValue(newValue);
+    localStorage.setItem(STORAGE_KEY, newValue);
   };
 
   return (
@@ -94,15 +108,15 @@ export default function Services() {
   );
 }
 
-// tour
 const TourTabContent = () => {
-  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [deleteItem, setDeleteItem] = useState(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const [viewItem, setViewItem] = useState(null);
 
   const loadData = useCallback(async () => {
     try {
@@ -147,7 +161,7 @@ const TourTabContent = () => {
       <CustomTable
         columns={tourColumns}
         data={data}
-        onView={(row) => navigate(`/services/${row.id}?type=tour`)}
+        onView={(row) => setViewItem(row)}
         onDelete={handleClickDelete}
       />
 
@@ -157,19 +171,21 @@ const TourTabContent = () => {
         onConfirm={handleConfirmDelete}
         itemName={deleteItem?.name}
       />
+
+      <TourDetailDialog open={!!viewItem} data={viewItem} onClose={() => setViewItem(null)} />
     </>
   );
 };
 
-// ticket
 const TicketTabContent = () => {
-  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [deleteItem, setDeleteItem] = useState(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const [viewItem, setViewItem] = useState(null);
 
   const loadData = useCallback(async () => {
     try {
@@ -214,7 +230,7 @@ const TicketTabContent = () => {
       <CustomTable
         columns={ticketColumns}
         data={data}
-        onView={(row) => navigate(`/services/${row.id}?type=leisure`)}
+        onView={(row) => setViewItem(row)}
         onDelete={handleClickDelete}
       />
       <DeleteConfirmDialog
@@ -223,19 +239,21 @@ const TicketTabContent = () => {
         onConfirm={handleConfirmDelete}
         itemName={deleteItem?.name}
       />
+
+      <TicketDetailDialog open={!!viewItem} data={viewItem} onClose={() => setViewItem(null)} />
     </>
   );
 };
 
-// menu
 const MenuTabContent = () => {
-  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [deleteItem, setDeleteItem] = useState(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const [viewItem, setViewItem] = useState(null);
 
   const loadData = useCallback(async () => {
     try {
@@ -280,7 +298,7 @@ const MenuTabContent = () => {
       <CustomTable
         columns={menuColumns}
         data={data}
-        onView={(row) => navigate(`/services/${row.id}?type=fnb`)}
+        onView={(row) => setViewItem(row)}
         onDelete={handleClickDelete}
       />
       <DeleteConfirmDialog
@@ -289,19 +307,21 @@ const MenuTabContent = () => {
         onConfirm={handleConfirmDelete}
         itemName={deleteItem?.name}
       />
+
+      <MenuDetailDialog open={!!viewItem} data={viewItem} onClose={() => setViewItem(null)} />
     </>
   );
 };
 
-// room
 const RoomTabContent = () => {
-  const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const [deleteItem, setDeleteItem] = useState(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
+  const [viewItem, setViewItem] = useState(null);
 
   const loadData = useCallback(async () => {
     try {
@@ -346,7 +366,7 @@ const RoomTabContent = () => {
       <CustomTable
         columns={roomColumns}
         data={data}
-        onView={(row) => navigate(`/services/${row.id}?type=stay`)}
+        onView={(row) => setViewItem(row)}
         onDelete={handleClickDelete}
       />
       <DeleteConfirmDialog
@@ -355,6 +375,8 @@ const RoomTabContent = () => {
         onConfirm={handleConfirmDelete}
         itemName={deleteItem?.name}
       />
+
+      <RoomDetailDialog open={!!viewItem} data={viewItem} onClose={() => setViewItem(null)} />
     </>
   );
 };
