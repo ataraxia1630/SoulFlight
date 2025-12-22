@@ -1,11 +1,10 @@
 import { Box, Chip, Pagination, Typography } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const ResultSection = ({ title, count, children }) => {
   const childrenArray = Array.isArray(children) ? children : [children];
 
   const itemsPerPage = 10;
-
   const [currentPage, setCurrentPage] = useState(0);
 
   const totalPages = Math.ceil(childrenArray.length / itemsPerPage);
@@ -15,8 +14,12 @@ const ResultSection = ({ title, count, children }) => {
 
   const handlePaginationChange = (_event, page) => {
     setCurrentPage(page - 1);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: trigger scroll on page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
 
   return (
     <Box sx={{ mb: 5 }}>
@@ -43,7 +46,6 @@ const ResultSection = ({ title, count, children }) => {
           sx={{
             display: "grid",
             gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
-            justifyContent: "space-between",
             gap: 3,
             width: "100%",
           }}
