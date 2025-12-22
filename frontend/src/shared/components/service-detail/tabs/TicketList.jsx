@@ -11,9 +11,12 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { useAuthStore } from "@/app/store";
 import formatPrice from "@/shared/utils/FormatPrice";
 
 const TicketsList = ({ tickets }) => {
+  const { user } = useAuthStore();
+
   const formatOpeningHours = (hours) => {
     if (!hours) return "Chưa cập nhật";
     if (hours.open && hours.close) return `${hours.open} - ${hours.close}`;
@@ -170,28 +173,30 @@ const TicketsList = ({ tickets }) => {
                 )}
               </CardContent>
 
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  alignItems: "center",
-                  p: 2,
-                  pt: 0,
-                  gap: 2,
-                }}
-              >
-                <Button
-                  variant="outlined"
-                  size="small"
-                  startIcon={<AddShoppingCart />}
-                  disabled={!isAvailable}
+              {user?.role === "TRAVELER" && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                    p: 2,
+                    pt: 0,
+                    gap: 2,
+                  }}
                 >
-                  Thêm vào giỏ
-                </Button>
-                <Button variant="contained" size="small" disabled={!isAvailable}>
-                  {isAvailable ? "Mua ngay" : "Tạm ngưng"}
-                </Button>
-              </Box>
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    startIcon={<AddShoppingCart />}
+                    disabled={!isAvailable}
+                  >
+                    Thêm vào giỏ
+                  </Button>
+                  <Button variant="contained" size="small" disabled={!isAvailable}>
+                    {isAvailable ? "Mua ngay" : "Tạm ngưng"}
+                  </Button>
+                </Box>
+              )}
             </Box>
           </Card>
         );

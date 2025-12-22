@@ -23,8 +23,11 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import { useAuthStore } from "@/app/store";
 
 const ProviderCard = ({ provider, onReportSubmit }) => {
+  const { user } = useAuthStore();
+
   const [openReport, setOpenReport] = useState(false);
   const [reportReason, setReportReason] = useState("");
 
@@ -67,20 +70,22 @@ const ProviderCard = ({ provider, onReportSubmit }) => {
               Nhà cung cấp
             </Typography>
 
-            <Tooltip title="Tố cáo vi phạm">
-              <IconButton
-                onClick={handleOpenReport}
-                sx={{
-                  color: "text.secondary",
-                  "&:hover": {
-                    color: "error.main",
-                    bgcolor: "rgba(211, 47, 47, 0.08)",
-                  },
-                }}
-              >
-                <ReportProblem sx={{ fontSize: 25 }} />
-              </IconButton>
-            </Tooltip>
+            {user?.role === "TRAVELER" && (
+              <Tooltip title="Tố cáo vi phạm">
+                <IconButton
+                  onClick={handleOpenReport}
+                  sx={{
+                    color: "text.secondary",
+                    "&:hover": {
+                      color: "error.main",
+                      bgcolor: "rgba(211, 47, 47, 0.08)",
+                    },
+                  }}
+                >
+                  <ReportProblem sx={{ fontSize: 25 }} />
+                </IconButton>
+              </Tooltip>
+            )}
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
@@ -149,9 +154,11 @@ const ProviderCard = ({ provider, onReportSubmit }) => {
             )}
           </Box>
 
-          <Button fullWidth variant="outlined" startIcon={<MessageIcon />} sx={{ mt: 3 }}>
-            Liên hệ nhà cung cấp
-          </Button>
+          {user?.role === "TRAVELER" && (
+            <Button fullWidth variant="outlined" startIcon={<MessageIcon />} sx={{ mt: 3 }}>
+              Liên hệ nhà cung cấp
+            </Button>
+          )}
         </CardContent>
       </Card>
 

@@ -13,12 +13,14 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import { useAuthStore } from "@/app/store";
 import { formatDateTime } from "@/shared/utils/formatDate";
 
 const ReviewsList = ({ reviews = [], onSubmitReview }) => {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
   const [hoverRating, setHoverRating] = useState(-1);
+  const { user } = useAuthStore();
 
   const totalReviews = reviews.length;
   const averageRating =
@@ -79,56 +81,58 @@ const ReviewsList = ({ reviews = [], onSubmitReview }) => {
         </Box>
       </Paper>
 
-      <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
-        <Typography variant="h6" fontWeight={600} gutterBottom>
-          Viết đánh giá của bạn
-        </Typography>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Typography component="legend">Chất lượng:</Typography>
-            <Rating
-              name="hover-feedback"
-              value={rating}
-              precision={1}
-              onChange={(_event, newValue) => {
-                setRating(newValue);
-              }}
-              onChangeActive={(_event, newHover) => {
-                setHoverRating(newHover);
-              }}
-              size="large"
+      {user?.role === "TRAVELER" && (
+        <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
+          <Typography variant="h6" fontWeight={600} gutterBottom>
+            Viết đánh giá của bạn
+          </Typography>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography component="legend">Chất lượng:</Typography>
+              <Rating
+                name="hover-feedback"
+                value={rating}
+                precision={1}
+                onChange={(_event, newValue) => {
+                  setRating(newValue);
+                }}
+                onChangeActive={(_event, newHover) => {
+                  setHoverRating(newHover);
+                }}
+                size="large"
+              />
+              {rating !== null && (
+                <Box sx={{ ml: 2, typography: "caption", color: "text.secondary" }}>
+                  {labels[hoverRating !== -1 ? hoverRating : rating]}
+                </Box>
+              )}
+            </Box>
+
+            <TextField
+              label="Chia sẻ cảm nhận của bạn"
+              multiline
+              rows={3}
+              variant="outlined"
+              fullWidth
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder="Phòng sạch sẽ, tiện nghi, nhân viên nhiệt tình..."
             />
-            {rating !== null && (
-              <Box sx={{ ml: 2, typography: "caption", color: "text.secondary" }}>
-                {labels[hoverRating !== -1 ? hoverRating : rating]}
-              </Box>
-            )}
-          </Box>
 
-          <TextField
-            label="Chia sẻ cảm nhận của bạn"
-            multiline
-            rows={3}
-            variant="outlined"
-            fullWidth
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="Phòng sạch sẽ, tiện nghi, nhân viên nhiệt tình..."
-          />
-
-          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button
-              variant="contained"
-              endIcon={<SendIcon />}
-              onClick={handleSubmit}
-              disabled={!rating}
-              sx={{ px: 4, borderRadius: 2 }}
-            >
-              Gửi đánh giá
-            </Button>
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <Button
+                variant="contained"
+                endIcon={<SendIcon />}
+                onClick={handleSubmit}
+                disabled={!rating}
+                sx={{ px: 4, borderRadius: 2 }}
+              >
+                Gửi đánh giá
+              </Button>
+            </Box>
           </Box>
-        </Box>
-      </Paper>
+        </Paper>
+      )}
 
       <Divider sx={{ my: 4 }}>
         <Chip label="Đánh giá gần đây" />
