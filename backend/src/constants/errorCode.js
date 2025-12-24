@@ -327,6 +327,20 @@ const ERROR_CODES = {
     message: "Thiếu checkin hoặc checkout",
     code: "MISSING_DATES",
   },
+
+  // notification
+  NOTIFICATION_NOT_FOUND: {
+    message: "Không tìm thấy thông báo",
+    statusCode: 404,
+    code: "BOOKING_NOT_FOUND",
+  },
+
+  // report
+  REPORT_NOT_FOUND: {
+    message: "Không tìm thấy tố cáo",
+    statusCode: 404,
+    code: "REPORT_NOT_FOUND",
+  },
 };
 
 module.exports = { ERROR_CODES };
