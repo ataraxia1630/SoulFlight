@@ -3,7 +3,7 @@ const { pickImage } = require("../utils/pickImage");
 const formatPrice = (price, currency = "VND", locale = "vi-VN") =>
   new Intl.NumberFormat(locale, { style: "currency", currency }).format(price);
 
-function SearchServiceDTO(services) {
+function SearchServiceDTO(services, travelerId = null) {
   return Promise.all(
     services.map(async (s) => ({
       id: s.id,
@@ -12,6 +12,7 @@ function SearchServiceDTO(services) {
       location: s.location || "",
       rating: s.rating,
       type: s.Type?.name || "",
+      is_wishlisted: travelerId ? s.Wishlists && s.Wishlists.length > 0 : false,
       provider: {
         name: s.Provider?.user?.name || `Provider ${s.provider_id}`,
       },

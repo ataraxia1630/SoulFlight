@@ -1,15 +1,15 @@
-import axios from "axios";
+import api from "@/shared/utils/axiosInstance";
 
-const API_URL = `${import.meta.env.VITE_BASE_URL}/api/service`;
+const API_URL = "/api/service";
 
 const ServiceService = {
   getAll: async () => {
-    const response = await axios.get(API_URL);
+    const response = await api.get(API_URL);
     return response.data;
   },
 
   getById: async (id) => {
-    const response = await axios.get(`${API_URL}/${id}`);
+    const response = await api.get(`${API_URL}/${id}`);
     return response.data;
   },
 };

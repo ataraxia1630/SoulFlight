@@ -4,16 +4,20 @@ const { success } = require("../utils/ApiResponse");
 
 const handleSearch = (searchFn) =>
   catchAsync(async (req, res) => {
+    const travelerId = req.user?.id || null;
+
     const mode = req.body.mode || "text";
     let result = [];
 
     if (mode === "text") {
       const { keyword, location, priceMin, priceMax, guests, ...filters } = req.body;
-      result = await searchFn(keyword, location, priceMin, priceMax, guests, filters);
+
+      result = await searchFn(keyword, location, priceMin, priceMax, guests, filters, travelerId);
     } else if (mode === "voice" || mode === "image") {
       const buffer = req.file?.buffer;
       const keyword = req.body.keyword;
-      result = await SearchService.handleMediaSearch(mode, buffer, searchFn, keyword);
+
+      result = await SearchService.handleMediaSearch(mode, buffer, searchFn, keyword, travelerId);
     }
 
     res.json(success(result));

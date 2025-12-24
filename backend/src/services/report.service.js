@@ -32,7 +32,7 @@ const ReportService = {
         NotificationService.create({
           userId: admin.id,
           title: "Tố cáo vi phạm",
-          message: `Người dùng đã tố cáo Provider: ${providerName}. Nội dung: ${data.content}`,
+          message: `Người dùng đã tố cáo nhà cung cấp: ${providerName}. Nội dung: ${data.content}`,
           type: "REPORT_CREATED",
           relatedId: String(report.id),
         }),
@@ -91,7 +91,7 @@ const ReportService = {
       await NotificationService.create({
         userId: report.reporter_id,
         title: "Kết quả xử lý tố cáo",
-        message: `Cảm ơn bạn đã phản hồi. Chúng tôi đã xử lý xong tố cáo của bạn đối với Provider: ${providerName}.`,
+        message: `Cảm ơn bạn đã phản hồi. Chúng tôi đã xử lý xong tố cáo của bạn đối với nhà cung cấp: ${providerName}.`,
         type: "REPORT_RESOLVED",
         relatedId: report.id,
       });

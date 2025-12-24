@@ -1,10 +1,10 @@
-import axios from "axios";
+import api from "@/shared/utils/axiosInstance";
 
-const API_BASE_URL = `${import.meta.env.VITE_BASE_URL}/api/service-tag`;
+const API_BASE_URL = "/api/service-tag";
 
 const ServiceTagService = {
   getAll: async () => {
-    const response = await axios.get(`${API_BASE_URL}`);
+    const response = await api.get(`${API_BASE_URL}`);
     return response.data.data;
   },
 
@@ -14,7 +14,7 @@ const ServiceTagService = {
       category: formData.category,
     };
 
-    const response = await axios.post(`${API_BASE_URL}`, data, {
+    const response = await api.post(`${API_BASE_URL}`, data, {
       header: { "Content-Type": "application/json" },
     });
 
@@ -27,14 +27,14 @@ const ServiceTagService = {
       category: formData.category,
     };
 
-    const response = await axios.put(`${API_BASE_URL}/${id}`, data, {
+    const response = await api.put(`${API_BASE_URL}/${id}`, data, {
       header: { "Content-Type": "application/json" },
     });
     return response.data.data;
   },
 
   delete: async (id) => {
-    await axios.delete(`${API_BASE_URL}/${id}`);
+    await api.delete(`${API_BASE_URL}/${id}`);
   },
 };
 

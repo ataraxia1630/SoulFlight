@@ -1,10 +1,10 @@
-import axios from "axios";
+import api from "@/shared/utils/axiosInstance";
 
-const API_BASE_URL = `${import.meta.env.VITE_BASE_URL}/api/service-type`;
+const API_BASE_URL = "/api/service-type";
 
 const ServiceTypeService = {
   getAll: async () => {
-    const response = await axios.get(`${API_BASE_URL}`);
+    const response = await api.get(`${API_BASE_URL}`);
     return response.data.data;
   },
 
@@ -14,7 +14,7 @@ const ServiceTypeService = {
       description: formData.description,
     };
 
-    const response = await axios.put(`${API_BASE_URL}/${id}`, data, {
+    const response = await api.put(`${API_BASE_URL}/${id}`, data, {
       headers: { "Content-Type": "application/json" },
     });
 
