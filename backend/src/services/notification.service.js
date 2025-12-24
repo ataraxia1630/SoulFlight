@@ -1,6 +1,7 @@
 const prisma = require("../configs/prisma");
 const { NotificationDTO } = require("../dtos/notification.dto");
 const AppError = require("../utils/AppError");
+const { ERROR_CODES } = require("../constants/errorCode");
 
 const NotificationService = {
   // tạo thông báo để các hàm khác gọi lại
@@ -42,7 +43,17 @@ const NotificationService = {
       );
     }
 
-    return NotificationDTO.fromModel(notification);
+    if (!notification.is_read) {
+      await prisma.notification.update({
+        where: { id: parsedId },
+        data: { is_read: true },
+      });
+    }
+
+    return NotificationDTO.fromModel({
+      ...notification,
+      is_read: true,
+    });
   },
 
   countUnread: async (userId) => {
