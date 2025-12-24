@@ -1,6 +1,6 @@
-import axios from "axios";
+import api from "@/shared/utils/axiosInstance";
 
-const API_BASE_URL = `${import.meta.env.VITE_BASE_URL}/api`;
+const API_BASE_URL = "/api";
 
 const SearchService = {
   search: async (type, payload = {}) => {
@@ -19,13 +19,13 @@ const SearchService = {
         }
       });
 
-      const response = await axios.post(url, formData, {
+      const response = await api.post(url, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       return response.data;
     }
 
-    const response = await axios.post(url, payload, {
+    const response = await api.post(url, payload, {
       headers: { "Content-Type": "application/json" },
     });
     return response.data;

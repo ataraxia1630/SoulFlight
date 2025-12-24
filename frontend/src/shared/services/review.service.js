@@ -1,4 +1,4 @@
-// import axios from "axios";
+// import api from "@/shared/utils/axiosInstance";
 
 // const API_BASE_URL = `${import.meta.env.VITE_BASE_URL}/api/review`;
 

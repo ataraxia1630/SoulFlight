@@ -5,7 +5,7 @@ const { success } = require("../utils/ApiResponse");
 const ReportController = {
   create: catchAsync(async (req, res) => {
     const report = await ReportService.create(req.body, req.user.id);
-    res.json(success(report));
+    res.status(201).json(success(report));
   }),
 
   getAll: catchAsync(async (_req, res) => {

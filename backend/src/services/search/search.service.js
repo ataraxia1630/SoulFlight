@@ -14,7 +14,7 @@ const {
 } = require("../../dtos/search.dto");
 
 const SearchService = {
-  searchServices: (keyword, location, priceMin, priceMax, guests, filters) =>
+  searchServices: (keyword, location, priceMin, priceMax, guests, filters, travelerId) =>
     searchEntity({
       keyword,
       location,
@@ -33,6 +33,7 @@ const SearchService = {
             Type: true,
             Provider: { include: { user: { select: { name: true } } } },
             Tags: { include: { Tag: true } },
+            Wishlists: travelerId ? { where: { traveler_id: travelerId } } : false,
             Vouchers: { where: { valid_to: { gte: new Date() } } },
             Menus: { include: { MenuItems: true } },
             Tours: {
@@ -49,7 +50,7 @@ const SearchService = {
             Tickets: { include: { Place: true } },
           },
         }),
-      DTO: SearchServiceDTO,
+      DTO: (results) => SearchServiceDTO(results, travelerId),
     }),
 
   searchVouchers: (keyword, location, priceMin, priceMax, guests, filters) =>

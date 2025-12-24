@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 const SearchController = require("../controllers/search.controller");
 const upload = require("../middlewares/multer.middleware");
+const authorize = require("../middlewares/auth.middleware");
+
+router.use(authorize);
 
 router.post("/services", upload.single("file"), SearchController.searchServices);
 router.post("/vouchers", upload.single("file"), SearchController.searchVouchers);
