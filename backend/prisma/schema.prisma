@@ -51,6 +51,28 @@ enum RegistrationStatus {
   REJECTED
 }
 
+enum ReportStatus {
+  PENDING
+  RESOLVED
+  REJECTED
+}
+
+enum NotificationType {
+  BOOKING_CREATED
+  REVIEW_CREATED
+
+  REPORT_CREATED
+  REPORT_RESOLVED
+
+  // Provider registration
+  REGISTRATION_SUBMITTED
+  REGISTRATION_APPROVED
+  REGISTRATION_REJECTED
+  REGISTRATION_INFO_REQUIRED
+
+  SYSTEM_INFO
+}
+
 enum ActionTaker {
   PROVIDER
   ADMIN
@@ -80,20 +102,21 @@ model User {
 }
 
 model Provider {
-  id             Int       @id
-  description    String?
-  logo_url       String?
-  website_link   String?
-  address        String?
-  id_card        String    @unique
-  province       String
-  country        String
-  establish_year Int
-  created_at     DateTime  @default(now())
-  updated_at     DateTime  @updatedAt
-  user           User      @relation(fields: [id], references: [id])
-  Services       Service[]
-  bookings       Booking[]
+  id                Int       @id
+  description       String?
+  logo_url          String?
+  website_link      String?
+  address           String?
+  id_card           String    @unique
+  province          String
+  country           String
+  establish_year    Int
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+  user              User      @relation(fields: [id], references: [id])
+  Services          Service[]
+  bookings          Booking[]
+  reports_received  Report[]  @relation("ProviderReports")
 }
 
 model Traveler {
@@ -110,6 +133,7 @@ model Traveler {
   wishlists         Wishlist[]
   itineraries       Itinerary[]
   sharedItineraries SharedItinerary[]
+  reports_sent      Report[]          @relation("TravelerReports")
 }
 
 model ServiceType {
@@ -561,18 +585,35 @@ model Wishlist {
 }
 
 model Notification {
-  id         Int      @id @default(autoincrement())
+  id         Int              @id @default(autoincrement())
   user_id    Int
   title      String
   message    String
-  type       String
-  is_read    Boolean  @default(false)
-  related_id String? // booking_id, payment_id, etc.
-  created_at DateTime @default(now())
-
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  type       NotificationType
+  is_read    Boolean          @default(false)
+  related_id String?          // id của đối tượng liên quan (report, booking...)
+  
+  created_at DateTime         @default(now())
+  
+  user       User             @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@index([user_id, is_read])
+}
+
+model Report {
+  id            Int           @id @default(autoincrement())
+  
+  reporter_id   Int           // người tố cáo (traveler)
+  reporter      Traveler      @relation("TravelerReports", fields: [reporter_id], references: [id])
+  
+  provider_id   Int           // provider bị tố cáo
+  provider      Provider      @relation("ProviderReports", fields: [provider_id], references: [id])
+  
+  content       String?
+  status        ReportStatus  @default(PENDING)
+  
+  created_at    DateTime      @default(now())
+  updated_at    DateTime      @updatedAt
 }
 
 // ==================== AI ITINERARY PLANNING ====================
