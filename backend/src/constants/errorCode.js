@@ -327,6 +327,38 @@ const ERROR_CODES = {
     message: "Thiếu checkin hoặc checkout",
     code: "MISSING_DATES",
   },
+
+  // Payment errors
+  PAYMENT_NOT_FOUND: {
+    code: "PAYMENT_NOT_FOUND",
+    message: "Không tìm thấy payment",
+  },
+  INVALID_PAYMENT_METHOD: {
+    code: "INVALID_PAYMENT_METHOD",
+    message: "Phương thức thanh toán không hợp lệ",
+  },
+
+  // Booking errors
+  ROOM_UNAVAILABLE: {
+    code: "ROOM_UNAVAILABLE",
+    message: "Phòng không còn trống cho ngày đã chọn",
+  },
+  TOUR_FULL: {
+    code: "TOUR_FULL",
+    message: "Tour đã đầy chỗ",
+  },
+  TICKET_UNAVAILABLE: {
+    code: "TICKET_UNAVAILABLE",
+    message: "Vé không đủ số lượng",
+  },
+  INVALID_DATES: {
+    code: "INVALID_DATES",
+    message: "Ngày không hợp lệ",
+  },
+  PAST_DATE: {
+    code: "PAST_DATE",
+    message: "Không thể đặt cho ngày trong quá khứ",
+  },
 };
 
 module.exports = { ERROR_CODES };
