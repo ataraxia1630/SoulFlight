@@ -134,6 +134,7 @@ model Traveler {
   itineraries       Itinerary[]
   sharedItineraries SharedItinerary[]
   reports_sent      Report[]          @relation("TravelerReports")
+  reviews           Review[]
 }
 
 model ServiceType {
@@ -166,6 +167,7 @@ model Service {
   Tickets     Ticket[]
   Vouchers    Voucher[]
   Wishlists   Wishlist[]
+  reviews     Review[]
 }
 
 model ServiceTag {
@@ -198,6 +200,7 @@ model Menu {
   updated_at  DateTime   @updatedAt
   Service     Service    @relation(fields: [service_id], references: [id])
   MenuItems   MenuItem[]
+  reviews     Review[]
 }
 
 model MenuItem {
@@ -238,6 +241,7 @@ model Tour {
   TourPlace  TourPlace[]
   TourGuide  TourGuide?  @relation(fields: [tourguide_id], references: [id])
   cart_items CartItem[]  @relation("CartItemToTour")
+  reviews    Review[]
 }
 
 model Place {
@@ -322,6 +326,7 @@ model Room {
   created_at     DateTime           @default(now())
   updated_at     DateTime           @updatedAt
   availabilities RoomAvailability[]
+  reviews        Review[]
 
   @@index([service_id])
 }
@@ -385,6 +390,7 @@ model Ticket {
   Place          Place                @relation(fields: [place_id], references: [id], onDelete: Cascade)
   cart_items     CartItem[]           @relation("CartItemToTicket")
   availabilities TicketAvailability[]
+  reviews        Review[]
 }
 
 model TicketAvailability {
@@ -488,7 +494,6 @@ model Booking {
   provider Provider      @relation(fields: [provider_id], references: [id])
   voucher  Voucher?      @relation(fields: [voucher_id], references: [id])
   items    BookingItem[]
-  reviews  Review[]
   payment  Payment?      @relation("PaymentToBookings", fields: [payment_id], references: [id])
 
   created_at DateTime @default(now())
@@ -563,13 +568,25 @@ model Payment {
 }
 
 model Review {
-  id         Int      @id @default(autoincrement())
-  booking_id String
-  rating     Int
-  comment    String?
-  created_at DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  traveler_id Int
+  service_id  Int
+  
+  room_id     Int?
+  tour_id     Int?
+  ticket_id   Int?
+  menu_id     Int?
 
-  booking Booking @relation(fields: [booking_id], references: [id])
+  rating      Int      @default(5)
+  comment     String?
+  created_at  DateTime @default(now())
+
+  traveler    Traveler @relation(fields: [traveler_id], references: [id])
+  service     Service  @relation(fields: [service_id], references: [id])
+  room        Room?    @relation(fields: [room_id], references: [id])
+  tour        Tour?    @relation(fields: [tour_id], references: [id])
+  ticket      Ticket?  @relation(fields: [ticket_id], references: [id])
+  menu        Menu?    @relation(fields: [menu_id], references: [id])
 }
 
 model Wishlist {
