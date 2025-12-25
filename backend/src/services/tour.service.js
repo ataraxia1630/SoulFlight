@@ -162,6 +162,17 @@ const TourService = {
   create: async (data) => {
     const { places = [], ...tourData } = data;
 
+    const startTime = new Date(tourData.start_time);
+    const endTime = new Date(tourData.end_time);
+
+    if (endTime <= startTime) {
+      throw new AppError(
+        ERROR_CODES.INVALID_TOUR_TIME.statusCode,
+        ERROR_CODES.INVALID_TOUR_TIME.message,
+        ERROR_CODES.INVALID_TOUR_TIME.code,
+      );
+    }
+
     const tour = await prisma.tour.create({
       data: {
         ...tourData,
@@ -199,6 +210,18 @@ const TourService = {
       );
     }
     const { places, ...tourData } = data;
+
+    const finalStartTime = tourData.start_time ? new Date(tourData.start_time) : tour.start_time;
+
+    const finalEndTime = tourData.end_time ? new Date(tourData.end_time) : tour.end_time;
+
+    if (finalEndTime <= finalStartTime) {
+      throw new AppError(
+        ERROR_CODES.INVALID_TOUR_TIME.statusCode,
+        ERROR_CODES.INVALID_TOUR_TIME.message,
+        ERROR_CODES.INVALID_TOUR_TIME.code,
+      );
+    }
 
     const updateData = {
       ...tourData,
