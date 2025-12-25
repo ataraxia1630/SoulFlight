@@ -358,6 +358,7 @@ const ERROR_CODES = {
   PAST_DATE: {
     code: "PAST_DATE",
     message: "Không thể đặt cho ngày trong quá khứ",
+  },
   // notification
   NOTIFICATION_NOT_FOUND: {
     message: "Không tìm thấy thông báo",
