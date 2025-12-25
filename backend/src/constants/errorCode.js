@@ -358,6 +358,18 @@ const ERROR_CODES = {
   PAST_DATE: {
     code: "PAST_DATE",
     message: "Không thể đặt cho ngày trong quá khứ",
+  // notification
+  NOTIFICATION_NOT_FOUND: {
+    message: "Không tìm thấy thông báo",
+    statusCode: 404,
+    code: "BOOKING_NOT_FOUND",
+  },
+
+  // report
+  REPORT_NOT_FOUND: {
+    message: "Không tìm thấy tố cáo",
+    statusCode: 404,
+    code: "REPORT_NOT_FOUND",
   },
 };
 

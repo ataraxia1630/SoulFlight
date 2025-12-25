@@ -1,26 +1,25 @@
 import { Box, Chip, Pagination, Typography } from "@mui/material";
-import React from "react";
-import CarouselDots from "../CarouselDots";
+import { useEffect, useState } from "react";
 
-const ResultSection = ({ title, count, children, currentTab }) => {
+const ResultSection = ({ title, count, children }) => {
   const childrenArray = Array.isArray(children) ? children : [children];
 
-  const itemsPerPage = currentTab === "all" ? 4 : 10;
-
-  const [currentPage, setCurrentPage] = React.useState(0);
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(0);
 
   const totalPages = Math.ceil(childrenArray.length / itemsPerPage);
   const startIdx = currentPage * itemsPerPage;
   const endIdx = startIdx + itemsPerPage;
   const visibleItems = childrenArray.slice(startIdx, endIdx);
 
-  const handleDotClick = (pageIndex) => {
-    setCurrentPage(pageIndex);
-  };
-
   const handlePaginationChange = (_event, page) => {
     setCurrentPage(page - 1);
   };
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: trigger scroll on page change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
 
   return (
     <Box sx={{ mb: 5 }}>
@@ -46,34 +45,28 @@ const ResultSection = ({ title, count, children, currentTab }) => {
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            justifyContent: "space-between",
+            gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
             gap: 3,
             width: "100%",
           }}
         >
           {visibleItems.map((child, i) => (
-            <Box key={child.id || `${startIdx}-${i}`}>{child}</Box>
+            <Box key={child.key || `${startIdx}-${i}`}>{child}</Box>
           ))}
         </Box>
 
-        {totalPages > 1 &&
-          (currentTab === "all" ? (
-            <CarouselDots
-              totalDots={totalPages}
-              currentIndex={currentPage}
-              onDotClick={handleDotClick}
-              categories={childrenArray}
-            />
-          ) : (
-            <Pagination
-              count={totalPages}
-              page={currentPage + 1}
-              onChange={handlePaginationChange}
-              color="primary"
-              size="large"
-            />
-          ))}
+        {totalPages > 1 && (
+          <Pagination
+            count={totalPages}
+            page={currentPage + 1}
+            onChange={handlePaginationChange}
+            color="primary"
+            size="large"
+            shape="rounded"
+            showFirstButton
+            showLastButton
+          />
+        )}
       </Box>
     </Box>
   );

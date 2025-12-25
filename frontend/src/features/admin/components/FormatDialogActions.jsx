@@ -5,8 +5,8 @@ export default function FormatDialogActions({
   onSave,
   isLoading = false,
   isValid = true,
-  cancelText = "Cancel",
-  saveText = "Save",
+  cancelText = "Hủy",
+  saveText = "Lưu",
   editing = false,
 }) {
   return (
@@ -26,13 +26,7 @@ export default function FormatDialogActions({
           minWidth: 100,
         }}
       >
-        {isLoading
-          ? editing
-            ? "Đang cập nhật..."
-            : "Đang thêm..."
-          : editing
-            ? "Update"
-            : saveText}
+        {isLoading ? (editing ? "Đang tải..." : "Đang tải...") : editing ? "Cập nhật" : saveText}
       </Button>
     </>
   );

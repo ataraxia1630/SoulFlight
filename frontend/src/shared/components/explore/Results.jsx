@@ -1,14 +1,10 @@
 import { Search } from "@mui/icons-material";
 import { Box, Fade, Paper, Typography } from "@mui/material";
-import MenuCard from "./cards/MenuCard";
-import RoomCard from "./cards/RoomCard";
 import ServiceCard from "./cards/ServiceCard";
-import TicketCard from "./cards/TicketCard";
-import TourCard from "./cards/TourCard";
 import ResultSection from "./ResultSection";
 
-const Results = ({ filtered, currentTab }) => {
-  const hasResults = Object.values(filtered).some((arr) => arr && arr.length > 0);
+const Results = ({ services }) => {
+  const hasResults = services && services.length > 0;
 
   if (!hasResults) {
     return (
@@ -22,9 +18,9 @@ const Results = ({ filtered, currentTab }) => {
             mb: 1,
           }}
         >
-          No results found
+          Không tìm thấy dịch vụ nào
         </Typography>
-        <Typography sx={{ color: "text.secondary" }}>Try adjusting your search criteria</Typography>
+        <Typography sx={{ color: "text.secondary" }}>Bạn hãy thử đổi tìm kiếm khác</Typography>
       </Paper>
     );
   }
@@ -32,45 +28,11 @@ const Results = ({ filtered, currentTab }) => {
   return (
     <Fade in timeout={600}>
       <Box>
-        {filtered.services && filtered.services.length > 0 && (
-          <ResultSection title="Services" count={filtered.services.length} currentTab={currentTab}>
-            {filtered.services.map((item) => (
-              <ServiceCard key={item.id} data={item} />
-            ))}
-          </ResultSection>
-        )}
-
-        {filtered.rooms && filtered.rooms.length > 0 && (
-          <ResultSection title="Rooms" count={filtered.rooms.length} currentTab={currentTab}>
-            {filtered.rooms.map((item) => (
-              <RoomCard key={item.id} data={item} />
-            ))}
-          </ResultSection>
-        )}
-
-        {filtered.menus && filtered.menus.length > 0 && (
-          <ResultSection title="Menus" count={filtered.menus.length} currentTab={currentTab}>
-            {filtered.menus.map((item) => (
-              <MenuCard key={item.id} data={item} />
-            ))}
-          </ResultSection>
-        )}
-
-        {filtered.tickets && filtered.tickets.length > 0 && (
-          <ResultSection title="Tickets" count={filtered.tickets.length} currentTab={currentTab}>
-            {filtered.tickets.map((item) => (
-              <TicketCard key={item.id} data={item} />
-            ))}
-          </ResultSection>
-        )}
-
-        {filtered.tours && filtered.tours.length > 0 && (
-          <ResultSection title="Tours" count={filtered.tours.length} currentTab={currentTab}>
-            {filtered.tours.map((item) => (
-              <TourCard key={item.id} data={item} />
-            ))}
-          </ResultSection>
-        )}
+        <ResultSection title="Danh sách dịch vụ" count={services.length}>
+          {services.map((item) => (
+            <ServiceCard key={item.id} data={item} />
+          ))}
+        </ResultSection>
       </Box>
     </Fade>
   );

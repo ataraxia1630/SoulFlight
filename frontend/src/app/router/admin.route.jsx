@@ -1,11 +1,11 @@
 import Facilities from "@admin/pages/Facilities";
 import PartnerRegistration from "@admin/pages/PartnerRegistration";
-import Provider from "@admin/pages/Provider";
+import Services from "@admin/pages/Services";
 import ServiceTags from "@admin/pages/ServiceTags";
 import ServiceTypes from "@admin/pages/ServiceTypes";
+import Users from "@admin/pages/Users";
 import { Route } from "react-router-dom";
 import AdminHome from "@/features/admin/pages/Home";
-import Traveler from "@/features/admin/pages/Traveler";
 import ProtectedRoute from "./ProtectedRoute";
 
 const adminRoutes = (
@@ -16,8 +16,8 @@ const adminRoutes = (
     <Route path="admin/facilities" element={<Facilities />} />
     <Route path="admin/service_type" element={<ServiceTypes />} />
     <Route path="admin/tag" element={<ServiceTags />} />
-    <Route path="admin/traveler" element={<Traveler />} />
-    <Route path="admin/business" element={<Provider />} />
+    <Route path="admin/user" element={<Users />} />
+    <Route path="admin/service" element={<Services />} />
   </Route>
 );
 

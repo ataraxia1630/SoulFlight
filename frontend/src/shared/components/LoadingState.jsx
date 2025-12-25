@@ -12,7 +12,7 @@ const LoadingState = () => (
     }}
   >
     <CircularProgress size={48} />
-    <Typography sx={{ color: "text.secondary", fontSize: 14 }}>Loading...</Typography>
+    <Typography sx={{ color: "text.secondary", fontSize: 14 }}>Đang tải...</Typography>
   </Box>
 );
 

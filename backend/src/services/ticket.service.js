@@ -5,7 +5,13 @@ const { ERROR_CODES } = require("../constants/errorCode");
 const { attachImagesList } = require("../utils/attachImage");
 
 const commonInclude = {
-  Service: { select: { id: true, name: true } },
+  Service: {
+    include: {
+      Provider: {
+        include: { user: true },
+      },
+    },
+  },
   Place: true,
 };
 

@@ -70,9 +70,7 @@ const SearchDialog = ({ open, onClose, activeField = "location", initialSearchPa
     }
 
     try {
-      console.log(payload);
       const results = await SearchService.searchAll(payload);
-      console.log(results);
       navigate("/explore", { state: { results, searchParams: payload } });
       handleClose();
     } catch (error) {

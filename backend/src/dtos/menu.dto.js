@@ -16,6 +16,8 @@ class MenuDTO {
     this.service_id = menu.service_id;
     this.service_name = menu.Service?.name || null;
 
+    this.provider_name = menu.Service?.Provider?.user?.name || null;
+
     // Menu_item
     this.items = (menu.MenuItems || []).map((item) => ({
       id: item.id,

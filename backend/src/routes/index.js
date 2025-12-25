@@ -18,6 +18,9 @@ const cartRoutes = require("./cart.routes");
 const bookingRoutes = require("./booking.routes");
 const itineraryRoutes = require("./itinerary.routes");
 const paymentRoutes = require("./payment.routes");
+const notificationRoutes = require("./notification.routes");
+const reportRoutes = require("./report.routes");
+const wishlistRoutes = require("./wishlist.routes");
 
 function route(app) {
   app.use("/api/auth", authRoutes);
@@ -39,6 +42,9 @@ function route(app) {
   app.use("/api/booking", bookingRoutes);
   app.use("/api/itinerary", itineraryRoutes);
   app.use("/api/payment", paymentRoutes);
+  app.use("/api/notification", notificationRoutes);
+  app.use("/api/report", reportRoutes);
+  app.use("/api/wishlist", wishlistRoutes);
 
   // luôn để sau cùng
 

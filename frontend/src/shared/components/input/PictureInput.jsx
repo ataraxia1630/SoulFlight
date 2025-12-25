@@ -111,6 +111,7 @@ const PictureInput = ({
             >
               <img
                 src={previewUrl}
+                key={previewUrl}
                 alt="Preview"
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 onError={(e) => {
@@ -131,7 +132,7 @@ const PictureInput = ({
                     borderRadius: 1,
                   }}
                 >
-                  NEW
+                  MỚI
                 </Box>
               )}
             </Box>

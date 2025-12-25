@@ -45,7 +45,7 @@ export default function ServiceTypeDialog({ open, onClose, onSave, editingItem, 
       <DialogContent>
         <FormInput
           fullWidth
-          label="Name"
+          label="Tên"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           margin="normal"
@@ -53,7 +53,7 @@ export default function ServiceTypeDialog({ open, onClose, onSave, editingItem, 
         />
         <FormInput
           fullWidth
-          label="Description"
+          label="Mô tả"
           value={formData.description}
           onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           margin="normal"
@@ -67,7 +67,7 @@ export default function ServiceTypeDialog({ open, onClose, onSave, editingItem, 
           isLoading={actionLoading}
           isValid={hasValidData()}
           editing={true}
-          saveText="Update"
+          saveText="Cập nhật"
         />
       </DialogActions>
     </Dialog>

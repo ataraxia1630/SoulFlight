@@ -1,8 +1,8 @@
-import ServiceTypeService from "@admin/services/serviceType.service";
 import { Alert, Box, CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import PageHeaderWithAdd from "@/shared/components/PageHeaderWithAdd";
 import CustomTable from "@/shared/components/Table";
+import ServiceTypeService from "@/shared/services/serviceType.service";
 import columnConfig from "./Components/columnsConfig";
 import ServiceTypeDialog from "./Components/ServiceTypeDialog";
 
@@ -71,7 +71,7 @@ export default function ServiceTypes() {
 
   return (
     <Box sx={{ width: "100%", p: { xs: 2, sm: 3 } }}>
-      <PageHeaderWithAdd title="Service Type" />
+      <PageHeaderWithAdd title="Loại Dịch Vụ" />
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>

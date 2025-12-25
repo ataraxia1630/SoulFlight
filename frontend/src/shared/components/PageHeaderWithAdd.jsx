@@ -1,7 +1,7 @@
 import AddIcon from "@mui/icons-material/Add";
 import { Box, Button, Typography } from "@mui/material";
 
-export default function PageHeaderWithAdd({ title, onAdd, addButtonText = "Add", sx = {} }) {
+export default function PageHeaderWithAdd({ title, onAdd, addButtonText = "Thêm", sx = {} }) {
   return (
     <Box
       sx={{

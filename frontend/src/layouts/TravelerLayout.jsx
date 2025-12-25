@@ -30,7 +30,7 @@ const TravelerLayout = () => {
             }}
           >
             <Toolbar />
-            {user && <LeftSidebar />}
+            {user?.role === "TRAVELER" && <LeftSidebar />}
           </Box>
         )}
 
@@ -65,7 +65,7 @@ const TravelerLayout = () => {
             }}
           >
             <Toolbar />
-            {user && <RightSidebar />}
+            {user?.role === "TRAVELER" && <RightSidebar />}
           </Box>
         )}
       </Box>

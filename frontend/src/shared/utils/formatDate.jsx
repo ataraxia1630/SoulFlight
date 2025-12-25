@@ -25,3 +25,16 @@ export const formatDateTime = (dateString) => {
     minute: "2-digit",
   });
 };
+
+export const getDurationText = (hours) => {
+  if (hours <= 0) return "Trong ngày";
+  if (hours < 24) return `${hours} giờ`;
+
+  const days = Math.floor(hours / 24);
+  const remainHours = hours % 24;
+
+  if (remainHours > 0) {
+    return `${days} ngày ${remainHours} giờ`;
+  }
+  return `${days} ngày`;
+};

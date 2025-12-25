@@ -1,6 +1,5 @@
 import AssessmentIcon from "@mui/icons-material/Assessment";
 import BarChartIcon from "@mui/icons-material/BarChart";
-import BusinessIcon from "@mui/icons-material/Business";
 import CategoryIcon from "@mui/icons-material/Category";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -66,14 +65,9 @@ const AdminSidebar = ({ open, onToggle }) => {
       path: "/admin/tag",
     },
     {
-      text: t("sidebar.traveler"),
+      text: "Người dùng",
       icon: <PersonIcon />,
-      path: "/admin/traveler",
-    },
-    {
-      text: t("sidebar.provider"),
-      icon: <BusinessIcon />,
-      path: "/admin/business",
+      path: "/admin/user",
     },
     {
       text: t("sidebar.service"),
@@ -117,6 +111,24 @@ const AdminSidebar = ({ open, onToggle }) => {
             width: open ? DRAWER_WIDTH : DRAWER_WIDTH_COLLAPSED,
             bgcolor: "background.paper",
             boxSizing: "border-box",
+
+            scrollbarWidth: "thin",
+            scrollbarColor: "#e0e0e0 transparent",
+
+            "&::-webkit-scrollbar": {
+              width: "5px",
+            },
+            "&::-webkit-scrollbar-track": {
+              background: "transparent",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#e0e0e0",
+              borderRadius: "20px",
+              border: "transparent",
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              backgroundColor: "#a0a0a0",
+            },
           },
         }}
       >
