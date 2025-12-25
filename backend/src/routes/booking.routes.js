@@ -8,6 +8,10 @@ const {
   createBookingSchema,
   cancelBookingSchema,
   updateStatusSchema,
+  directMenuBookingSchema,
+  directRoomBookingSchema,
+  directTicketBookingSchema,
+  directTourBookingSchema,
 } = require("../validators/booking.validator");
 const validate = require("../middlewares/validate.middleware");
 const authorize = require("../middlewares/auth.middleware");
@@ -31,6 +35,34 @@ router.post(
   requiredRoles(["TRAVELER"]),
   validate(cancelBookingSchema),
   BookingController.cancelBooking,
+);
+
+router.post(
+  "/direct/room",
+  requiredRoles(["TRAVELER"]),
+  validate(directRoomBookingSchema),
+  BookingController.createRoomBooking,
+);
+
+router.post(
+  "/direct/tour",
+  requiredRoles(["TRAVELER"]),
+  validate(directTourBookingSchema),
+  BookingController.createTourBooking,
+);
+
+router.post(
+  "/direct/ticket",
+  requiredRoles(["TRAVELER"]),
+  validate(directTicketBookingSchema),
+  BookingController.createTicketBooking,
+);
+
+router.post(
+  "/direct/menu",
+  requiredRoles(["TRAVELER"]),
+  validate(directMenuBookingSchema),
+  BookingController.createMenuBooking,
 );
 
 // === PROVIDER ROUTES ===

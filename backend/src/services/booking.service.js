@@ -11,17 +11,21 @@ const BookingService = {
       prisma.booking.findMany({
         where,
         include: {
-          provider: { select: { name: true } },
+          provider: {
+            include: {
+              user: { select: { name: true } },
+            },
+          },
           voucher: true,
           items: {
             include: {
-              room: { include: { service: true, images: true } },
+              room: { include: { service: true } },
               tour: true,
               ticket: { include: { place: true } },
               menu_item: true,
             },
           },
-          payments: { take: 1, orderBy: { created_at: "desc" } },
+          payment: { select: { id: true, status: true, method: true } },
         },
         orderBy: { booking_date: "desc" },
         skip: (page - 1) * limit,
@@ -31,7 +35,7 @@ const BookingService = {
     ]);
 
     return {
-      bookings,
+      bookings: bookings.map(BookingService.enrichBookingItems),
       pagination: {
         page,
         limit,
@@ -45,17 +49,15 @@ const BookingService = {
     const booking = await prisma.booking.findFirst({
       where: { id: bookingId, traveler_id: travelerId },
       include: {
-        provider: true,
-        voucher: true,
-        items: {
+        provider: {
           include: {
-            room: { include: { service: true, images: true } },
-            tour: true,
-            ticket: { include: { place: true } },
-            menu_item: true,
+            user: { select: { name: true, email: true, phone: true } },
           },
         },
-        payments: { orderBy: { created_at: "desc" } },
+        voucher: true,
+        items: true,
+        payment: true,
+        reviews: true,
       },
     });
 
@@ -65,6 +67,7 @@ const BookingService = {
         ERROR_CODES.BOOKING_NOT_FOUND.message,
         ERROR_CODES.BOOKING_NOT_FOUND.code,
       );
+
     return BookingService.enrichBookingItems(booking);
   },
 
@@ -76,13 +79,26 @@ const BookingService = {
         include: {
           items: {
             include: {
-              room: { include: { service: { include: { Provider: true } } } },
-              tour: { include: { Service: { include: { Provider: true } } } },
-              ticket: { include: { Service: { include: { Provider: true } } } },
+              room: {
+                include: {
+                  service: { include: { Provider: true } },
+                },
+              },
+              tour: {
+                include: {
+                  Service: { include: { Provider: true } },
+                },
+              },
+              ticket: {
+                include: {
+                  Service: { include: { Provider: true } },
+                  Place: { select: { name: true } },
+                },
+              },
               menu_item: {
                 include: {
-                  menu: {
-                    include: { service: { include: { Provider: true } } },
+                  Menu: {
+                    include: { Service: { include: { Provider: true } } },
                   },
                 },
               },
@@ -95,63 +111,25 @@ const BookingService = {
         throw new AppError(400, ERROR_CODES.CART_EMPTY.message, ERROR_CODES.CART_EMPTY.code);
       }
 
-      // 2. Nhóm items theo provider
-      const itemsByProvider = cartData.items.reduce((acc, item) => {
-        let providerId, providerName;
-
-        if (item.item_type === "ROOM" && item.room?.service?.Provider) {
-          providerId = item.room.service.Provider.id;
-          providerName = item.room.service.Provider.name;
-        } else if (item.item_type === "TOUR" && item.tour?.Service?.Provider) {
-          providerId = item.tour.Service.Provider.id;
-          providerName = item.tour.Service.Provider.name;
-        } else if (item.item_type === "TICKET" && item.ticket?.Service?.Provider) {
-          providerId = item.ticket.Service.Provider.id;
-          providerName = item.ticket.Service.Provider.name;
-        } else if (item.item_type === "MENU_ITEM" && item.menu_item?.menu?.service?.Provider) {
-          providerId = item.menu_item.menu.service.Provider.id;
-          providerName = item.menu_item.menu.service.Provider.name;
-        } else {
-          throw new AppError(400, "Không xác định được nhà cung cấp", "PROVIDER_NOT_FOUND");
-        }
-
-        if (!acc[providerId]) {
-          acc[providerId] = { providerId, providerName, items: [], total: 0 };
-        }
-
-        const price = item.price || 0;
-        const itemTotal = price * item.quantity;
-
-        acc[providerId].items.push({ ...item, price, itemTotal });
-        acc[providerId].total += itemTotal;
-
-        return acc;
-      }, {});
-
-      // 3. Áp dụng voucher (nếu có) — chia đều theo tỷ lệ
-      let globalVoucher = null;
-      const voucherDiscounts = {}; // { providerId: discountAmount }
-
-      if (voucherCode) {
-        globalVoucher = await tx.voucher.findUnique({
-          where: { code: voucherCode },
-        });
-
-        if (!globalVoucher || globalVoucher.valid_to < new Date()) {
-          throw new AppError(400, "Mã giảm giá không hợp lệ hoặc hết hạn", "INVALID_VOUCHER");
-        }
-
-        const totalCartAmount = Object.values(itemsByProvider).reduce((sum, p) => sum + p.total, 0);
-        const totalDiscount = totalCartAmount * (globalVoucher.discount_percent / 100);
-
-        // Chia discount theo tỷ lệ đóng góp
-        Object.keys(itemsByProvider).forEach((providerId) => {
-          const ratio = itemsByProvider[providerId].total / totalCartAmount;
-          voucherDiscounts[providerId] = totalDiscount * ratio;
-        });
+      // 2. Validate dates và availability
+      for (const item of cartData.items) {
+        await BookingService.validateCartItem(tx, item);
       }
 
-      // 4. Tạo nhiều Booking (mỗi provider 1 cái)
+      // 3. Nhóm items theo provider và tính giá
+      const itemsByProvider = await BookingService.groupItemsByProvider(cartData.items);
+
+      // 4. Áp dụng voucher (nếu có)
+      let globalVoucher = null;
+      const voucherDiscounts = {};
+
+      if (voucherCode) {
+        const voucherResult = await BookingService.applyVoucher(tx, voucherCode, itemsByProvider);
+        globalVoucher = voucherResult.voucher;
+        Object.assign(voucherDiscounts, voucherResult.discounts);
+      }
+
+      // 5. Tạo bookings cho từng provider
       const createdBookings = [];
 
       for (const { providerId, items, total } of Object.values(itemsByProvider)) {
@@ -170,33 +148,255 @@ const BookingService = {
           },
         });
 
-        // Tạo BookingItem
+        // Tạo BookingItems
         const bookingItems = items.map((item) => ({
           booking_id: booking.id,
           item_type: item.item_type,
           item_id: item.item_id,
           quantity: item.quantity,
           unit_price: item.price,
-          total_price: item.price * item.quantity,
+          total_price: item.itemTotal,
           checkin_date: item.checkin_date,
           checkout_date: item.checkout_date,
           visit_date: item.visit_date,
         }));
 
         await tx.bookingItem.createMany({ data: bookingItems });
+
+        // Update availability
+        await BookingService.updateAvailability(tx, items, "decrement");
+
         createdBookings.push(booking);
       }
 
-      // 5. Xóa giỏ hàng
+      // 6. Update voucher usage
+      if (globalVoucher) {
+        await tx.voucher.update({
+          where: { id: globalVoucher.id },
+          data: { used_count: { increment: 1 } },
+        });
+      }
+
+      // 7. Xóa giỏ hàng
       await tx.cartItem.deleteMany({ where: { cart_id: cartData.id } });
 
       return createdBookings;
     });
   },
 
-  cancelBooking: async (travelerId, bookingId, _reason) => {
+  // Helper: Validate cart item
+  validateCartItem: async (tx, item) => {
+    if (item.item_type === "ROOM") {
+      if (!item.checkin_date || !item.checkout_date) {
+        throw new AppError(
+          400,
+          "Room booking phải có checkin_date và checkout_date",
+          "MISSING_DATES",
+        );
+      }
+
+      const checkin = new Date(item.checkin_date);
+      const checkout = new Date(item.checkout_date);
+
+      if (checkout <= checkin) {
+        throw new AppError(400, "Checkout phải sau checkin", "INVALID_DATES");
+      }
+
+      if (checkin < new Date()) {
+        throw new AppError(400, "Không thể đặt phòng quá khứ", "PAST_DATE");
+      }
+
+      // Check availability
+      const dates = BookingService.getDateRange(checkin, checkout);
+      for (const date of dates) {
+        const avail = await tx.roomAvailability.findUnique({
+          where: {
+            room_id_date: { room_id: item.item_id, date },
+          },
+        });
+
+        if (!avail || avail.available_count < item.quantity) {
+          throw new AppError(400, `Phòng "${item.room?.name}" không đủ chỗ`, "ROOM_UNAVAILABLE");
+        }
+      }
+    }
+
+    if (item.item_type === "TOUR") {
+      if (!item.visit_date) {
+        throw new AppError(400, "Tour phải có visit_date", "MISSING_DATE");
+      }
+
+      if (new Date(item.visit_date) < new Date()) {
+        throw new AppError(400, "Không thể đặt tour quá khứ", "PAST_DATE");
+      }
+
+      const tour = await tx.tour.findUnique({ where: { id: item.item_id } });
+      if (tour.current_bookings + item.quantity > tour.max_participants) {
+        throw new AppError(400, `Tour "${item.tour?.name}" đã đầy`, "TOUR_FULL");
+      }
+    }
+
+    if (item.item_type === "TICKET") {
+      if (!item.visit_date) {
+        throw new AppError(400, "Ticket phải có visit_date", "MISSING_DATE");
+      }
+
+      if (new Date(item.visit_date) < new Date()) {
+        throw new AppError(400, "Không thể đặt ticket quá khứ", "PAST_DATE");
+      }
+
+      const avail = await tx.ticketAvailability.findUnique({
+        where: {
+          ticket_id_date: {
+            ticket_id: item.item_id,
+            date: new Date(item.visit_date),
+          },
+        },
+      });
+
+      if (avail && avail.available_count < item.quantity) {
+        throw new AppError(400, "Ticket không đủ số lượng", "TICKET_UNAVAILABLE");
+      }
+    }
+  },
+
+  // Helper: Group items by provider
+  groupItemsByProvider: (cartItems) => {
+    return cartItems.reduce((acc, item) => {
+      let providerId,
+        providerName,
+        price = 0;
+
+      if (item.item_type === "ROOM" && item.room?.service?.Provider) {
+        providerId = item.room.service.Provider.id;
+        providerName = item.room.service.Provider.user?.name || "Unknown";
+
+        const checkin = new Date(item.checkin_date);
+        const checkout = new Date(item.checkout_date);
+        const nights = Math.ceil((checkout - checkin) / (1000 * 60 * 60 * 24));
+        price = Number(item.room.price_per_night) * nights;
+      } else if (item.item_type === "TOUR" && item.tour?.Service?.Provider) {
+        providerId = item.tour.Service.Provider.id;
+        providerName = item.tour.Service.Provider.user?.name || "Unknown";
+        price = Number(item.tour.total_price);
+      } else if (item.item_type === "TICKET" && item.ticket?.Service?.Provider) {
+        providerId = item.ticket.Service.Provider.id;
+        providerName = item.ticket.Service.Provider.user?.name || "Unknown";
+        price = Number(item.ticket.price);
+      } else if (item.item_type === "MENU_ITEM" && item.menu_item?.Menu?.Service?.Provider) {
+        providerId = item.menu_item.Menu.Service.Provider.id;
+        providerName = item.menu_item.Menu.Service.Provider.user?.name || "Unknown";
+        price = Number(item.menu_item.price);
+      } else {
+        throw new AppError(400, "Không xác định được provider", "PROVIDER_NOT_FOUND");
+      }
+
+      if (!acc[providerId]) {
+        acc[providerId] = { providerId, providerName, items: [], total: 0 };
+      }
+
+      const itemTotal = price * item.quantity;
+
+      acc[providerId].items.push({
+        ...item,
+        price,
+        itemTotal,
+      });
+      acc[providerId].total += itemTotal;
+
+      return acc;
+    }, {});
+  },
+
+  // Helper: Apply voucher
+  applyVoucher: async (tx, voucherCode, itemsByProvider) => {
+    const voucher = await tx.voucher.findUnique({
+      where: { code: voucherCode },
+    });
+
+    if (!voucher || (voucher.valid_to && voucher.valid_to < new Date())) {
+      throw new AppError(400, "Mã giảm giá không hợp lệ", "INVALID_VOUCHER");
+    }
+
+    if (voucher.max_uses && voucher.used_count >= voucher.max_uses) {
+      throw new AppError(400, "Mã giảm giá đã hết lượt sử dụng", "VOUCHER_LIMIT_REACHED");
+    }
+
+    const totalCartAmount = Object.values(itemsByProvider).reduce((sum, p) => sum + p.total, 0);
+    const totalDiscount = totalCartAmount * (voucher.discount_percent / 100);
+
+    const discounts = {};
+    Object.keys(itemsByProvider).forEach((providerId) => {
+      const ratio = itemsByProvider[providerId].total / totalCartAmount;
+      discounts[providerId] = totalDiscount * ratio;
+    });
+
+    return { voucher, discounts };
+  },
+
+  // Helper: Update availability
+  updateAvailability: async (tx, items, operation) => {
+    for (const item of items) {
+      if (item.item_type === "ROOM") {
+        const dates = BookingService.getDateRange(
+          new Date(item.checkin_date),
+          new Date(item.checkout_date),
+        );
+
+        for (const date of dates) {
+          await tx.roomAvailability.updateMany({
+            where: { room_id: item.item_id, date },
+            data: {
+              available_count: {
+                [operation]: item.quantity,
+              },
+            },
+          });
+        }
+      }
+
+      if (item.item_type === "TOUR") {
+        await tx.tour.update({
+          where: { id: item.item_id },
+          data: {
+            current_bookings: {
+              [operation]: item.quantity,
+            },
+          },
+        });
+      }
+
+      if (item.item_type === "TICKET") {
+        await tx.ticketAvailability.update({
+          where: {
+            ticket_id_date: {
+              ticket_id: item.item_id,
+              date: new Date(item.visit_date),
+            },
+          },
+          data: {
+            available_count: {
+              [operation]: item.quantity,
+            },
+          },
+        });
+      }
+    }
+  },
+
+  // Helper: Get date range
+  getDateRange: (start, end) => {
+    const dates = [];
+    for (let d = new Date(start); d < end; d.setDate(d.getDate() + 1)) {
+      dates.push(new Date(d));
+    }
+    return dates;
+  },
+
+  cancelBooking: async (travelerId, bookingId, reason) => {
     const booking = await prisma.booking.findFirst({
       where: { id: bookingId, traveler_id: travelerId },
+      include: { items: true },
     });
 
     if (!booking)
@@ -205,6 +405,7 @@ const BookingService = {
         ERROR_CODES.BOOKING_NOT_FOUND.message,
         ERROR_CODES.BOOKING_NOT_FOUND.code,
       );
+
     if (!["PENDING", "PAID"].includes(booking.status)) {
       throw new AppError(
         400,
@@ -216,32 +417,513 @@ const BookingService = {
     await prisma.$transaction(async (tx) => {
       await tx.booking.update({
         where: { id: bookingId },
-        data: { status: "CANCELLED" },
+        data: {
+          status: "CANCELLED",
+          notes: reason ? `Cancelled: ${reason}` : booking.notes,
+        },
       });
 
-      // Có thể thêm bảng BookingCancellation nếu cần lưu lý do
+      // Restore availability
+      await BookingService.updateAvailability(tx, booking.items, "increment");
+
+      // TODO: Trigger refund if paid
+      if (booking.status === "PAID" && booking.payment_id) {
+        // await PaymentService.initiateRefund(booking.payment_id);
+      }
     });
   },
 
   enrichBookingItems: (booking) => {
-    booking.items = booking.items.map((item) => {
-      let details = {};
-      if (item.room) {
-        details = {
-          name: item.room.name,
-          image: item.room.images[0]?.url,
-          serviceId: item.room.service_id,
-        };
-      } else if (item.tour) {
-        details = { name: item.tour.name };
-      } else if (item.ticket) {
-        details = { name: item.ticket.name, place: item.ticket.place.name };
-      } else if (item.menu_item) {
-        details = { name: item.menu_item.name };
-      }
-      return { ...item, details };
-    });
+    if (booking.items) {
+      booking.items = booking.items.map((item) => {
+        let details = {};
+        if (item.room) {
+          details = {
+            name: item.room.name,
+            image: item.room.image_url,
+            serviceId: item.room.service_id,
+          };
+        } else if (item.tour) {
+          details = { name: item.tour.name };
+        } else if (item.ticket) {
+          details = { name: item.ticket.name, place: item.ticket.Place?.name };
+        } else if (item.menu_item) {
+          details = { name: item.menu_item.name };
+        }
+        return { ...item, details };
+      });
+    }
     return booking;
+  },
+
+  createRoomBooking: async (travelerId, bookingData) => {
+    const { roomId, checkinDate, checkoutDate, quantity, voucherCode, guestInfo } = bookingData;
+
+    return await prisma.$transaction(async (tx) => {
+      // 1. Lấy thông tin room
+      const room = await tx.room.findUnique({
+        where: { id: roomId },
+        include: {
+          service: {
+            include: { Provider: true },
+          },
+        },
+      });
+
+      if (!room) {
+        throw new AppError(404, "Không tìm thấy phòng", "ROOM_NOT_FOUND");
+      }
+
+      // 2. Validate dates
+      const checkin = new Date(checkinDate);
+      const checkout = new Date(checkoutDate);
+
+      if (checkout <= checkin) {
+        throw new AppError(400, "Checkout phải sau checkin", "INVALID_DATES");
+      }
+
+      if (checkin < new Date()) {
+        throw new AppError(400, "Không thể đặt phòng quá khứ", "PAST_DATE");
+      }
+
+      // 3. Check availability
+      const dates = BookingService.getDateRange(checkin, checkout);
+      for (const date of dates) {
+        const avail = await tx.roomAvailability.findUnique({
+          where: {
+            room_id_date: { room_id: roomId, date },
+          },
+        });
+
+        if (!avail || avail.available_count < quantity) {
+          throw new AppError(
+            400,
+            `Phòng không đủ chỗ cho ngày ${date.toLocaleDateString("vi-VN")}`,
+            "ROOM_UNAVAILABLE",
+          );
+        }
+      }
+
+      // 4. Tính giá
+      const nights = dates.length;
+      const pricePerNight = Number(room.price_per_night);
+      const totalAmount = pricePerNight * nights * quantity;
+
+      // 5. Áp dụng voucher
+      let discount = 0;
+      let voucherId = null;
+
+      if (voucherCode) {
+        const voucher = await tx.voucher.findUnique({
+          where: { code: voucherCode },
+        });
+
+        if (voucher && (!voucher.valid_to || voucher.valid_to >= new Date())) {
+          // Check if voucher applies to this service
+          if (voucher.is_global || voucher.service_id === room.service_id) {
+            discount = totalAmount * (voucher.discount_percent / 100);
+            voucherId = voucher.id;
+
+            // Update usage
+            await tx.voucher.update({
+              where: { id: voucher.id },
+              data: { used_count: { increment: 1 } },
+            });
+          }
+        }
+      }
+
+      const finalAmount = totalAmount - discount;
+
+      // 6. Tạo booking
+      const booking = await tx.booking.create({
+        data: {
+          traveler_id: travelerId,
+          provider_id: room.service.Provider.id,
+          total_amount: totalAmount,
+          discount_amount: discount,
+          final_amount: finalAmount,
+          voucher_id: voucherId,
+          status: "PENDING",
+          notes: guestInfo ? JSON.stringify(guestInfo) : null,
+        },
+      });
+
+      // 7. Tạo booking item
+      await tx.bookingItem.create({
+        data: {
+          booking_id: booking.id,
+          item_type: "ROOM",
+          item_id: roomId,
+          quantity,
+          unit_price: pricePerNight,
+          total_price: totalAmount,
+          checkin_date: checkin,
+          checkout_date: checkout,
+        },
+      });
+
+      // 8. Update availability
+      for (const date of dates) {
+        await tx.roomAvailability.updateMany({
+          where: { room_id: roomId, date },
+          data: {
+            available_count: { decrement: quantity },
+          },
+        });
+      }
+
+      // 9. Return full booking
+      return await tx.booking.findUnique({
+        where: { id: booking.id },
+        include: {
+          provider: { include: { user: true } },
+          items: { include: { room: true } },
+          voucher: true,
+        },
+      });
+    });
+  },
+
+  createTourBooking: async (travelerId, bookingData) => {
+    const { tourId, visitDate, quantity, voucherCode, guestInfo } = bookingData;
+
+    return await prisma.$transaction(async (tx) => {
+      // 1. Lấy thông tin tour
+      const tour = await tx.tour.findUnique({
+        where: { id: tourId },
+        include: {
+          Service: {
+            include: { Provider: true },
+          },
+        },
+      });
+
+      if (!tour) {
+        throw new AppError(404, "Không tìm thấy tour", "TOUR_NOT_FOUND");
+      }
+
+      // 2. Validate date
+      const visit = new Date(visitDate);
+      if (visit < new Date()) {
+        throw new AppError(400, "Không thể đặt tour quá khứ", "PAST_DATE");
+      }
+
+      // 3. Check availability
+      if (tour.current_bookings + quantity > tour.max_participants) {
+        throw new AppError(400, "Tour đã đầy chỗ", "TOUR_FULL");
+      }
+
+      // 4. Tính giá
+      const totalAmount = Number(tour.total_price) * quantity;
+
+      // 5. Áp dụng voucher
+      let discount = 0;
+      let voucherId = null;
+
+      if (voucherCode) {
+        const voucher = await tx.voucher.findUnique({
+          where: { code: voucherCode },
+        });
+
+        if (voucher && (!voucher.valid_to || voucher.valid_to >= new Date())) {
+          if (voucher.is_global || voucher.service_id === tour.service_id) {
+            discount = totalAmount * (voucher.discount_percent / 100);
+            voucherId = voucher.id;
+
+            await tx.voucher.update({
+              where: { id: voucher.id },
+              data: { used_count: { increment: 1 } },
+            });
+          }
+        }
+      }
+
+      const finalAmount = totalAmount - discount;
+
+      // 6. Tạo booking
+      const booking = await tx.booking.create({
+        data: {
+          traveler_id: travelerId,
+          provider_id: tour.Service.Provider.id,
+          total_amount: totalAmount,
+          discount_amount: discount,
+          final_amount: finalAmount,
+          voucher_id: voucherId,
+          status: "PENDING",
+          notes: guestInfo ? JSON.stringify(guestInfo) : null,
+        },
+      });
+
+      // 7. Tạo booking item
+      await tx.bookingItem.create({
+        data: {
+          booking_id: booking.id,
+          item_type: "TOUR",
+          item_id: tourId,
+          quantity,
+          unit_price: tour.total_price,
+          total_price: totalAmount,
+          visit_date: visit,
+        },
+      });
+
+      // 8. Update tour bookings
+      await tx.tour.update({
+        where: { id: tourId },
+        data: {
+          current_bookings: { increment: quantity },
+        },
+      });
+
+      // 9. Return full booking
+      return await tx.booking.findUnique({
+        where: { id: booking.id },
+        include: {
+          provider: { include: { user: true } },
+          items: { include: { tour: true } },
+          voucher: true,
+        },
+      });
+    });
+  },
+
+  createTicketBooking: async (travelerId, bookingData) => {
+    const { ticketId, visitDate, quantity, voucherCode, guestInfo } = bookingData;
+
+    return await prisma.$transaction(async (tx) => {
+      // 1. Lấy thông tin ticket
+      const ticket = await tx.ticket.findUnique({
+        where: { id: ticketId },
+        include: {
+          Service: {
+            include: { Provider: true },
+          },
+          Place: true,
+        },
+      });
+
+      if (!ticket) {
+        throw new AppError(404, "Không tìm thấy vé", "TICKET_NOT_FOUND");
+      }
+
+      // 2. Validate date
+      const visit = new Date(visitDate);
+      if (visit < new Date()) {
+        throw new AppError(400, "Không thể đặt vé quá khứ", "PAST_DATE");
+      }
+
+      // 3. Check availability
+      const avail = await tx.ticketAvailability.findUnique({
+        where: {
+          ticket_id_date: {
+            ticket_id: ticketId,
+            date: visit,
+          },
+        },
+      });
+
+      if (avail && avail.available_count < quantity) {
+        throw new AppError(400, "Vé không đủ số lượng", "TICKET_UNAVAILABLE");
+      }
+
+      // 4. Tính giá
+      const totalAmount = Number(ticket.price) * quantity;
+
+      // 5. Áp dụng voucher
+      let discount = 0;
+      let voucherId = null;
+
+      if (voucherCode) {
+        const voucher = await tx.voucher.findUnique({
+          where: { code: voucherCode },
+        });
+
+        if (voucher && (!voucher.valid_to || voucher.valid_to >= new Date())) {
+          if (voucher.is_global || voucher.service_id === ticket.service_id) {
+            discount = totalAmount * (voucher.discount_percent / 100);
+            voucherId = voucher.id;
+
+            await tx.voucher.update({
+              where: { id: voucher.id },
+              data: { used_count: { increment: 1 } },
+            });
+          }
+        }
+      }
+
+      const finalAmount = totalAmount - discount;
+
+      // 6. Tạo booking
+      const booking = await tx.booking.create({
+        data: {
+          traveler_id: travelerId,
+          provider_id: ticket.Service.Provider.id,
+          total_amount: totalAmount,
+          discount_amount: discount,
+          final_amount: finalAmount,
+          voucher_id: voucherId,
+          status: "PENDING",
+          notes: guestInfo ? JSON.stringify(guestInfo) : null,
+        },
+      });
+
+      // 7. Tạo booking item
+      await tx.bookingItem.create({
+        data: {
+          booking_id: booking.id,
+          item_type: "TICKET",
+          item_id: ticketId,
+          quantity,
+          unit_price: ticket.price,
+          total_price: totalAmount,
+          visit_date: visit,
+        },
+      });
+
+      // 8. Update availability
+      if (avail) {
+        await tx.ticketAvailability.update({
+          where: {
+            ticket_id_date: {
+              ticket_id: ticketId,
+              date: visit,
+            },
+          },
+          data: {
+            available_count: { decrement: quantity },
+          },
+        });
+      }
+
+      // 9. Return full booking
+      return await tx.booking.findUnique({
+        where: { id: booking.id },
+        include: {
+          provider: { include: { user: true } },
+          items: { include: { ticket: { include: { Place: true } } } },
+          voucher: true,
+        },
+      });
+    });
+  },
+
+  createMenuBooking: async (travelerId, bookingData) => {
+    const { serviceId, items, visitDate, voucherCode, guestInfo } = bookingData;
+    // items = [{ menuItemId, quantity }, ...]
+
+    return await prisma.$transaction(async (tx) => {
+      // 1. Lấy thông tin service (restaurant)
+      const service = await tx.service.findUnique({
+        where: { id: serviceId },
+        include: {
+          Provider: true,
+        },
+      });
+
+      if (!service) {
+        throw new AppError(404, "Không tìm thấy nhà hàng", "SERVICE_NOT_FOUND");
+      }
+
+      // 2. Validate và tính tổng tiền
+      let totalAmount = 0;
+      const menuItemsData = [];
+
+      for (const item of items) {
+        const menuItem = await tx.menuItem.findUnique({
+          where: { id: item.menuItemId },
+          include: { Menu: true },
+        });
+
+        if (!menuItem) {
+          throw new AppError(
+            404,
+            `Không tìm thấy món ăn ID ${item.menuItemId}`,
+            "MENU_ITEM_NOT_FOUND",
+          );
+        }
+
+        if (menuItem.status !== "AVAILABLE") {
+          throw new AppError(
+            400,
+            `Món "${menuItem.name}" hiện không có sẵn`,
+            "MENU_ITEM_UNAVAILABLE",
+          );
+        }
+
+        const itemTotal = Number(menuItem.price) * item.quantity;
+        totalAmount += itemTotal;
+
+        menuItemsData.push({
+          menuItem,
+          quantity: item.quantity,
+          itemTotal,
+        });
+      }
+
+      // 3. Áp dụng voucher
+      let discount = 0;
+      let voucherId = null;
+
+      if (voucherCode) {
+        const voucher = await tx.voucher.findUnique({
+          where: { code: voucherCode },
+        });
+
+        if (voucher && (!voucher.valid_to || voucher.valid_to >= new Date())) {
+          if (voucher.is_global || voucher.service_id === serviceId) {
+            discount = totalAmount * (voucher.discount_percent / 100);
+            voucherId = voucher.id;
+
+            await tx.voucher.update({
+              where: { id: voucher.id },
+              data: { used_count: { increment: 1 } },
+            });
+          }
+        }
+      }
+
+      const finalAmount = totalAmount - discount;
+
+      // 4. Tạo booking
+      const booking = await tx.booking.create({
+        data: {
+          traveler_id: travelerId,
+          provider_id: service.Provider.id,
+          total_amount: totalAmount,
+          discount_amount: discount,
+          final_amount: finalAmount,
+          voucher_id: voucherId,
+          status: "PENDING",
+          notes: guestInfo ? JSON.stringify(guestInfo) : null,
+        },
+      });
+
+      // 5. Tạo booking items
+      for (const itemData of menuItemsData) {
+        await tx.bookingItem.create({
+          data: {
+            booking_id: booking.id,
+            item_type: "MENU_ITEM",
+            item_id: itemData.menuItem.id,
+            quantity: itemData.quantity,
+            unit_price: itemData.menuItem.price,
+            total_price: itemData.itemTotal,
+            visit_date: visitDate ? new Date(visitDate) : null,
+          },
+        });
+      }
+
+      // 6. Return full booking
+      return await tx.booking.findUnique({
+        where: { id: booking.id },
+        include: {
+          provider: { include: { user: true } },
+          items: { include: { menu_item: true } },
+          voucher: true,
+        },
+      });
+    });
   },
 
   getBookingsByProvider: async (providerId, filters) => {
@@ -259,7 +941,7 @@ const BookingService = {
         include: {
           traveler: { include: { user: true } },
           items: true,
-          payments: true,
+          payment: true,
         },
         orderBy: { booking_date: "desc" },
         skip: (filters.page - 1) * filters.limit,
@@ -276,7 +958,25 @@ const BookingService = {
     };
   },
 
-  providerUpdateStatus: async (providerId, bookingId, newStatus, _note) => {
+  getBookingForProvider: async (providerId, bookingId) => {
+    const booking = await prisma.booking.findFirst({
+      where: { id: bookingId, provider_id: providerId },
+      include: {
+        traveler: { include: { user: true } },
+        items: true,
+        payment: true,
+        voucher: true,
+      },
+    });
+
+    if (!booking) {
+      throw new AppError(404, "Booking not found", "BOOKING_NOT_FOUND");
+    }
+
+    return BookingService.enrichBookingItems(booking);
+  },
+
+  providerUpdateStatus: async (providerId, bookingId, newStatus, note) => {
     const booking = await prisma.booking.findUnique({
       where: { id: bookingId },
       include: { provider: true },
@@ -291,7 +991,7 @@ const BookingService = {
     }
 
     if (booking.provider_id !== providerId) {
-      throw new AppError(403, "You do not have permission to update this booking", "FORBIDDEN");
+      throw new AppError(403, "Unauthorized", "FORBIDDEN");
     }
 
     const allowedTransitions = {
@@ -319,16 +1019,12 @@ const BookingService = {
 
     const updatedBooking = await prisma.booking.update({
       where: { id: bookingId },
-      data: { status: newStatus },
+      data: {
+        status: newStatus,
+        notes: note || booking.notes,
+      },
       include: {
-        items: {
-          include: {
-            room: { include: { service: true } },
-            tour: true,
-            ticket: true,
-            menu_item: true,
-          },
-        },
+        items: true,
         traveler: { include: { user: true } },
         provider: true,
         voucher: true,
@@ -338,12 +1034,69 @@ const BookingService = {
     return updatedBooking;
   },
 
-  // Admin được phép đổi bất kỳ status nào
-  adminForceUpdateStatus: async (bookingId, newStatus) => {
+  getAllBookingsAdmin: async (filters) => {
+    const where = {};
+    if (filters.status) where.status = filters.status;
+    if (filters.providerId) where.provider_id = Number(filters.providerId);
+    if (filters.travelerId) where.traveler_id = Number(filters.travelerId);
+
+    const page = Number(filters.page) || 1;
+    const limit = Number(filters.limit) || 20;
+
+    const [bookings, total] = await Promise.all([
+      prisma.booking.findMany({
+        where,
+        include: {
+          traveler: { include: { user: true } },
+          provider: { include: { user: true } },
+          items: true,
+          payment: true,
+        },
+        orderBy: { created_at: "desc" },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.booking.count({ where }),
+    ]);
+
+    return {
+      bookings: bookings.map(BookingService.enrichBookingItems),
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
+  },
+
+  getBookingDetailAdmin: async (bookingId) => {
+    const booking = await prisma.booking.findUnique({
+      where: { id: bookingId },
+      include: {
+        traveler: { include: { user: true } },
+        provider: { include: { user: true } },
+        items: true,
+        payment: true,
+        voucher: true,
+        reviews: true,
+      },
+    });
+
+    if (!booking) {
+      throw new AppError(404, "Booking not found", "BOOKING_NOT_FOUND");
+    }
+
+    return BookingService.enrichBookingItems(booking);
+  },
+
+  adminForceUpdateStatus: async (bookingId, newStatus, note) => {
     return await prisma.booking.update({
       where: { id: bookingId },
-      data: { status: newStatus },
-      include: { items: true, traveler: true, provider: true },
+      data: {
+        status: newStatus,
+        notes: note || undefined,
+      },
+      include: {
+        items: true,
+        traveler: { include: { user: true } },
+        provider: { include: { user: true } },
+      },
     });
   },
 };
