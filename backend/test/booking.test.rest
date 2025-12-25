@@ -1,0 +1,519 @@
+### ============================================
+### SETUP VARIABLES
+### ============================================
+@baseUrl = http://localhost:1601/api
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NSwiZW1haWwiOiJqb2huLmRvZUBlbWFpbC5jb20iLCJpYXQiOjE3NjY2NzI4MzIsImV4cCI6MTc2NjY3NjQzMn0.3Fdmgz0vx7qGdsktA7cR3O_Xqc-Z2ECoZ97sEItvAqM
+
+### ============================================
+### 1. AUTHENTICATION
+### ============================================
+
+### Register Traveler
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "username": "traveler1",
+  "password": "password123",
+  "name": "Nguyen Van A",
+  "email": "traveler1@example.com",
+  "phone": "0901234567",
+  "role": "TRAVELER"
+}
+
+### Login
+# @name login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "traveler1",
+  "password": "password123"
+}
+
+### Extract token from login response
+@authToken = {{login.response.body.$.data.token}}
+
+### Get My Profile
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{authToken}}
+
+### ============================================
+### 2. SERVICES (Browse)
+### ============================================
+
+### Get All Services
+GET {{baseUrl}}/services?page=1&limit=10&type_id=1
+Authorization: Bearer {{authToken}}
+
+### Get Service Detail
+GET {{baseUrl}}/services/1
+Authorization: Bearer {{authToken}}
+
+### Search Services
+GET {{baseUrl}}/services/search?q=hotel&location=Hanoi
+Authorization: Bearer {{authToken}}
+
+### ============================================
+### 3. CART OPERATIONS
+### ============================================
+
+### Get Cart
+GET {{baseUrl}}/cart
+Authorization: Bearer {{authToken}}
+
+### Add Room to Cart
+POST {{baseUrl}}/cart
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "item_type": "ROOM",
+  "item_id": 1,
+  "quantity": 1,
+  "checkin_date": "2025-02-01T14:00:00.000Z",
+  "checkout_date": "2025-02-03T12:00:00.000Z",
+  "note": "Late check-in requested"
+}
+
+### Add Tour to Cart
+POST {{baseUrl}}/cart
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "item_type": "TOUR",
+  "item_id": 5,
+  "quantity": 2,
+  "visit_date": "2025-02-05T08:00:00.000Z",
+  "note": "Vegetarian meals please"
+}
+
+### Add Ticket to Cart
+POST {{baseUrl}}/cart
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "item_type": "TICKET",
+  "item_id": 3,
+  "quantity": 4,
+  "visit_date": "2025-02-10T10:00:00.000Z"
+}
+
+### Add Menu Item to Cart
+POST {{baseUrl}}/cart
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "item_type": "MENU_ITEM",
+  "item_id": 12,
+  "quantity": 3,
+  "note": "Extra spicy"
+}
+
+### Update Cart Item
+PATCH {{baseUrl}}/cart/1
+Authorization: Bearer {{authToken}}
+Content-Type: application/json
+
+{
+  "quantity": 2,
+  "note": "Updated note"
+}
+
+### Remove from Cart
+DELETE {{baseUrl}}/cart/1
+Authorization: Bearer {{authToken}}
+
+### Clear Cart
+DELETE {{baseUrl}}/cart
+Authorization: Bearer {{authToken}}
+
+### ============================================
+### 4. BOOKING - FROM CART
+### ============================================
+
+### Create Booking from Cart (without voucher)
+# @name createBooking
+POST {{baseUrl}}/booking
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "voucherCode": null
+}
+
+### Create Booking from Cart (with voucher)
+POST {{baseUrl}}/booking
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "voucherCode": "SUMMER2025"
+}
+
+### ============================================
+### 5. BOOKING - DIRECT BOOKING
+### ============================================
+
+### Direct Book Room
+# @name directBookRoom
+POST {{baseUrl}}/booking/direct/room
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "roomId": 1,
+  "checkinDate": "2025-12-27",
+  "checkoutDate": "2025-12-28",
+  "quantity": 2,
+  "voucherCode": "SPRING2025",
+  "guestInfo": {
+    "fullName": "Nguyen Van A",
+    "phone": "0901234567",
+    "email": "traveler1@example.com",
+    "specialRequest": "High floor, non-smoking room"
+  }
+}
+
+### Direct Book Tour
+# @name directBookTour
+POST {{baseUrl}}/booking/direct/tour
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "tourId": 12,
+  "visitDate": "2025-12-26",
+  "quantity": 3,
+  "guestInfo": {
+    "fullName": "Nguyen Van A",
+    "phone": "0901234567",
+    "email": "traveler1@example.com",
+    "emergencyContact": "0912345678"
+  }
+}
+
+### Direct Book Ticket
+# @name directBookTicket
+POST {{baseUrl}}/booking/direct/ticket
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "ticketId": 11,
+  "visitDate": "2025-12-27",
+  "quantity": 5,
+  "guestInfo": {
+    "fullName": "Nguyen Van A",
+    "phone": "0901234567"
+  }
+}
+
+### Direct Book Menu (Restaurant)
+# @name directBookMenu
+POST {{baseUrl}}/booking/direct/menu
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "serviceId": 8,
+  "items": [
+    {
+      "menuItemId": 12,
+      "quantity": 2
+    },
+    {
+      "menuItemId": 15,
+      "quantity": 1
+    },
+    {
+      "menuItemId": 18,
+      "quantity": 3
+    }
+  ],
+  "visitDate": "2025-02-20T19:00:00.000Z",
+  "voucherCode": null,
+  "guestInfo": {
+    "fullName": "Nguyen Van A",
+    "phone": "0901234567",
+    "tableNumber": "T5",
+    "specialRequest": "Window seat if possible"
+  }
+}
+
+### ============================================
+### 6. BOOKING MANAGEMENT
+### ============================================
+
+### Get My Booking
+GET {{baseUrl}}/booking/my?page=1&limit=10&status=PENDING
+Authorization: Bearer {{token}}
+
+### Get Booking Detail
+GET {{baseUrl}}/booking/my/{{createBooking.response.body.$.data.booking.id}}
+Authorization: Bearer {{token}}
+
+### Cancel Booking
+POST {{baseUrl}}/booking/my/clx123abc/cancel
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "reason": "Change of travel plans"
+}
+
+### ============================================
+### 7. PAYMENT
+### ============================================
+
+### Create Payment (VNPay)
+# @name createPayment
+POST {{baseUrl}}/payments
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "bookingIds": [
+    "{{directBookRoom.response.body.$.data.booking.id}}",
+    "{{directBookTour.response.body.$.data.booking.id}}"
+  ],
+  "method": "VNPAY"
+}
+
+### Get Payment Detail
+GET {{baseUrl}}/payments/{{createPayment.response.body.$.data.payment.id}}
+Authorization: Bearer {{token}}
+
+### Get My Payments
+GET {{baseUrl}}/payments?page=1&limit=10&status=SUCCESS
+Authorization: Bearer {{token}}
+
+### Simulate VNPay Return (Manual test in browser)
+# Copy paymentUrl from createPayment response and open in browser
+# After payment, VNPay will redirect to:
+# http://localhost:3000/payment/result?success=true&paymentId=xxx&message=xxx
+
+### ============================================
+### 8. PROVIDER OPERATIONS
+### ============================================
+
+### Provider Login
+# @name providerLogin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "provider1",
+  "password": "password123"
+}
+
+@providerToken = {{providerLogin.response.body.$.data.token}}
+
+### Get Provider Booking
+GET {{baseUrl}}/booking/provider?page=1&limit=10&status=PAID
+Authorization: Bearer {{providerToken}}
+
+### Get Provider Booking Detail
+GET {{baseUrl}}/booking/provider/clx123abc
+Authorization: Bearer {{providerToken}}
+
+### Update Booking Status (Provider)
+PATCH {{baseUrl}}/booking/provider/clx123abc/status
+Authorization: Bearer {{providerToken}}
+Content-Type: application/json
+
+{
+  "status": "IN_PROGRESS",
+  "note": "Guest checked in"
+}
+
+### ============================================
+### 9. ADMIN OPERATIONS
+### ============================================
+
+### Admin Login
+# @name adminLogin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+@adminToken = {{adminLogin.response.body.$.data.token}}
+
+### Get All Booking (Admin)
+GET {{baseUrl}}/booking/admin?page=1&limit=20&status=PAID&providerId=5
+Authorization: Bearer {{adminToken}}
+
+### Get Booking Detail (Admin)
+GET {{baseUrl}}/booking/admin/clx123abc
+Authorization: Bearer {{adminToken}}
+
+### Force Update Booking Status (Admin)
+PATCH {{baseUrl}}/booking/admin/clx123abc/status
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "status": "REFUNDED",
+  "note": "Approved refund request due to service issue"
+}
+
+### Get Revenue Summary (Admin)
+GET {{baseUrl}}/admin/revenue?startDate=2025-01-01&endDate=2025-01-31
+Authorization: Bearer {{adminToken}}
+
+### ============================================
+### 10. VOUCHER OPERATIONS
+### ============================================
+
+### Check Voucher
+POST {{baseUrl}}/vouchers/check
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "code": "SUMMER2025",
+  "serviceId": 5
+}
+
+### Get Available Vouchers
+GET {{baseUrl}}/vouchers?serviceId=5
+Authorization: Bearer {{token}}
+
+### ============================================
+### 11. WISHLIST
+### ============================================
+
+### Add to Wishlist
+POST {{baseUrl}}/wishlists
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "serviceId": 10
+}
+
+### Get My Wishlist
+GET {{baseUrl}}/wishlists
+Authorization: Bearer {{token}}
+
+### Remove from Wishlist
+DELETE {{baseUrl}}/wishlists/5
+Authorization: Bearer {{token}}
+
+### ============================================
+### 12. REVIEWS
+### ============================================
+
+### Create Review
+POST {{baseUrl}}/reviews
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "bookingId": "clx123abc",
+  "rating": 5,
+  "comment": "Excellent service! Highly recommended."
+}
+
+### Get Service Reviews
+GET {{baseUrl}}/services/5/reviews?page=1&limit=10
+Authorization: Bearer {{token}}
+
+### ============================================
+### 13. NOTIFICATIONS
+### ============================================
+
+### Get My Notifications
+GET {{baseUrl}}/notifications?page=1&limit=20&is_read=false
+Authorization: Bearer {{token}}
+
+### Mark Notification as Read
+PATCH {{baseUrl}}/notifications/123/read
+Authorization: Bearer {{token}}
+
+### Mark All as Read
+PATCH {{baseUrl}}/notifications/read-all
+Authorization: Bearer {{token}}
+
+### ============================================
+### TEST SCENARIOS
+### ============================================
+
+### SCENARIO 1: Complete Booking Flow (Cart → Payment)
+# 1. Add items to cart (run Add to Cart requests above)
+# 2. Get cart to verify
+# 3. Create booking from cart
+# 4. Create payment
+# 5. Open paymentUrl in browser
+# 6. Complete payment on VNPay
+# 7. Check booking status (should be PAID)
+
+### SCENARIO 2: Direct Booking Flow
+# 1. Direct book room (run Direct Book Room)
+# 2. Get booking detail
+# 3. Create payment with bookingId
+# 4. Complete payment
+# 5. Provider updates status to IN_PROGRESS
+# 6. Provider updates to COMPLETED
+# 7. Traveler creates review
+
+### SCENARIO 3: Cancel and Refund
+# 1. Create booking + payment (PAID status)
+# 2. Traveler cancels booking
+# 3. Admin reviews and approves refund
+# 4. Check payment status (should be REFUNDED)
+
+### ============================================
+### ERROR TESTING
+### ============================================
+
+### Test: Book unavailable room
+POST {{baseUrl}}/booking/direct/room
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "roomId": 999,
+  "checkinDate": "2025-03-15",
+  "checkoutDate": "2025-03-18",
+  "quantity": 100
+}
+
+### Test: Invalid voucher
+POST {{baseUrl}}/booking/direct/tour
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "tourId": 5,
+  "visitDate": "2025-04-01",
+  "quantity": 3,
+  "voucherCode": "INVALID_CODE"
+}
+
+### Test: Past date booking
+POST {{baseUrl}}/booking/direct/ticket
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "ticketId": 3,
+  "visitDate": "2020-01-01",
+  "quantity": 2
+}
+
+### Test: Unauthorized access
+GET {{baseUrl}}/booking/provider
+Authorization: Bearer {{token}}
+
+### Test: Payment timeout (after 15 minutes)
+GET {{baseUrl}}/booking/my/clx123abc
+Authorization: Bearer {{token}}
+# Booking should be auto-cancelled if not paid within 15 minutes
