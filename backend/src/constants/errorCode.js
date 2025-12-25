@@ -220,6 +220,12 @@ const ERROR_CODES = {
     code: "TOUR_NOT_FOUND",
   },
 
+  INVALID_TOUR_TIME: {
+    message: "Ngày kết thúc phải sau ngày bắt đầu",
+    statusCode: 400,
+    code: "INVALID_TOUR_TIME",
+  },
+
   //facility
   FACILITY_NOT_FOUND: {
     message: "Facility not found",
