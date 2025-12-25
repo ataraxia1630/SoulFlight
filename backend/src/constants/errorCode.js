@@ -341,6 +341,13 @@ const ERROR_CODES = {
     statusCode: 404,
     code: "REPORT_NOT_FOUND",
   },
+
+  // review
+  REVIEW_FORBIDDEN: {
+    message: "Bạn không có quyền sửa đánh giá này",
+    statusCode: 403,
+    code: "FORBIDDEN",
+  },
 };
 
 module.exports = { ERROR_CODES };
