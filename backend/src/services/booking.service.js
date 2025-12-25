@@ -578,7 +578,7 @@ const BookingService = {
         where: { id: booking.id },
         include: {
           provider: { include: { user: true } },
-          items: { include: { room: true } },
+          items: true,
           voucher: true,
         },
       });
@@ -587,7 +587,7 @@ const BookingService = {
 
   createTourBooking: async (travelerId, bookingData) => {
     const { tourId, visitDate, quantity, voucherCode, guestInfo } = bookingData;
-
+    console.log(bookingData);
     return await prisma.$transaction(async (tx) => {
       // 1. Lấy thông tin tour
       const tour = await tx.tour.findUnique({
@@ -602,7 +602,7 @@ const BookingService = {
       if (!tour) {
         throw new AppError(404, "Không tìm thấy tour", "TOUR_NOT_FOUND");
       }
-
+      console.log(tour);
       // 2. Validate date
       const visit = new Date(visitDate);
       if (visit < new Date()) {
@@ -654,6 +654,7 @@ const BookingService = {
           notes: guestInfo ? JSON.stringify(guestInfo) : null,
         },
       });
+      console.log(booking);
 
       // 7. Tạo booking item
       await tx.bookingItem.create({
@@ -681,7 +682,7 @@ const BookingService = {
         where: { id: booking.id },
         include: {
           provider: { include: { user: true } },
-          items: { include: { tour: true } },
+          items: true,
           voucher: true,
         },
       });
@@ -801,7 +802,7 @@ const BookingService = {
         where: { id: booking.id },
         include: {
           provider: { include: { user: true } },
-          items: { include: { ticket: { include: { Place: true } } } },
+          items: true,
           voucher: true,
         },
       });
@@ -919,7 +920,7 @@ const BookingService = {
         where: { id: booking.id },
         include: {
           provider: { include: { user: true } },
-          items: { include: { menu_item: true } },
+          items: true,
           voucher: true,
         },
       });

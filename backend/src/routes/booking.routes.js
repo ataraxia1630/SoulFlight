@@ -22,65 +22,65 @@ const router = Router();
 router.use(authorize);
 
 // === TRAVELER ROUTES ===
-router.get("/my", requiredRoles(["TRAVELER"]), BookingController.getMyBookings);
-router.get("/my/:bookingId", requiredRoles(["TRAVELER"]), BookingController.getBookingDetail);
+router.get("/my", requiredRoles("TRAVELER"), BookingController.getMyBookings);
+router.get("/my/:bookingId", requiredRoles("TRAVELER"), BookingController.getBookingDetail);
 router.post(
   "/",
-  requiredRoles(["TRAVELER"]),
+  requiredRoles("TRAVELER"),
   validate(createBookingSchema),
   BookingController.createFromCart,
 );
 router.post(
   "/my/:bookingId/cancel",
-  requiredRoles(["TRAVELER"]),
+  requiredRoles("TRAVELER"),
   validate(cancelBookingSchema),
   BookingController.cancelBooking,
 );
 
 router.post(
   "/direct/room",
-  requiredRoles(["TRAVELER"]),
+  requiredRoles("TRAVELER"),
   validate(directRoomBookingSchema),
   BookingController.createRoomBooking,
 );
 
 router.post(
   "/direct/tour",
-  requiredRoles(["TRAVELER"]),
+  requiredRoles("TRAVELER"),
   validate(directTourBookingSchema),
   BookingController.createTourBooking,
 );
 
 router.post(
   "/direct/ticket",
-  requiredRoles(["TRAVELER"]),
+  requiredRoles("TRAVELER"),
   validate(directTicketBookingSchema),
   BookingController.createTicketBooking,
 );
 
 router.post(
   "/direct/menu",
-  requiredRoles(["TRAVELER"]),
+  requiredRoles("TRAVELER"),
   validate(directMenuBookingSchema),
   BookingController.createMenuBooking,
 );
 
 // === PROVIDER ROUTES ===
-router.get("/provider", requiredRoles(["PROVIDER"]), ProviderBookingController.getProviderBookings);
+router.get("/provider", requiredRoles("PROVIDER"), ProviderBookingController.getProviderBookings);
 router.get(
   "/provider/:bookingId",
-  requiredRoles(["PROVIDER"]),
+  requiredRoles("PROVIDER"),
   ProviderBookingController.getProviderBookingDetail,
 );
 router.patch(
   "/provider/:bookingId/status",
-  requiredRoles(["PROVIDER"]),
+  requiredRoles("PROVIDER"),
   validate(updateStatusSchema),
   ProviderBookingController.updateBookingStatus,
 );
 
 // === ADMIN ROUTES ===
-router.use(requiredRoles(["ADMIN"]));
+router.use(requiredRoles("ADMIN"));
 
 router.get("/admin", AdminBookingController.getAllBookings);
 router.get("/admin/:bookingId", AdminBookingController.getBookingDetail);
