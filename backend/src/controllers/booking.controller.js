@@ -52,6 +52,54 @@ const BookingController = {
     await BookingService.cancelBooking(travelerId, bookingId, reason);
     res.status(200).json(ApiResponse.success({ message: "Booking cancelled successfully" }));
   }),
+
+  createRoomBooking: catchAsync(async (req, res) => {
+    const travelerId = req.user.id;
+    const booking = await BookingService.createRoomBooking(travelerId, req.body);
+
+    res.status(201).json(
+      ApiResponse.success({
+        message: "Đặt phòng thành công",
+        booking: BookingDTO.fromModel(booking),
+      }),
+    );
+  }),
+
+  createTourBooking: catchAsync(async (req, res) => {
+    const travelerId = req.user.id;
+    const booking = await BookingService.createTourBooking(travelerId, req.body);
+
+    res.status(201).json(
+      ApiResponse.success({
+        message: "Đặt tour thành công",
+        booking: BookingDTO.fromModel(booking),
+      }),
+    );
+  }),
+
+  createTicketBooking: catchAsync(async (req, res) => {
+    const travelerId = req.user.id;
+    const booking = await BookingService.createTicketBooking(travelerId, req.body);
+
+    res.status(201).json(
+      ApiResponse.success({
+        message: "Đặt vé thành công",
+        booking: BookingDTO.fromModel(booking),
+      }),
+    );
+  }),
+
+  createMenuBooking: catchAsync(async (req, res) => {
+    const travelerId = req.user.id;
+    const booking = await BookingService.createMenuBooking(travelerId, req.body);
+
+    res.status(201).json(
+      ApiResponse.success({
+        message: "Đặt món thành công",
+        booking: BookingDTO.fromModel(booking),
+      }),
+    );
+  }),
 };
 
 // ========== PROVIDER ==========

@@ -171,6 +171,39 @@ const PaymentService = {
       },
     };
   },
+
+  async initiateRefund(paymentId, reason) {
+    const payment = await prisma.payment.findUnique({
+      where: { id: paymentId },
+      include: { bookings: true },
+    });
+
+    if (payment.status !== "SUCCESS") {
+      throw new AppError(400, "Chỉ có thể refund payment đã thành công", "INVALID_PAYMENT");
+    }
+
+    const strategy = PaymentFactory.getStrategy(payment.method);
+    const refundResult = await strategy.initiateRefund({
+      transactionId: payment.transaction_id,
+      amount: payment.amount,
+      reason,
+    });
+
+    await prisma.payment.update({
+      where: { id: paymentId },
+      data: {
+        status: "REFUNDED",
+        payload: { ...payment.payload, refund: refundResult },
+      },
+    });
+
+    await prisma.booking.updateMany({
+      where: { payment_id: paymentId },
+      data: { status: "REFUNDED" },
+    });
+
+    return refundResult;
+  },
 };
 
 module.exports = PaymentService;
