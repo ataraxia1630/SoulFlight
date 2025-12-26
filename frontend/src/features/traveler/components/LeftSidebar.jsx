@@ -2,6 +2,7 @@ import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import BookIcon from "@mui/icons-material/Book";
 import CardTravelIcon from "@mui/icons-material/CardTravel";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import StarsIcon from "@mui/icons-material/Stars";
 import {
   Avatar,
   alpha,
@@ -35,6 +36,11 @@ const LeftSidebar = () => {
       path: "/travel-diary",
       icon: <BookIcon />,
       subtitle: "Lưu giữ kỷ niệm",
+    },
+    {
+      text: "Dịch vụ yêu thích",
+      path: "/love-service",
+      icon: <StarsIcon />,
     },
     {
       text: "Lịch trình của tôi",

@@ -25,28 +25,25 @@ const ServiceCard = ({ data }) => {
 
   const handleWishlistClick = async (e) => {
     e.stopPropagation();
-
     const previousState = isWishlisted;
     setIsWishlisted(!previousState);
-
     try {
       const res = await WishlistService.toggle(data.id);
       const serverData = res.data;
-
       if (serverData && typeof serverData.liked === "boolean") {
         setIsWishlisted(serverData.liked);
-
-        if (serverData.liked) {
-          toast.success(serverData.message);
-        } else {
-          toast.info(serverData.message);
-        }
+        if (serverData.liked) toast.success(serverData.message);
+        else toast.info(serverData.message);
       }
     } catch {
       setIsWishlisted(previousState);
-      const msg = "Có lỗi xảy ra!";
-      toast.error(msg);
+      toast.error("Có lỗi xảy ra!");
     }
+  };
+
+  const getDisplayImage = () => {
+    if (data.image) return data.image;
+    return "https://placehold.co/600x400?text=No+Image";
   };
 
   return (
@@ -54,10 +51,12 @@ const ServiceCard = ({ data }) => {
       onClick={handleClick}
       sx={{
         height: "100%",
+        width: "100%",
         display: "flex",
         flexDirection: "column",
         cursor: "pointer",
         transition: "all 0.3s ease",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
         "&:hover": {
           transform: "translateY(-4px)",
           boxShadow: 6,
@@ -68,9 +67,9 @@ const ServiceCard = ({ data }) => {
         <CardMedia
           component="img"
           height="200"
-          image={data.image || "/placeholder.jpg"}
+          image={getDisplayImage()}
           alt={data.name}
-          sx={{ objectFit: "cover" }}
+          sx={{ objectFit: "cover", bgcolor: "#f5f5f5" }}
         />
 
         <Box
@@ -90,7 +89,9 @@ const ServiceCard = ({ data }) => {
               size="small"
               sx={{
                 bgcolor: "white",
-                fontWeight: 600,
+                fontWeight: 700,
+                fontSize: "0.75rem",
+                boxShadow: 1,
               }}
             />
           )}
@@ -100,10 +101,7 @@ const ServiceCard = ({ data }) => {
             sx={{
               bgcolor: "white",
               boxShadow: 2,
-              "&:hover": {
-                bgcolor: "white",
-                transform: "scale(1.1)",
-              },
+              "&:hover": { bgcolor: "white", transform: "scale(1.1)" },
               transition: "all 0.2s ease",
               p: 0.5,
             }}
@@ -118,33 +116,37 @@ const ServiceCard = ({ data }) => {
         </Box>
       </Box>
 
-      <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column", gap: 1.5 }}>
+      <CardContent sx={{ flexGrow: 1, display: "flex", flexDirection: "column", gap: 1 }}>
         <Typography
           variant="h6"
           sx={{
             fontSize: 18,
-            fontWeight: 600,
+            fontWeight: 700,
             lineHeight: 1.3,
             overflow: "hidden",
             textOverflow: "ellipsis",
             display: "-webkit-box",
             WebkitLineClamp: 2,
             WebkitBoxOrient: "vertical",
+            minHeight: "46px",
           }}
         >
           {data.name}
         </Typography>
 
         {data.location && (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-            <LocationOn sx={{ fontSize: 16, color: "text.secondary" }} />
-            <Typography variant="body2" sx={{ color: "text.secondary", fontSize: 13 }}>
+          <Box sx={{ display: "flex", alignItems: "flex-start", gap: 0.5 }}>
+            <LocationOn sx={{ fontSize: 16, color: "text.secondary", mt: 0.3 }} />
+            <Typography
+              variant="body2"
+              sx={{ color: "text.secondary", fontSize: 13, lineHeight: 1.4 }}
+            >
               {data.location}
             </Typography>
           </Box>
         )}
 
-        {data.rating && (
+        {data.rating > 0 && (
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
             <Star sx={{ fontSize: 18, color: "#FFB800" }} />
             <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -153,8 +155,8 @@ const ServiceCard = ({ data }) => {
           </Box>
         )}
 
-        {data.tags && data.tags.length > 0 && (
-          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: "auto" }}>
+        {data.tags && data.tags.length > 0 ? (
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mb: 1 }}>
             {data.tags.slice(0, 3).map((tag, idx) => (
               <Chip
                 key={tag.id || idx}
@@ -165,27 +167,34 @@ const ServiceCard = ({ data }) => {
                   fontSize: 11,
                   bgcolor: "primary.50",
                   color: "primary.main",
-                  fontWeight: 500,
+                  fontWeight: 600,
                 }}
               />
             ))}
           </Box>
+        ) : (
+          <Box sx={{ mb: 1 }} />
         )}
 
-        {data.price_range && (
-          <Typography
-            variant="body1"
-            sx={{ color: "primary.main", fontWeight: 700, fontSize: 16, mt: 1 }}
-          >
-            {data.price_range}
-          </Typography>
-        )}
+        <Box sx={{ mt: "auto" }}>
+          {data.price_range && (
+            <Typography
+              variant="body1"
+              sx={{ color: "primary.main", fontWeight: 700, fontSize: 16 }}
+            >
+              {data.price_range}
+            </Typography>
+          )}
 
-        {data.provider?.name && (
-          <Typography variant="caption" sx={{ color: "text.secondary", fontSize: 12 }}>
-            by {data.provider.name}
-          </Typography>
-        )}
+          {data.provider?.name && (
+            <Typography
+              variant="caption"
+              sx={{ color: "text.secondary", fontSize: 12, display: "block", mt: 0.5 }}
+            >
+              by {data.provider.name}
+            </Typography>
+          )}
+        </Box>
       </CardContent>
     </Card>
   );

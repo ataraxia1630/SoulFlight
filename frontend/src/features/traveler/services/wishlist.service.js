@@ -1,9 +1,9 @@
-import api from "../../../shared/utils/axiosInstance";
+import api from "@/shared/utils/axiosInstance";
 
 const BASE = "/api/wishlist";
 
 const WishlistService = {
-  getWishList: async () => {
+  getWishlist: async () => {
     const response = await api.get(BASE);
     return response.data;
   },

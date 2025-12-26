@@ -4,6 +4,7 @@ import Booking from "../../features/traveler/pages/Booking/Booking";
 import ItinerariesListPage from "../../features/traveler/pages/Planner/ItinerariesListPage";
 import ItineraryPage from "../../features/traveler/pages/Planner/ItineraryPage";
 import ServiceCart from "../../features/traveler/pages/ServiceCart";
+import Wishlist from "../../features/traveler/pages/Wishlist";
 import { createAuthRoutes } from "./auth.route";
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -18,6 +19,7 @@ const mainRoutes = (
     <Route path="itineraries" element={<ItinerariesListPage />} />
     <Route path="itinerary/:id" element={<ItineraryPage />} />
     <Route path="travel-planner" element={<ItineraryPage />} />
+    <Route path="love-service" element={<Wishlist />} />
   </Route>
 );
 
