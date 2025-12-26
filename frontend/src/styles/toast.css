@@ -1,0 +1,21 @@
+.notistack-MuiContent-success {
+  background-color: #2e7d32;
+}
+
+.notistack-MuiContent-error {
+  background-color: #d32f2f;
+}
+
+.notistack-MuiContent-warning {
+  background-color: #ed6c02;
+}
+
+.notistack-MuiContent-info {
+  background-color: #0288d1;
+}
+
+.notistack-MuiContent {
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}

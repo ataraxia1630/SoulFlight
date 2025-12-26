@@ -1,32 +1,56 @@
 import { Box, Container, useTheme } from "@mui/material";
-import { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+import SearchService from "@/shared/services/search.service";
 import ErrorState from "../components/explore/ErrorState";
 import ExploreHeader from "../components/explore/Header";
 import Results from "../components/explore/Results";
 import LoadingState from "../components/LoadingState";
-import { mockExploreResults } from "./mockdata";
 
 export default function ExplorePage() {
   const theme = useTheme();
-  const { state } = useLocation();
+  const [searchParamsUrl] = useSearchParams();
 
-  const results = state?.results || mockExploreResults;
-  const searchParams = state?.searchParams || {};
+  const [servicesData, setServicesData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const servicesData = results?.services || [];
+  const filterParams = {
+    location: searchParamsUrl.get("location") || "",
+    priceMin: searchParamsUrl.get("priceMin") || 0,
+    priceMax: searchParamsUrl.get("priceMax") || "",
+    guests: searchParamsUrl.get("guests") || "1",
+  };
 
-  const [loading] = useState(false);
-  const [error] = useState(null);
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        setLoading(true);
+        const res = await SearchService.searchAll({
+          keyword: " ",
+        });
+        console.log(res);
+        const data = res.services || [];
+        setServicesData(data);
+      } catch (err) {
+        console.error(err);
+        setError("Không thể tải danh sách dịch vụ. Vui lòng thử lại.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchServices();
+  }, []);
 
   return (
     <Box sx={{ minHeight: "100vh" }}>
       <Container>
         <ExploreHeader
-          location={searchParams.location || ""}
-          priceMin={searchParams.priceMin || 0}
-          priceMax={searchParams.priceMax || ""}
-          guests={searchParams.guests || "1"}
+          location={filterParams.location}
+          priceMin={filterParams.priceMin}
+          priceMax={filterParams.priceMax}
+          guests={filterParams.guests}
           totalResults={servicesData.length}
           theme={theme}
         />

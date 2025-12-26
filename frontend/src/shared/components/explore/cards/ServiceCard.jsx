@@ -1,20 +1,52 @@
 import { Favorite, FavoriteBorder, LocationOn, Star } from "@mui/icons-material";
 import { Box, Card, CardContent, CardMedia, Chip, IconButton, Typography } from "@mui/material";
-import { useState } from "react";
+import WishlistService from "@traveler/services/wishlist.service";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "@/shared/utils/toast";
 
 const ServiceCard = ({ data }) => {
   const navigate = useNavigate();
   const [isWishlisted, setIsWishlisted] = useState(false);
 
+  useEffect(() => {
+    if (data.is_wishlisted !== undefined) {
+      setIsWishlisted(data.is_wishlisted);
+    } else if (data.Wishlists && data.Wishlists.length > 0) {
+      setIsWishlisted(true);
+    } else {
+      setIsWishlisted(false);
+    }
+  }, [data.is_wishlisted, data.Wishlists]);
+
   const handleClick = () => {
     navigate(`/services/${data.id}`);
   };
 
-  const handleWishlistClick = (e) => {
+  const handleWishlistClick = async (e) => {
     e.stopPropagation();
-    setIsWishlisted(!isWishlisted);
-    //Add API call to save wishlist state
+
+    const previousState = isWishlisted;
+    setIsWishlisted(!previousState);
+
+    try {
+      const res = await WishlistService.toggle(data.id);
+      const serverData = res.data;
+
+      if (serverData && typeof serverData.liked === "boolean") {
+        setIsWishlisted(serverData.liked);
+
+        if (serverData.liked) {
+          toast.success(serverData.message);
+        } else {
+          toast.info(serverData.message);
+        }
+      }
+    } catch {
+      setIsWishlisted(previousState);
+      const msg = "Có lỗi xảy ra!";
+      toast.error(msg);
+    }
   };
 
   return (
@@ -54,7 +86,7 @@ const ServiceCard = ({ data }) => {
         >
           {data.type && (
             <Chip
-              label={data.type}
+              label={typeof data.type === "object" ? data.type.name : data.type}
               size="small"
               sx={{
                 bgcolor: "white",
@@ -143,12 +175,7 @@ const ServiceCard = ({ data }) => {
         {data.price_range && (
           <Typography
             variant="body1"
-            sx={{
-              color: "primary.main",
-              fontWeight: 700,
-              fontSize: 16,
-              mt: 1,
-            }}
+            sx={{ color: "primary.main", fontWeight: 700, fontSize: 16, mt: 1 }}
           >
             {data.price_range}
           </Typography>
