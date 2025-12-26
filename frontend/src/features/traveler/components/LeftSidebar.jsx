@@ -19,6 +19,9 @@ import { useId } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/app/store";
 
+const LEFT_SIDEBAR_WIDTH = 280;
+const HEADER_HEIGHT = 72;
+
 const LeftSidebar = () => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -49,14 +52,13 @@ const LeftSidebar = () => {
   return (
     <Box
       sx={{
-        width: 280,
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        bgcolor: "background.paper",
+        position: "fixed",
+        top: HEADER_HEIGHT,
+        width: LEFT_SIDEBAR_WIDTH,
+        height: `calc(100vh - ${HEADER_HEIGHT}px)`,
       }}
     >
-      <Box sx={{ pr: 3.7 }}>
+      <Box sx={{ pr: 3.7, pt: 2 }}>
         <Box
           onClick={() => navigate("/profile")}
           sx={{
