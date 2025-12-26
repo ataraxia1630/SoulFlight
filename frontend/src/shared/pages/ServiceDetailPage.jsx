@@ -1,8 +1,32 @@
-import { ArrowBack, Favorite, FavoriteBorder, Share } from "@mui/icons-material";
-import { Box, Button, Container, Grid, IconButton } from "@mui/material";
+import {
+  ArrowBack,
+  CalendarMonth,
+  East,
+  Favorite,
+  FavoriteBorder,
+  Share,
+} from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Container,
+  Grid,
+  IconButton,
+  Paper,
+  Stack,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import { format } from "date-fns";
+import { vi as viLocale } from "date-fns/locale";
 import { useCallback, useEffect, useState } from "react";
+import { DateRangePicker } from "react-date-range";
 import { useParams } from "react-router-dom";
 import { useAuthStore } from "@/app/store";
+import "react-date-range/dist/styles.css";
+import "react-date-range/dist/theme/default.css";
+
 import LoadingState from "../components/LoadingState.jsx";
 import EmptyState from "../components/service-detail/EmptyState";
 import ProviderCard from "../components/service-detail/ProviderCard";
@@ -18,6 +42,8 @@ import TourService from "../services/tour.service.js";
 const ServiceDetailPage = () => {
   const { id } = useParams();
   const { user } = useAuthStore();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [service, setService] = useState(null);
   const [rooms, setRooms] = useState([]);
@@ -28,6 +54,14 @@ const ServiceDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
 
+  const [dateRange, setDateRange] = useState([
+    {
+      startDate: new Date(),
+      endDate: new Date(new Date().setDate(new Date().getDate() + 1)),
+      key: "selection",
+    },
+  ]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -35,13 +69,11 @@ const ServiceDetailPage = () => {
   const fetchAllData = useCallback(async () => {
     try {
       setLoading(true);
-
       const serviceRes = await ServiceService.getById(id);
       const serviceData = serviceRes.data;
       setService(serviceData);
 
       const typeName = serviceData.type?.name;
-
       const reviewsPromise = ReviewService.getByService(id);
 
       let roomsPromise = Promise.resolve({ data: [] });
@@ -53,15 +85,12 @@ const ServiceDetailPage = () => {
         case "stay":
           roomsPromise = RoomService.getByService(id);
           break;
-
         case "fnb":
           menusPromise = MenuService.getByService(id);
           break;
-
         case "tour":
           toursPromise = TourService.getByService(id);
           break;
-
         case "leisure":
           ticketsPromise = TicketService.getByService(id);
           break;
@@ -97,13 +126,10 @@ const ServiceDetailPage = () => {
     }
   };
 
-  if (loading) {
-    return <LoadingState />;
-  }
+  if (loading) return <LoadingState />;
+  if (!service) return <EmptyState message="Không tìm thấy dịch vụ" />;
 
-  if (!service) {
-    return <EmptyState message="Không tìm thấy dịch vụ" />;
-  }
+  const typeName = service.type?.name;
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh", py: 1 }}>
@@ -138,13 +164,293 @@ const ServiceDetailPage = () => {
         <Grid>
           <Grid>
             <ServiceHeader service={service} reviews={reviews} />
+
+            {["stay", "tour", "leisure"].includes(typeName) && (
+              <Paper
+                elevation={0}
+                sx={{
+                  my: 3,
+                  borderRadius: "5px",
+                  border: "1px solid",
+                  borderColor: "divider",
+                  bgcolor: "white",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.04)",
+                  transition: "box-shadow 0.25s ease",
+                }}
+              >
+                <Box
+                  sx={{
+                    p: 3,
+                    borderBottom: "1px solid",
+                    borderColor: "grey.300",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flexWrap: "wrap",
+                    gap: 2,
+                  }}
+                >
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    <CalendarMonth color="primary" sx={{ fontSize: 30 }} />
+                    <Box>
+                      <Typography variant="subtitle1" fontWeight={800}>
+                        Lịch trình dự kiến
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        Chọn ngày bạn dự kiến đi
+                      </Typography>
+                    </Box>
+                  </Box>
+
+                  <Stack
+                    direction="row"
+                    spacing={3}
+                    alignItems="center"
+                    sx={{
+                      bgcolor: "primary.main",
+                      p: "16px 24px",
+                      borderRadius: "12px",
+                      color: "white",
+                    }}
+                  >
+                    <Box sx={{ textAlign: "center" }}>
+                      <Typography
+                        variant="caption"
+                        sx={{ opacity: 0.8, display: "block", mb: 0.5, fontWeight: 700 }}
+                      >
+                        NGÀY ĐI
+                      </Typography>
+                      <Typography variant="body1" fontWeight={800}>
+                        {format(dateRange[0].startDate, "dd/MM/yyyy")}
+                      </Typography>
+                    </Box>
+                    <East sx={{ opacity: 0.8 }} />
+                    <Box sx={{ textAlign: "center" }}>
+                      <Typography
+                        variant="caption"
+                        sx={{ opacity: 0.8, display: "block", mb: 0.5, fontWeight: 700 }}
+                      >
+                        NGÀY VỀ
+                      </Typography>
+                      <Typography variant="body1" fontWeight={800}>
+                        {format(dateRange[0].endDate, "dd/MM/yyyy")}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </Box>
+
+                <Box
+                  sx={{
+                    p: 2,
+                    display: "flex",
+                    justifyContent: "center",
+                    backgroundColor: "#fff",
+                    borderRadius: "12px",
+
+                    // ẩn UI thừa & ngày của tháng khác
+                    "& .rdrDefinedRangesWrapper": { display: "none" },
+                    "& .rdrDateDisplayWrapper": { display: "none" },
+                    "& .rdrDayPassive": {
+                      visibility: "hidden",
+                      pointerEvents: "none",
+                    },
+
+                    // tổng thể Calendar
+                    "& .rdrCalendarWrapper": {
+                      color: "text.primary",
+                      fontFamily: "inherit",
+                      width: "100%",
+                    },
+
+                    // month & year Selects
+                    "& .rdrMonthAndYearWrapper": {
+                      padding: "20px 0",
+                      height: "auto",
+                      alignItems: "center",
+                      paddingTop: 0,
+                    },
+                    "& .rdrMonthAndYearPickers": {
+                      fontWeight: 600,
+                      gap: "12px",
+                      "& select": {
+                        appearance: "none",
+                        backgroundColor: "#f5f5f5",
+                        padding: "10px 36px 10px 16px",
+                        borderRadius: "12px",
+                        border: "2px solid transparent",
+                        cursor: "pointer",
+                        fontSize: "15px",
+                        fontWeight: 600,
+                        transition: "all 0.2s ease",
+                        color: "text.primary",
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "right 12px center",
+                        backgroundSize: "12px",
+                        minWidth: "80px",
+                        textAlign: "left",
+
+                        "&:hover": {
+                          backgroundColor: "#ebebeb",
+                          borderColor: "primary.light",
+                        },
+                        "&:focus": {
+                          outline: "none",
+                          backgroundColor: "#fff",
+                          borderColor: "primary.main",
+                          boxShadow: "0 0 0 3px rgba(25, 118, 210, 0.1)",
+                        },
+                      },
+
+                      // custom scrollbar
+                      "& select::-webkit-scrollbar": {
+                        width: "8px",
+                      },
+                      "& select::-webkit-scrollbar-track": {
+                        background: "#f1f1f1",
+                        borderRadius: "10px",
+                      },
+                      "& select::-webkit-scrollbar-thumb": {
+                        background: "#c1c1c1",
+                        borderRadius: "10px",
+                        "&:hover": {
+                          background: "#a8a8a8",
+                        },
+                      },
+                    },
+
+                    // nút qua lại
+                    "& .rdrNextPrevButton": {
+                      background: "#f5f5f5",
+                      borderRadius: "12px",
+                      width: "44px",
+                      height: "44px",
+                      margin: "0 8px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      transition: "all 0.2s ease",
+                      "&:hover": {
+                        background: "#e3e3e3",
+                        transform: "scale(1.05)",
+                      },
+                      "& i": {
+                        margin: "5px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      },
+                    },
+
+                    // Thứ trong tuần
+                    "& .rdrWeekDay": {
+                      color: "grey.600",
+                      fontWeight: 600,
+                      fontSize: "0.8rem",
+                      paddingBottom: "12px",
+                    },
+
+                    // Ô ngày
+                    "& .rdrDay": {
+                      height: "47px",
+                    },
+
+                    "& .rdrDayNumber": {
+                      top: "5px",
+                      bottom: "5px",
+                      left: "5px",
+                      right: "5px",
+                      fontWeight: 500,
+                      fontSize: "14px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    },
+
+                    // Các ngày trong range
+                    "& .rdrInRange, & .rdrStartEdge, & .rdrEndEdge": {
+                      top: "5px !important",
+                      bottom: "5px !important",
+                      left: "5px !important",
+                      right: "5px !important",
+                      borderRadius: "100% !important",
+                      border: "none !important",
+                    },
+
+                    "& .rdrInRange": {
+                      background: (theme) => theme.palette.primary.main,
+                      opacity: "0.6 !important",
+                    },
+
+                    "& .rdrStartEdge, & .rdrEndEdge": {
+                      background: (theme) => theme.palette.primary.main,
+                      opacity: "1 !important",
+                    },
+
+                    // Ngày đã qua
+                    "& .rdrDayDisabled": {
+                      backgroundColor: "transparent",
+                      "& .rdrDayNumber span": {
+                        color: "grey.300 !important",
+                        opacity: 0.5,
+                      },
+                    },
+
+                    // Hover ngày
+                    "& .rdrDayHoverPreview": {
+                      borderRadius: "100% !important",
+                      top: "5px !important",
+                      bottom: "5px !important",
+                      left: "5px !important",
+                      right: "5px !important",
+                      border: "2px solid",
+                      borderColor: "primary.light",
+                      background: "rgba(25, 118, 210, 0.05)",
+                      boxSizing: "border-box",
+                    },
+
+                    // Text cho ngày được chọn
+                    "& .rdrStartEdge ~ .rdrDayNumber span, & .rdrEndEdge ~ .rdrDayNumber span": {
+                      color: "#fff !important",
+                      fontWeight: 600,
+                    },
+
+                    "& .rdrInRange ~ .rdrDayNumber span": {
+                      color: "primary.main !important",
+                      fontWeight: 600,
+                    },
+
+                    "& .rdrDayToday .rdrDayNumber span::after": {
+                      display: "none",
+                    },
+                  }}
+                >
+                  <DateRangePicker
+                    onChange={(item) => setDateRange([item.selection])}
+                    showSelectionPreview={true}
+                    moveRangeOnFirstSelection={false}
+                    months={isMobile ? 1 : 2}
+                    ranges={dateRange}
+                    direction="horizontal"
+                    locale={viLocale}
+                    rangeColors={[theme.palette.primary.main]}
+                    minDate={new Date()}
+                    staticRanges={[]}
+                    inputRanges={[]}
+                    preventSnapToSelection={true}
+                  />
+                </Box>
+              </Paper>
+            )}
+
             <ServiceTabs
               rooms={rooms}
               menus={menus}
               tours={tours}
               tickets={tickets}
               reviews={reviews}
+              bookingDates={dateRange[0]}
             />
+
             <Box sx={{ mt: 3 }}>
               <ProviderCard provider={service.provider} />
             </Box>
