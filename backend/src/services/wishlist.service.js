@@ -55,6 +55,33 @@ const WishlistService = {
             Tags: {
               include: { Tag: true },
             },
+            Rooms: {
+              take: 1,
+              select: { id: true },
+            },
+            Tours: {
+              take: 1,
+              include: {
+                TourPlace: {
+                  take: 1,
+                  select: { place_id: true },
+                },
+              },
+            },
+            Menus: {
+              take: 1,
+              select: {
+                cover_url: true,
+                MenuItems: {
+                  take: 1,
+                  select: { image_url: true },
+                },
+              },
+            },
+            Tickets: {
+              take: 1,
+              select: { place_id: true },
+            },
           },
         },
       },
