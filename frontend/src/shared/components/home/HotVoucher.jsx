@@ -1,4 +1,5 @@
 import { Box, Container, Grid } from "@mui/material";
+import { useEffect, useState } from "react";
 import useCarouselPagination from "@/shared/hooks/useCarouselPagination";
 import CarouselDots from "../CarouselDots";
 import InfoCard from "./cards/InfoCard";
@@ -38,6 +39,29 @@ const HotVouchers = () => {
     gap,
   });
 
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    if (isPaused) return;
+
+    const interval = setInterval(() => {
+      const container = scrollContainerRef.current;
+      if (!container) return;
+
+      const step = cardWidth + gap * 8;
+
+      const isAtEnd = container.scrollLeft + container.clientWidth >= container.scrollWidth - 10;
+
+      if (isAtEnd) {
+        container.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        container.scrollBy({ left: step, behavior: "smooth" });
+      }
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [isPaused, scrollContainerRef]);
+
   return (
     <Container sx={{ py: 0.5 }}>
       <Grid container spacing={4}>
@@ -59,6 +83,8 @@ const HotVouchers = () => {
               width: "100%",
               gap: 1.7,
             }}
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
           >
             <Box
               ref={scrollContainerRef}
