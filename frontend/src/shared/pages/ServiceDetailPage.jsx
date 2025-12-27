@@ -66,55 +66,60 @@ const ServiceDetailPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const fetchAllData = useCallback(async () => {
-    try {
-      setLoading(true);
-      const serviceRes = await ServiceService.getById(id);
-      const serviceData = serviceRes.data;
-      setService(serviceData);
+  const fetchAllData = useCallback(
+    async (isRefresh = false) => {
+      try {
+        if (!isRefresh) {
+          setLoading(true);
+        }
+        const serviceRes = await ServiceService.getById(id);
+        const serviceData = serviceRes.data;
+        setService(serviceData);
 
-      const typeName = serviceData.type?.name;
-      const reviewsPromise = ReviewService.getByService(id);
+        const typeName = serviceData.type?.name;
+        const reviewsPromise = ReviewService.getByService(id);
 
-      let roomsPromise = Promise.resolve({ data: [] });
-      let menusPromise = Promise.resolve({ data: [] });
-      let toursPromise = Promise.resolve({ data: [] });
-      let ticketsPromise = Promise.resolve({ data: [] });
+        let roomsPromise = Promise.resolve({ data: [] });
+        let menusPromise = Promise.resolve({ data: [] });
+        let toursPromise = Promise.resolve({ data: [] });
+        let ticketsPromise = Promise.resolve({ data: [] });
 
-      switch (typeName) {
-        case "stay":
-          roomsPromise = RoomService.getByService(id);
-          break;
-        case "fnb":
-          menusPromise = MenuService.getByService(id);
-          break;
-        case "tour":
-          toursPromise = TourService.getByService(id);
-          break;
-        case "leisure":
-          ticketsPromise = TicketService.getByService(id);
-          break;
+        switch (typeName) {
+          case "stay":
+            roomsPromise = RoomService.getByService(id);
+            break;
+          case "fnb":
+            menusPromise = MenuService.getByService(id);
+            break;
+          case "tour":
+            toursPromise = TourService.getByService(id);
+            break;
+          case "leisure":
+            ticketsPromise = TicketService.getByService(id);
+            break;
+        }
+
+        const [reviewsRes, roomsRes, menusRes, toursRes, ticketsRes] = await Promise.all([
+          reviewsPromise,
+          roomsPromise,
+          menusPromise,
+          toursPromise,
+          ticketsPromise,
+        ]);
+
+        setReviews(reviewsRes.data || []);
+        setRooms(roomsRes.data || []);
+        setMenus(menusRes.data || []);
+        setTours(toursRes.data || []);
+        setTickets(ticketsRes.data || []);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
       }
-
-      const [reviewsRes, roomsRes, menusRes, toursRes, ticketsRes] = await Promise.all([
-        reviewsPromise,
-        roomsPromise,
-        menusPromise,
-        toursPromise,
-        ticketsPromise,
-      ]);
-
-      setReviews(reviewsRes.data || []);
-      setRooms(roomsRes.data || []);
-      setMenus(menusRes.data || []);
-      setTours(toursRes.data || []);
-      setTickets(ticketsRes.data || []);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
+    },
+    [id],
+  );
 
   useEffect(() => {
     fetchAllData();
@@ -443,12 +448,14 @@ const ServiceDetailPage = () => {
             )}
 
             <ServiceTabs
+              serviceId={id}
               rooms={rooms}
               menus={menus}
               tours={tours}
               tickets={tickets}
               reviews={reviews}
               bookingDates={dateRange[0]}
+              onRefresh={() => fetchAllData(true)}
             />
 
             <Box sx={{ mt: 3 }}>

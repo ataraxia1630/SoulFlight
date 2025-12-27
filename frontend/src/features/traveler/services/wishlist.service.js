@@ -8,8 +8,8 @@ const WishlistService = {
     return response.data;
   },
 
-  toggle: async (service_id) => {
-    const response = await api.post(`${BASE}/toggle`, { service_id });
+  toggle: async (serviceId) => {
+    const response = await api.post(`${BASE}/toggle`, { serviceId });
     return response.data;
   },
 };
