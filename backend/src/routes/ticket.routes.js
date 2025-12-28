@@ -3,6 +3,9 @@ const router = express.Router();
 const TicketController = require("../controllers/ticket.controller");
 const validate = require("../middlewares/validate.middleware");
 const { createTicketSchema, updateTicketSchema } = require("../validators/ticket.validator");
+const authorize = require("../middlewares/auth.middleware");
+
+router.use(authorize);
 
 router.get("/", TicketController.getAll);
 router.post("/", validate(createTicketSchema), TicketController.create);

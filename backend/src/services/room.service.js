@@ -8,16 +8,21 @@ const { generateAvailable } = require("../utils/generateAvailable");
 const { attachImages, attachImagesList } = require("../utils/attachImage");
 const { uploadImages, updateImageList } = require("../utils/imageHandler");
 
-const roomInclude = {
+const roomInclude = (travelerId) => ({
   facilities: { include: { facility: true } },
   service: {
     include: {
       Provider: {
         include: { user: true },
       },
+      Wishlists: travelerId
+        ? {
+            where: { traveler_id: parseInt(travelerId, 10) },
+          }
+        : false,
     },
   },
-};
+});
 
 const RoomService = {
   create: async (data, files = []) => {
@@ -35,7 +40,7 @@ const RoomService = {
             })),
           },
         },
-        include: roomInclude,
+        include: roomInclude(null),
       });
 
       await generateAvailable(
@@ -65,9 +70,9 @@ const RoomService = {
     return RoomDTO.fromModel(roomWithImages);
   },
 
-  getAll: async () => {
+  getAll: async (travelerId) => {
     const rooms = await prisma.room.findMany({
-      include: roomInclude,
+      include: roomInclude(travelerId),
       orderBy: { id: "asc" },
     });
 
@@ -79,11 +84,11 @@ const RoomService = {
     return RoomDTO.fromList(roomsWithImages);
   },
 
-  getOne: async (id) => {
+  getOne: async (id, travelerId) => {
     const roomId = parseInt(id, 10);
     const room = await prisma.room.findUnique({
       where: { id: roomId },
-      include: roomInclude,
+      include: roomInclude(travelerId),
     });
 
     if (!room) {
@@ -159,7 +164,7 @@ const RoomService = {
 
     const fullRoom = await prisma.room.findUnique({
       where: { id: roomId },
-      include: roomInclude,
+      include: roomInclude(null),
     });
 
     const roomWithImages = await attachImages({
@@ -199,10 +204,10 @@ const RoomService = {
     return null;
   },
 
-  checkAvailability: async (roomId, checkIn, checkOut, quantity = 1) => {
+  checkAvailability: async (roomId, travelerId, checkIn, checkOut, quantity = 1) => {
     const room = await prisma.room.findUnique({
       where: { id: parseInt(roomId, 10) },
-      include: roomInclude,
+      include: roomInclude(travelerId),
     });
 
     if (!room) {
@@ -251,11 +256,11 @@ const RoomService = {
     });
   },
 
-  getAvailable: async (serviceId, checkIn, checkOut, adults = 1, children = 0) => {
+  getAvailable: async (serviceId, travelerId, checkIn, checkOut, adults = 1, children = 0) => {
     const service_id = parseInt(serviceId, 10);
     const rooms = await prisma.room.findMany({
       where: { service_id },
-      include: roomInclude,
+      include: roomInclude(travelerId),
       orderBy: { price_per_night: "asc" },
     });
 
@@ -276,22 +281,22 @@ const RoomService = {
     return results;
   },
 
-  getByService: async (serviceId) => {
+  getByService: async (serviceId, travelerId) => {
     const service_id = parseInt(serviceId, 10);
     const rooms = await prisma.room.findMany({
       where: { service_id },
-      include: roomInclude,
+      include: roomInclude(travelerId),
       orderBy: { price_per_night: "asc" },
     });
     const roomsWithImages = await attachImagesList({ entities: rooms, type: "Room" });
     return RoomDTO.fromList(roomsWithImages);
   },
 
-  getByProvider: async (providerId) => {
+  getByProvider: async (providerId, travelerId) => {
     const provider_id = parseInt(providerId, 10);
     const rooms = await prisma.room.findMany({
       where: { service: { provider_id: provider_id } },
-      include: roomInclude,
+      include: roomInclude(travelerId),
       orderBy: { updated_at: "desc" },
     });
     const roomsWithImages = await attachImagesList({ entities: rooms, type: "Room" });

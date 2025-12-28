@@ -19,6 +19,7 @@ class TourDTO {
     this.service_id = tour.service_id;
     this.service_name = tour.Service?.name || null;
     this.provider_name = tour.Service?.Provider?.user?.name || null;
+    this.is_wishlisted = tour.Service?.Wishlists?.length > 0 || false;
 
     this.tourguide = tour.TourGuide
       ? {

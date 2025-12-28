@@ -20,6 +20,7 @@ class RoomDTO {
     this.service_name = room.service?.name || null;
 
     this.provider_name = room.service?.Provider?.user?.name || null;
+    this.is_wishlisted = room.service?.Wishlists?.length > 0 || false;
 
     this.facilities = room.facilities.map((rf) => FacilityDTO.fromModel(rf.facility));
 

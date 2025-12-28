@@ -17,6 +17,7 @@ class MenuDTO {
     this.service_name = menu.Service?.name || null;
 
     this.provider_name = menu.Service?.Provider?.user?.name || null;
+    this.is_wishlisted = menu.Service?.Wishlists?.length > 0 || false;
 
     // Menu_item
     this.items = (menu.MenuItems || []).map((item) => ({

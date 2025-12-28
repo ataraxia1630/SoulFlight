@@ -4,7 +4,7 @@ const CloudinaryService = require("../services/cloudinary.service");
 const { ERROR_CODES } = require("../constants/errorCode");
 const { MenuDTO } = require("../dtos/menu.dto");
 
-const menuInclude = {
+const menuInclude = (travelerId) => ({
   Service: {
     include: {
       Provider: {
@@ -12,24 +12,29 @@ const menuInclude = {
           user: true,
         },
       },
+      Wishlists: travelerId
+        ? {
+            where: { traveler_id: parseInt(travelerId, 10) },
+          }
+        : false,
     },
   },
   MenuItems: true,
-};
+});
 
 const MenuService = {
-  getAll: async () => {
+  getAll: async (travelerId) => {
     const menus = await prisma.menu.findMany({
-      include: menuInclude,
+      include: menuInclude(travelerId),
       orderBy: { updated_at: "desc" },
     });
     return MenuDTO.fromList(menus);
   },
 
-  getById: async (id) => {
+  getById: async (id, travelerId) => {
     const menu = await prisma.menu.findUnique({
       where: { id: parseInt(id, 10) },
-      include: menuInclude,
+      include: menuInclude(travelerId),
     });
     if (!menu) {
       return new AppError(
@@ -41,18 +46,20 @@ const MenuService = {
     return MenuDTO.fromModel(menu);
   },
 
-  getByService: async (serviceId) => {
+  getByService: async (serviceId, travelerId) => {
     const menus = await prisma.menu.findMany({
       where: { service_id: parseInt(serviceId, 10) },
-      include: menuInclude,
+      include: menuInclude(travelerId),
+      orderBy: { updated_at: "desc" },
     });
     return MenuDTO.fromList(menus);
   },
 
-  getByProvider: async (providerId) => {
+  getByProvider: async (providerId, travelerId) => {
     const menus = await prisma.menu.findMany({
       where: { Service: { provider_id: parseInt(providerId, 10) } },
-      include: menuInclude,
+      include: menuInclude(travelerId),
+      orderBy: { updated_at: "desc" },
     });
     return MenuDTO.fromList(menus);
   },
@@ -72,7 +79,7 @@ const MenuService = {
         service_id: parseInt(data.service_id, 10),
         cover_url: coverPublicId,
       },
-      include: menuInclude,
+      include: menuInclude(null),
     });
 
     return MenuDTO.fromModel(menu);
@@ -110,7 +117,7 @@ const MenuService = {
         ...data,
         cover_url: coverPublicId,
       },
-      include: menuInclude,
+      include: menuInclude(null),
     });
 
     return MenuDTO.fromModel(updated);

@@ -4,6 +4,9 @@ const upload = require("../middlewares/multer.middleware");
 const validate = require("../middlewares/validate.middleware");
 const { createRoomSchema, updateRoomSchema } = require("../validators/room.validator");
 const RoomController = require("../controllers/room.controller");
+const authorize = require("../middlewares/auth.middleware");
+
+router.use(authorize);
 
 router
   .route("/")

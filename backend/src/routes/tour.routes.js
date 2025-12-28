@@ -1,9 +1,11 @@
 const { Router } = require("express");
 const { TourController } = require("../controllers/tour.controller");
 const { createSchema, updateSchema } = require("../validators/tour.validator");
-const validate = require("../middlewares/validate.middleware");
-
 const router = Router();
+const validate = require("../middlewares/validate.middleware");
+const authorize = require("../middlewares/auth.middleware");
+
+router.use(authorize);
 
 router.get("/", TourController.getAll);
 router.get("/me", TourController.getMine);

@@ -13,7 +13,7 @@ import RoomsList from "./tabs/RoomList";
 import TicketsList from "./tabs/TicketList";
 import ToursList from "./tabs/TourList";
 
-const ServiceTabs = ({ rooms, menus, tours, tickets, reviews }) => {
+const ServiceTabs = ({ rooms, menus, tours, tickets, reviews, serviceId, onRefresh }) => {
   const [tabValue, setTabValue] = useState(0);
 
   const hasRooms = rooms.length > 0;
@@ -65,7 +65,16 @@ const ServiceTabs = ({ rooms, menus, tours, tickets, reviews }) => {
         {tabs[tabValue] === "menus" && <MenusList menus={menus} />}
         {tabs[tabValue] === "tours" && <ToursList tours={tours} />}
         {tabs[tabValue] === "tickets" && <TicketsList tickets={tickets} />}
-        {tabs[tabValue] === "reviews" && <ReviewsList reviews={reviews} />}
+        {tabs[tabValue] === "reviews" && (
+          <ReviewsList
+            serviceId={serviceId}
+            rooms={rooms}
+            menus={menus}
+            tours={tours}
+            tickets={tickets}
+            onRefresh={onRefresh}
+          />
+        )}
       </Box>
     </Card>
   );
