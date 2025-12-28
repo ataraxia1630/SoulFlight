@@ -4,16 +4,21 @@ const { TicketDTO } = require("../dtos/ticket.dto");
 const { ERROR_CODES } = require("../constants/errorCode");
 const { attachImagesList } = require("../utils/attachImage");
 
-const commonInclude = {
+const commonInclude = (travelerId) => ({
   Service: {
     include: {
       Provider: {
         include: { user: true },
       },
+      Wishlists: travelerId
+        ? {
+            where: { traveler_id: parseInt(travelerId, 10) },
+          }
+        : false,
     },
   },
   Place: true,
-};
+});
 
 const attachPlaceImages = async (tickets) => {
   if (!tickets || tickets.length === 0) return tickets;
@@ -36,9 +41,9 @@ const attachPlaceImages = async (tickets) => {
 };
 
 const TicketService = {
-  getAll: async () => {
+  getAll: async (travelerId) => {
     const tickets = await prisma.ticket.findMany({
-      include: commonInclude,
+      include: commonInclude(travelerId),
       orderBy: { updated_at: "desc" },
     });
 
@@ -46,10 +51,10 @@ const TicketService = {
     return TicketDTO.fromList(tickets);
   },
 
-  getById: async (id) => {
+  getById: async (id, travelerId) => {
     const ticket = await prisma.ticket.findUnique({
       where: { id: parseInt(id, 10) },
-      include: commonInclude,
+      include: commonInclude(travelerId),
     });
 
     if (!ticket) {
@@ -64,22 +69,22 @@ const TicketService = {
     return TicketDTO.fromModel(ticket);
   },
 
-  getByService: async (serviceId) => {
+  getByService: async (serviceId, travelerId) => {
     const tickets = await prisma.ticket.findMany({
       where: { service_id: parseInt(serviceId, 10) },
-      include: commonInclude,
+      include: commonInclude(travelerId),
     });
 
     await attachPlaceImages(tickets);
     return TicketDTO.fromList(tickets);
   },
 
-  getByProvider: async (providerId) => {
+  getByProvider: async (providerId, travelerId) => {
     const tickets = await prisma.ticket.findMany({
       where: {
         Service: { provider_id: parseInt(providerId, 10) },
       },
-      include: commonInclude,
+      include: commonInclude(travelerId),
     });
 
     await attachPlaceImages(tickets);
@@ -96,7 +101,7 @@ const TicketService = {
         price: parseFloat(data.price),
         status: data.status || "AVAILABLE",
       },
-      include: commonInclude,
+      include: commonInclude(null),
     });
 
     return TicketService.getById(ticket.id);
@@ -149,8 +154,8 @@ const TicketService = {
     });
   },
 
-  checkAvailability: async (ticketId, visitDate, quantity = 1) => {
-    const ticket = await TicketService.getById(ticketId);
+  checkAvailability: async (ticketId, travelerId, visitDate, quantity = 1) => {
+    const ticket = await TicketService.getById(ticketId, travelerId);
 
     if (!visitDate) {
       throw new AppError(
@@ -174,14 +179,14 @@ const TicketService = {
     if (!availability) {
       return {
         available: false,
-        reason: "Ticket not available on this date",
+        reason: "Vé không có vào ngày này",
       };
     }
 
     if (availability.max_count !== null && quantity > availability.max_count) {
       return {
         available: false,
-        reason: "Exceed maximum ticket quantity",
+        reason: "Không đủ vé",
       };
     }
 
@@ -193,19 +198,24 @@ const TicketService = {
     };
   },
 
-  getAvailable: async (serviceId, visitDate, quantity = 1) => {
+  getAvailable: async (serviceId, travelerId, visitDate, quantity = 1) => {
     const tickets = await prisma.ticket.findMany({
       where: {
         service_id: parseInt(serviceId, 10),
         status: "AVAILABLE",
       },
-      include: commonInclude,
+      include: commonInclude(travelerId),
     });
 
     const results = [];
 
     for (const ticket of tickets) {
-      const check = await TicketService.checkAvailability(ticket.id, visitDate, quantity);
+      const check = await TicketService.checkAvailability(
+        ticket.id,
+        travelerId,
+        visitDate,
+        quantity,
+      );
 
       if (check.available) {
         results.push({ ticket });

@@ -5,12 +5,17 @@ const { TourDTO } = require("../dtos/tour.dto");
 const { attachImagesList } = require("../utils/attachImage");
 
 // lấy ảnh từ place
-const commonInclude = {
+const commonInclude = (travelerId) => ({
   Service: {
     include: {
       Provider: {
         include: { user: true },
       },
+      Wishlists: travelerId
+        ? {
+            where: { traveler_id: parseInt(travelerId, 10) },
+          }
+        : false,
     },
   },
   TourGuide: true,
@@ -19,7 +24,7 @@ const commonInclude = {
       Place: true,
     },
   },
-};
+});
 
 const attachPlaceImages = async (tours) => {
   if (!tours || tours.length === 0) return tours;
@@ -56,9 +61,9 @@ const autoUpdateTourStatus = async (tour) => {
 };
 
 const TourService = {
-  getAll: async () => {
+  getAll: async (travelerId) => {
     const tours = await prisma.tour.findMany({
-      include: commonInclude,
+      include: commonInclude(travelerId),
       orderBy: { created_at: "desc" },
     });
 
@@ -82,11 +87,11 @@ const TourService = {
     return TourDTO.fromList(tours);
   },
 
-  getById: async (id) => {
+  getById: async (id, travelerId) => {
     const tourId = parseInt(id, 10);
     const tour = await prisma.tour.findUnique({
       where: { id: tourId },
-      include: commonInclude,
+      include: commonInclude(travelerId),
     });
     if (!tour) {
       throw new AppError(
@@ -101,10 +106,10 @@ const TourService = {
     return TourDTO.fromModel(tour);
   },
 
-  getByService: async (serviceId) => {
+  getByService: async (serviceId, travelerId) => {
     const tours = await prisma.tour.findMany({
       where: { service_id: parseInt(serviceId, 10) },
-      include: commonInclude,
+      include: commonInclude(travelerId),
     });
 
     const now = new Date();
@@ -124,10 +129,10 @@ const TourService = {
     return TourDTO.fromList(tours);
   },
 
-  getByProvider: async (providerId) => {
+  getByProvider: async (providerId, travelerId) => {
     const tours = await prisma.tour.findMany({
       where: { Service: { provider_id: parseInt(providerId, 10) } },
-      include: commonInclude,
+      include: commonInclude(travelerId),
     });
 
     const now = new Date();
@@ -193,7 +198,7 @@ const TourService = {
           })),
         },
       },
-      include: commonInclude,
+      include: commonInclude(null),
     });
 
     return await TourService.getById(tour.id);
@@ -279,25 +284,10 @@ const TourService = {
   },
 
   // dùng cho booking
-  checkAvailability: async (tourId, checkIn, checkOut, quantity = 1) => {
-    const tour = await TourService.getById(tourId);
-
-    const d = (x) => new Date(x).toISOString().slice(0, 10);
-
-    const inDate = d(checkIn);
-    const outDate = d(checkOut);
-    const start = d(tour.start_time);
-    const end = d(tour.end_time);
-
-    if (inDate < start || outDate > end) {
-      return {
-        available: false,
-        reason: "Khoảng ngày người dùng chọn phải nằm hoàn toàn bên trong thời gian tour",
-      };
-    }
-
+  checkAvailability: async (tourId, travelerId, quantity = 1) => {
+    const tour = await TourService.getById(tourId, travelerId);
     if (tour.status !== "AVAILABLE") {
-      return { available: false, reason: `Tour is ${tour.status}` };
+      return { available: false, reason: `Tour đã tạm ngưng hoặc đã kết thúc` };
     }
 
     return {
@@ -308,25 +298,38 @@ const TourService = {
     };
   },
 
-  getAvailable: async (serviceId, checkIn, checkOut, participants = 1) => {
-    const tours = await TourService.getByService(serviceId);
-    const results = [];
+  getAvailable: async (serviceId, travelerId, startDate, endDate, participants = 1) => {
+    const service_id = parseInt(serviceId, 10);
+    const start = new Date(startDate);
+    const end = new Date(endDate);
 
-    if (!checkIn || !checkOut) {
-      throw new AppError(
-        ERROR_CODES.MISSING_DATES.statusCode,
-        ERROR_CODES.MISSING_DATES.message,
-        ERROR_CODES.MISSING_DATES.code,
-      );
-    }
+    const tours = await prisma.tour.findMany({
+      where: {
+        service_id,
+        AND: [{ end_time: { gte: start } }, { start_time: { lte: end } }],
+      },
+      include: commonInclude(travelerId),
+      orderBy: { start_time: "asc" },
+    });
+
+    const fullyInside = [];
+    const overlapped = [];
 
     for (const tour of tours) {
-      const check = await TourService.checkAvailability(tour.id, checkIn, checkOut, participants);
+      const check = await TourService.checkAvailability(tour.id, travelerId, participants);
 
-      if (check.available) results.push(check.tour);
+      if (!check.available) continue;
+
+      const isFullyInside = tour.start_time >= start && tour.end_time <= end;
+
+      if (isFullyInside) {
+        fullyInside.push(check.tour);
+      } else {
+        overlapped.push(check.tour);
+      }
     }
 
-    return results;
+    return [...fullyInside, ...overlapped];
   },
 };
 

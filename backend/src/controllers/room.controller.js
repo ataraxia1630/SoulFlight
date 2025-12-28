@@ -8,13 +8,15 @@ const RoomController = {
     return res.status(201).json(success(room));
   }),
 
-  getAll: catchAsync(async (_req, res) => {
-    const rooms = await RoomService.getAll();
+  getAll: catchAsync(async (req, res) => {
+    const travelerId = req.user?.id || null;
+    const rooms = await RoomService.getAll(travelerId);
     return res.json(success(rooms));
   }),
 
   getOne: catchAsync(async (req, res) => {
-    const room = await RoomService.getOne(req.params.id);
+    const travelerId = req.user?.id || null;
+    const room = await RoomService.getOne(req.params.id, travelerId);
     return res.json(success(room));
   }),
 
@@ -50,9 +52,11 @@ const RoomController = {
   checkAvailability: catchAsync(async (req, res) => {
     const { roomId } = req.params;
     const { checkIn, checkOut, quantity = 1 } = req.query;
+    const travelerId = req.user?.id || null;
 
     const room = await RoomService.checkAvailability(
       roomId,
+      travelerId,
       checkIn,
       checkOut,
       parseInt(quantity, 10),
@@ -64,9 +68,11 @@ const RoomController = {
   getAvailable: catchAsync(async (req, res) => {
     const { serviceId } = req.params;
     const { checkIn, checkOut, adults, children } = req.query;
+    const travelerId = req.user?.id || null;
 
     const rooms = await RoomService.getAvailable(
       serviceId,
+      travelerId,
       checkIn,
       checkOut,
       adults ? parseInt(adults, 10) : 1,
@@ -78,13 +84,15 @@ const RoomController = {
 
   getByService: catchAsync(async (req, res) => {
     const { serviceId } = req.params;
-    const rooms = await RoomService.getByService(serviceId);
+    const travelerId = req.user?.id || null;
+    const rooms = await RoomService.getByService(serviceId, travelerId);
     return res.json(success(rooms));
   }),
 
   getByProvider: catchAsync(async (req, res) => {
     const { providerId } = req.params;
-    const rooms = await RoomService.getByProvider(providerId);
+    const travelerId = req.user?.id || null;
+    const rooms = await RoomService.getByProvider(providerId, travelerId);
     return res.json(success(rooms));
   }),
 };

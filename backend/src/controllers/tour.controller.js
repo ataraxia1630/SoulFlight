@@ -3,13 +3,15 @@ const catchAsync = require("../utils/catchAsync");
 const { success } = require("../utils/ApiResponse");
 
 const TourController = {
-  getAll: catchAsync(async (_req, res) => {
-    const tours = await TourService.getAll();
+  getAll: catchAsync(async (req, res) => {
+    const travelerId = req.user?.id || null;
+    const tours = await TourService.getAll(travelerId);
     res.json(success(tours));
   }),
 
   getById: catchAsync(async (req, res) => {
-    const tour = await TourService.getById(req.params.id);
+    const travelerId = req.user?.id || null;
+    const tour = await TourService.getById(req.params.id, travelerId);
     res.json(success(tour));
   }),
 
@@ -34,34 +36,40 @@ const TourController = {
   }),
 
   getByService: catchAsync(async (req, res) => {
-    const tours = await TourService.getByService(req.params.serviceId);
+    const travelerId = req.user?.id || null;
+    const tours = await TourService.getByService(req.params.serviceId, travelerId);
     res.json(success(tours));
   }),
 
   getByProvider: catchAsync(async (req, res) => {
-    const tours = await TourService.getByProvider(req.params.providerId);
+    const travelerId = req.user?.id || null;
+    const tours = await TourService.getByProvider(req.params.providerId, travelerId);
     res.json(success(tours));
   }),
 
   checkAvailability: catchAsync(async (req, res) => {
-    const { checkIn, checkOut, quantity = 1 } = req.query;
+    const travelerId = req.user?.id || null;
+    const { quantity = 1 } = req.query;
     const result = await TourService.checkAvailability(
       req.params.tourId,
-      checkIn,
-      checkOut,
+      travelerId,
       parseInt(quantity, 10),
     );
     res.json(success(result));
   }),
 
   getAvailable: catchAsync(async (req, res) => {
-    const { checkIn, checkOut, participants = 1 } = req.query;
+    const travelerId = req.user?.id || null;
+    const { participants = 1, startDate, endDate } = req.query;
+
     const tours = await TourService.getAvailable(
       req.params.serviceId,
-      checkIn,
-      checkOut,
+      travelerId,
+      startDate,
+      endDate,
       parseInt(participants, 10),
     );
+
     res.json(success(tours));
   }),
 };

@@ -9,13 +9,15 @@ const MenuController = {
     res.status(201).json(success(menu));
   }),
 
-  getAll: catchAsync(async (_req, res) => {
-    const menus = await MenuService.getAll();
+  getAll: catchAsync(async (req, res) => {
+    const travelerId = req.user?.id || null;
+    const menus = await MenuService.getAll(travelerId);
     res.json(success(menus));
   }),
 
   getById: catchAsync(async (req, res) => {
-    const menu = await MenuService.getById(req.params.id);
+    const travelerId = req.user?.id || null;
+    const menu = await MenuService.getById(req.params.id, travelerId);
     res.json(success(menu));
   }),
 
@@ -31,12 +33,14 @@ const MenuController = {
   }),
 
   getByService: catchAsync(async (req, res) => {
-    const menus = await MenuService.getByService(req.params.serviceId);
+    const travelerId = req.user?.id || null;
+    const menus = await MenuService.getByService(req.params.serviceId, travelerId);
     res.json(success(menus));
   }),
 
   getByProvider: catchAsync(async (req, res) => {
-    const menus = await MenuService.getByProvider(req.params.providerId);
+    const travelerId = req.user?.id || null;
+    const menus = await MenuService.getByProvider(req.params.providerId, travelerId);
     res.json(success(menus));
   }),
 };

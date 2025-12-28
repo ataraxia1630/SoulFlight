@@ -1,10 +1,12 @@
 const { Router } = require("express");
 const { MenuController } = require("../controllers/menu.controller");
 const { createSchema, updateSchema } = require("../validators/menu.validator");
+const router = Router();
 const validate = require("../middlewares/validate.middleware");
 const upload = require("../middlewares/multer.middleware");
+const authorize = require("../middlewares/auth.middleware");
 
-const router = Router();
+router.use(authorize);
 
 router.get("/", MenuController.getAll);
 router.get("/:id", MenuController.getById);
