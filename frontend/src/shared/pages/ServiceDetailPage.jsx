@@ -27,6 +27,8 @@ import { useAuthStore } from "@/app/store";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 
+import WishlistService from "@traveler/services/wishlist.service";
+import toast from "@/shared/utils/toast";
 import LoadingState from "../components/LoadingState.jsx";
 import EmptyState from "../components/service-detail/EmptyState";
 import ProviderCard from "../components/service-detail/ProviderCard";
@@ -53,6 +55,7 @@ const ServiceDetailPage = () => {
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [toggleLoading, setToggleLoading] = useState(false);
 
   const [dateRange, setDateRange] = useState([
     {
@@ -69,49 +72,34 @@ const ServiceDetailPage = () => {
   const fetchAllData = useCallback(
     async (isRefresh = false) => {
       try {
-        if (!isRefresh) {
-          setLoading(true);
-        }
+        if (!isRefresh) setLoading(true);
+
         const serviceRes = await ServiceService.getById(id);
         const serviceData = serviceRes.data;
         setService(serviceData);
 
+        const reviewsRes = await ReviewService.getByService(id);
+        setReviews(reviewsRes.data || []);
+
+        const strategies = {
+          stay: { api: RoomService.getByService, setter: setRooms },
+          fnb: { api: MenuService.getByService, setter: setMenus },
+          tour: { api: TourService.getByService, setter: setTours },
+          leisure: { api: TicketService.getByService, setter: setTickets },
+        };
+
         const typeName = serviceData.type?.name;
-        const reviewsPromise = ReviewService.getByService(id);
+        const strategy = strategies[typeName];
 
-        let roomsPromise = Promise.resolve({ data: [] });
-        let menusPromise = Promise.resolve({ data: [] });
-        let toursPromise = Promise.resolve({ data: [] });
-        let ticketsPromise = Promise.resolve({ data: [] });
-
-        switch (typeName) {
-          case "stay":
-            roomsPromise = RoomService.getByService(id);
-            break;
-          case "fnb":
-            menusPromise = MenuService.getByService(id);
-            break;
-          case "tour":
-            toursPromise = TourService.getByService(id);
-            break;
-          case "leisure":
-            ticketsPromise = TicketService.getByService(id);
-            break;
+        let subData = [];
+        if (strategy) {
+          const subRes = await strategy.api(id);
+          subData = subRes.data || [];
+          strategy.setter(subData);
         }
 
-        const [reviewsRes, roomsRes, menusRes, toursRes, ticketsRes] = await Promise.all([
-          reviewsPromise,
-          roomsPromise,
-          menusPromise,
-          toursPromise,
-          ticketsPromise,
-        ]);
-
-        setReviews(reviewsRes.data || []);
-        setRooms(roomsRes.data || []);
-        setMenus(menusRes.data || []);
-        setTours(toursRes.data || []);
-        setTickets(ticketsRes.data || []);
+        const isWishlisted = subData[0]?.is_wishlisted ?? false;
+        setIsFavorite(!!isWishlisted);
       } catch (error) {
         console.error(error);
       } finally {
@@ -120,6 +108,31 @@ const ServiceDetailPage = () => {
     },
     [id],
   );
+
+  const handleToggleFavorite = async () => {
+    if (toggleLoading) return;
+    if (!user) return;
+
+    try {
+      setToggleLoading(true);
+
+      const res = await WishlistService.toggle(parseInt(id));
+      const isLiked = res.data?.liked;
+      const message = res.data.message;
+
+      setIsFavorite(isLiked);
+
+      if (isLiked) {
+        toast.success(message || "Đã thêm vào yêu thích");
+      } else {
+        toast.info(message || "Đã xóa khỏi yêu thích");
+      }
+    } catch {
+      toast.error("Có lỗi xảy ra, vui lòng thử lại sau.");
+    } finally {
+      setToggleLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchAllData();
@@ -153,8 +166,13 @@ const ServiceDetailPage = () => {
           {user?.role === "TRAVELER" && (
             <Box>
               <IconButton
-                onClick={() => setIsFavorite(!isFavorite)}
-                sx={{ color: isFavorite ? "error.main" : "text.secondary" }}
+                onClick={handleToggleFavorite}
+                disabled={toggleLoading}
+                sx={{
+                  color: isFavorite ? "error.main" : "text.secondary",
+                  transition: "transform 0.2s",
+                  "&:hover": { transform: "scale(1.1)" },
+                }}
               >
                 {isFavorite ? <Favorite /> : <FavoriteBorder />}
               </IconButton>

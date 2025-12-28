@@ -5,9 +5,10 @@ const { success } = require("../utils/ApiResponse");
 
 const WishlistController = {
   toggle: catchAsync(async (req, res) => {
-    const { service_id } = req.body;
-    const result = await WishlistService.toggle(req.user.id, service_id);
-    res.json(success(result));
+    const { serviceId } = req.body;
+    const userId = req.user.id;
+    const result = await WishlistService.toggle(userId, serviceId);
+    return res.json(success(result));
   }),
 
   getWishlist: catchAsync(async (req, res) => {
