@@ -59,7 +59,7 @@ const RoomService = {
 
     const fullRoom = await prisma.room.findUnique({
       where: { id: room.id },
-      include: roomInclude,
+      include: roomInclude(null),
     });
 
     const roomWithImages = await attachImages({
@@ -272,11 +272,17 @@ const RoomService = {
       const capacity = (room.max_adult_number || 2) + (room.max_children_number || 0);
       if (totalGuests > capacity) continue;
       try {
-        const avail = await RoomService.checkAvailability(room.id, checkIn, checkOut, 1);
+        const avail = await RoomService.checkAvailability(
+          room.id,
+          travelerId,
+          checkIn,
+          checkOut,
+          1,
+        );
         if (avail.availability.available) {
           results.push(avail);
         }
-      } catch (_err) {}
+      } catch {}
     }
     return results;
   },
