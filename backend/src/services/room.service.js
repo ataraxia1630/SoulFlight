@@ -59,7 +59,7 @@ const RoomService = {
 
     const fullRoom = await prisma.room.findUnique({
       where: { id: room.id },
-      include: roomInclude,
+      include: roomInclude(null),
     });
 
     const roomWithImages = await attachImages({
