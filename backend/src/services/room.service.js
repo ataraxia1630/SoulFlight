@@ -73,7 +73,7 @@ const RoomService = {
   getAll: async (travelerId) => {
     const rooms = await prisma.room.findMany({
       include: roomInclude(travelerId),
-      orderBy: { id: "asc" },
+      orderBy: { updated_at: "desc" },
     });
 
     const roomsWithImages = await attachImagesList({
@@ -292,7 +292,7 @@ const RoomService = {
     const rooms = await prisma.room.findMany({
       where: { service_id },
       include: roomInclude(travelerId),
-      orderBy: { price_per_night: "asc" },
+      orderBy: { updated_at: "desc" },
     });
     const roomsWithImages = await attachImagesList({ entities: rooms, type: "Room" });
     return RoomDTO.fromList(roomsWithImages);

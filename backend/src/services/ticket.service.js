@@ -73,6 +73,7 @@ const TicketService = {
     const tickets = await prisma.ticket.findMany({
       where: { service_id: parseInt(serviceId, 10) },
       include: commonInclude(travelerId),
+      orderBy: { updated_at: "desc" },
     });
 
     await attachPlaceImages(tickets);
@@ -85,6 +86,7 @@ const TicketService = {
         Service: { provider_id: parseInt(providerId, 10) },
       },
       include: commonInclude(travelerId),
+      orderBy: { updated_at: "desc" },
     });
 
     await attachPlaceImages(tickets);
