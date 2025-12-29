@@ -1,14 +1,15 @@
-import AssessmentIcon from "@mui/icons-material/Assessment";
+// import AssessmentIcon from "@mui/icons-material/Assessment";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import CategoryIcon from "@mui/icons-material/Category";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import HandymanIcon from "@mui/icons-material/Handyman";
-import PaymentIcon from "@mui/icons-material/Payment";
+// import PaymentIcon from "@mui/icons-material/Payment";
 import PersonIcon from "@mui/icons-material/Person";
 import RateReviewIcon from "@mui/icons-material/RateReview";
+// import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
+import ReportIcon from "@mui/icons-material/Report";
 import RoomServiceIcon from "@mui/icons-material/RoomService";
 import TagIcon from "@mui/icons-material/Tag";
 import {
@@ -75,24 +76,29 @@ const AdminSidebar = ({ open, onToggle }) => {
       path: "/admin/service",
     },
     {
-      text: t("sidebar.voucher"),
-      icon: <ConfirmationNumberIcon />,
-      path: "/admin/voucher",
+      text: "Tố cáo",
+      icon: <ReportIcon />,
+      path: "/admin/report",
     },
-    {
-      text: t("sidebar.payment"),
-      icon: <PaymentIcon />,
-      path: "/admin/payment",
-    },
-    {
-      text: t("sidebar.assessment"),
-      icon: <AssessmentIcon />,
-      path: "/admin/assessment",
-    },
+    // {
+    //   text: t("sidebar.voucher"),
+    //   icon: <ConfirmationNumberIcon />,
+    //   path: "/admin/voucher",
+    // },
+    // {
+    //   text: t("sidebar.payment"),
+    //   icon: <PaymentIcon />,
+    //   path: "/admin/payment",
+    // },
+    // {
+    //   text: t("sidebar.assessment"),
+    //   icon: <AssessmentIcon />,
+    //   path: "/admin/assessment",
+    // },
     {
       text: t("sidebar.report"),
       icon: <BarChartIcon />,
-      path: "/admin/report",
+      path: "/admin/statistic",
     },
   ];
 
