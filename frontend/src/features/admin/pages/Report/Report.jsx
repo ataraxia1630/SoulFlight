@@ -70,7 +70,7 @@ export default function Report() {
 
   return (
     <Box sx={{ width: "100%", p: { xs: 2, sm: 3 } }}>
-      <PageHeaderWithAdd title="Quản Lý Tố Cáo" />
+      <PageHeaderWithAdd title="Tố Cáo" />
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>

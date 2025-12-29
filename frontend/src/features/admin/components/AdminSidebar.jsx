@@ -7,8 +7,9 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import HandymanIcon from "@mui/icons-material/Handyman";
 // import PaymentIcon from "@mui/icons-material/Payment";
 import PersonIcon from "@mui/icons-material/Person";
-import RateReviewIcon from "@mui/icons-material/RateReview";
 // import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
+import PlaceIcon from "@mui/icons-material/Place";
+import RateReviewIcon from "@mui/icons-material/RateReview";
 import ReportIcon from "@mui/icons-material/Report";
 import RoomServiceIcon from "@mui/icons-material/RoomService";
 import TagIcon from "@mui/icons-material/Tag";
@@ -79,6 +80,11 @@ const AdminSidebar = ({ open, onToggle }) => {
       text: "Tố cáo",
       icon: <ReportIcon />,
       path: "/admin/report",
+    },
+    {
+      text: "Địa điểm du lịch",
+      icon: <PlaceIcon />,
+      path: "/admin/place",
     },
     // {
     //   text: t("sidebar.voucher"),

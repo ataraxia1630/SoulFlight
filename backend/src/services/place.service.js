@@ -21,11 +21,17 @@ const PlaceService = {
   },
 
   getAll: async () => {
-    const places = await prisma.place.findMany();
+    const places = await prisma.place.findMany({
+      orderBy: {
+        updated_at: "desc",
+      },
+    });
+
     const placesWithImages = await attachImagesList({
       entities: places,
       type: "Place",
     });
+
     return PlaceDTO.fromList(placesWithImages);
   },
 
@@ -105,6 +111,14 @@ const PlaceService = {
           console.warn(`Image not in cloudinary`);
         }
       }
+
+      await tx.image.deleteMany({
+        where: { related_id: placeId, related_type: "Place" },
+      });
+
+      await tx.tourPlace.deleteMany({
+        where: { place_id: placeId },
+      });
 
       await tx.place.delete({ where: { id: placeId } });
     });

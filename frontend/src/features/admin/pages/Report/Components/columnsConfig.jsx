@@ -18,7 +18,6 @@ const columnConfig = [
     search: true,
     header_align: "left",
     cell_align: "left",
-    render: (value) => value,
   },
   {
     id: "provider_name",
@@ -27,7 +26,6 @@ const columnConfig = [
     search: true,
     header_align: "left",
     cell_align: "left",
-    render: (value) => value,
   },
   {
     id: "content",
