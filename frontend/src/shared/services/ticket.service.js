@@ -10,6 +10,7 @@ const TicketService = {
 
   getById: async (id) => {
     const response = await api.get(`${API_BASE_URL}/${id}`);
+    console.log("TicketService.getById response:", response.data);
     return response.data;
   },
 
@@ -20,6 +21,24 @@ const TicketService = {
 
   delete: async (id) => {
     const response = await api.delete(`${API_BASE_URL}/${id}`);
+    return response.data;
+  },
+
+  checkAvailability: async (ticketId, visitDate, quantity = 1) => {
+    try {
+      const response = await api.get(`${API_BASE_URL}/${ticketId}/availability`, {
+        params: { visitDate, quantity },
+      });
+      console.log("TicketService.checkAvailability response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error in TicketService.checkAvailability:", error);
+      throw error;
+    }
+  },
+
+  bookTicket: async (data) => {
+    const response = await api.post("api/booking/direct/ticket", data);
     return response.data;
   },
 };

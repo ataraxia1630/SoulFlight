@@ -1,4 +1,3 @@
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CreditCardOutlinedIcon from "@mui/icons-material/CreditCardOutlined";
 import MailOutlineOutlinedIcon from "@mui/icons-material/MailOutlineOutlined";
 import PermIdentityOutlinedIcon from "@mui/icons-material/PermIdentityOutlined";
@@ -6,7 +5,6 @@ import PersonPinOutlinedIcon from "@mui/icons-material/PersonPinOutlined";
 import PhoneIphoneOutlinedIcon from "@mui/icons-material/PhoneIphoneOutlined";
 import {
   Box,
-  Button,
   Card,
   CardContent,
   Checkbox,
@@ -17,26 +15,19 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useState } from "react";
 
-export default function BookingContact() {
-  const [contactInfo, setContactInfo] = useState({
-    fullName: "",
-    idCard: "",
-    phone: "",
-    email: "",
-  });
-
-  const [isBookerStaying, setIsBookerStaying] = useState(false);
-
-  const [guestInfo, setGuestInfo] = useState({
-    fullName: "",
-    idCard: "",
-  });
-
+export default function BookingContact({
+  contactInfo,
+  setContactInfo,
+  guestInfo,
+  setGuestInfo,
+  isBookerStaying,
+  setIsBookerStaying,
+}) {
   const handleContactChange = (field) => (event) => {
     const value = event.target.value;
     const newContactInfo = { ...contactInfo, [field]: value };
+
     setContactInfo(newContactInfo);
 
     if (isBookerStaying) {
@@ -52,6 +43,7 @@ export default function BookingContact() {
 
   const handleCheckboxChange = (event) => {
     const checked = event.target.checked;
+
     setIsBookerStaying(checked);
 
     if (checked) {
@@ -70,12 +62,10 @@ export default function BookingContact() {
   return (
     <Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
       <Card
-        elevation={2}
+        elevation={0}
         sx={{
           width: "100%",
           maxWidth: 800,
-          borderRadius: 2,
-          overflow: "hidden",
         }}
       >
         <CardContent sx={{ p: 4 }}>
@@ -234,27 +224,6 @@ export default function BookingContact() {
               />
             </Grid>
           </Grid>
-          <Box sx={{ mt: 5 }}>
-            <Button
-              variant="contained"
-              fullWidth
-              size="large"
-              endIcon={<ArrowForwardIcon />}
-              sx={{
-                py: 1.5,
-                fontSize: "1rem",
-                fontWeight: "bold",
-                textTransform: "none",
-                boxShadow: 2,
-              }}
-              onClick={() => {
-                // Handle navigation logic here
-                console.log("Navigate to payment", { contactInfo, guestInfo });
-              }}
-            >
-              Tiếp tục thanh toán
-            </Button>
-          </Box>
         </CardContent>
       </Card>
     </Box>

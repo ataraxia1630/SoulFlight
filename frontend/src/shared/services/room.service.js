@@ -22,6 +22,18 @@ const RoomService = {
     const response = await api.delete(`${API_BASE_URL}/${id}`);
     return response.data;
   },
+
+  checkAvailability: async (roomId, checkIn, checkOut, quantity = 1) => {
+    const response = await api.get(`${API_BASE_URL}/${roomId}/availability`, {
+      params: { checkIn, checkOut, quantity },
+    });
+    return response.data;
+  },
+
+  bookRoom: async (data) => {
+    const response = await api.post("api/booking/direct/room", data);
+    return response.data;
+  },
 };
 
 export default RoomService;
