@@ -24,7 +24,7 @@ const ResultSection = ({ title, count, children }) => {
   return (
     <Box sx={{ mb: 5 }}>
       <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
-        <Typography sx={{ fontSize: 24, fontWeight: 700 }}>{title}</Typography>
+        <Typography sx={{ fontSize: 20, fontWeight: 700 }}>{title}</Typography>
         <Chip
           label={count}
           size="small"

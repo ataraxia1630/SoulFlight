@@ -17,7 +17,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 export default function CustomTable({ columns, data, onView, onEdit, onDelete }) {
   const [page, setPage] = useState(0);
@@ -38,19 +38,25 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
     return columns.filter((c) => c.search).map((c) => c.id);
   }, [columns]);
 
-  // Lọc dữ liệu theo search
+  const normalizeText = useCallback((text = "") => {
+    return text
+      ?.toString()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[đĐ]/g, "d")
+      .toLowerCase()
+      .trim();
+  }, []);
+
   const filteredData = useMemo(() => {
     if (!searchTerm) return data;
-    const lower = searchTerm.toLowerCase();
+
+    const normalizedSearch = normalizeText(searchTerm);
 
     return data.filter((row) =>
-      searchableFields.some((field) =>
-        String(row[field] || "")
-          .toLowerCase()
-          .includes(lower),
-      ),
+      searchableFields.some((field) => normalizeText(row[field]).includes(normalizedSearch)),
     );
-  }, [data, searchTerm, searchableFields]);
+  }, [data, searchTerm, searchableFields, normalizeText]);
 
   // Phân trang
   const paginatedData = useMemo(() => {

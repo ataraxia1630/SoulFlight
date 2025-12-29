@@ -37,6 +37,7 @@ const RATING_LABELS = {
 
 const ReviewsList = ({
   serviceId,
+  reviews: reviewsProp,
   rooms = [],
   tours = [],
   menus = [],
@@ -45,8 +46,8 @@ const ReviewsList = ({
 }) => {
   const user = useAuthStore((state) => state.user);
 
-  const [reviews, setReviews] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [reviews, setReviews] = useState(reviewsProp || []);
+  const [loading, setLoading] = useState(!reviewsProp);
 
   const [formDialogOpen, setFormDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -76,20 +77,33 @@ const ReviewsList = ({
     ];
   }, [rooms, tours, menus, tickets]);
 
+  useEffect(() => {
+    if (typeof reviewsProp !== "undefined") {
+      setReviews(reviewsProp);
+      setLoading(false);
+    }
+  }, [reviewsProp]);
+
   const fetchReviews = useCallback(async () => {
+    if (typeof reviewsProp !== "undefined") return;
+
+    if (!serviceId) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const res = await ReviewService.getByService(serviceId);
-      if (Array.isArray(res)) setReviews(res);
-      else if (res && Array.isArray(res.data)) setReviews(res.data);
-      else setReviews([]);
+      const list = Array.isArray(res) ? res : res?.data || [];
+      setReviews(list);
     } catch (error) {
       console.error("Failed to fetch reviews:", error);
       setReviews([]);
     } finally {
       setTimeout(() => setLoading(false), 300);
     }
-  }, [serviceId]);
+  }, [serviceId, reviewsProp]);
 
   useEffect(() => {
     fetchReviews();
@@ -191,10 +205,15 @@ const ReviewsList = ({
     return null;
   };
 
-  const checkPermission = (review) => {
+  const canEditReview = (review) => {
+    if (!user) return false;
+    return user.role === "TRAVELER" && user.id === review.traveler?.id;
+  };
+
+  const canDeleteReview = (review) => {
     if (!user) return false;
     if (user.role === "ADMIN") return true;
-    return review.traveler && user.id === review.traveler.id;
+    return user.id === review.traveler?.id;
   };
 
   const avgRating =
@@ -223,7 +242,7 @@ const ReviewsList = ({
           </Stack>
         </Box>
 
-        {user && (
+        {user?.role === "TRAVELER" && (
           <Button variant="contained" startIcon={<EditIcon />} onClick={handleOpenAdd}>
             Viết đánh giá
           </Button>
@@ -250,7 +269,8 @@ const ReviewsList = ({
           <>
             {Array.isArray(reviews) &&
               reviews.map((review) => {
-                const canEdit = checkPermission(review);
+                const canEdit = canEditReview(review);
+                const canDelete = canDeleteReview(review);
                 const targetInfo = getTargetInfo(review);
                 return (
                   <Card
@@ -299,22 +319,28 @@ const ReviewsList = ({
                                 />
                               )}
                             </Box>
-                            {canEdit && (
+
+                            {(canEdit || canDelete) && (
                               <Stack direction="row">
-                                <IconButton
-                                  size="small"
-                                  color="primary"
-                                  onClick={() => handleOpenEdit(review)}
-                                >
-                                  <EditIcon fontSize="small" />
-                                </IconButton>
-                                <IconButton
-                                  size="small"
-                                  color="error"
-                                  onClick={() => handleClickDelete(review)}
-                                >
-                                  <DeleteIcon fontSize="small" />
-                                </IconButton>
+                                {canEdit && (
+                                  <IconButton
+                                    size="small"
+                                    color="primary"
+                                    onClick={() => handleOpenEdit(review)}
+                                  >
+                                    <EditIcon fontSize="small" />
+                                  </IconButton>
+                                )}
+
+                                {canDelete && (
+                                  <IconButton
+                                    size="small"
+                                    color="error"
+                                    onClick={() => handleClickDelete(review)}
+                                  >
+                                    <DeleteIcon fontSize="small" />
+                                  </IconButton>
+                                )}
                               </Stack>
                             )}
                           </Stack>

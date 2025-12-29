@@ -1,6 +1,8 @@
 import { Route } from "react-router-dom";
 import TravelerHome from "@/features/traveler/pages/Home";
 import Booking from "../../features/traveler/pages/Booking/Booking";
+import ExplorePlace from "../../features/traveler/pages/Place";
+import PlaceDetailsPage from "../../features/traveler/pages/Place/PlaceDetailPage";
 import ItinerariesListPage from "../../features/traveler/pages/Planner/ItinerariesListPage";
 import ItineraryPage from "../../features/traveler/pages/Planner/ItineraryPage";
 import ServiceCart from "../../features/traveler/pages/ServiceCart";
@@ -20,6 +22,8 @@ const mainRoutes = (
     <Route path="itinerary/:id" element={<ItineraryPage />} />
     <Route path="travel-planner" element={<ItineraryPage />} />
     <Route path="love-service" element={<Wishlist />} />
+    <Route path="place" element={<ExplorePlace />} />
+    <Route path="place/:id" element={<PlaceDetailsPage />} />
   </Route>
 );
 
