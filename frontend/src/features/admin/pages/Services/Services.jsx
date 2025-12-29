@@ -22,6 +22,13 @@ const extractData = (res) => {
   return res?.data || res?.items || [];
 };
 
+const REVIEW_PARAM_MAP = {
+  tour: "tourId",
+  leisure: "ticketId",
+  fnb: "menuId",
+  stay: "roomId",
+};
+
 const tabStyle = (currentValue, tabId) => ({
   textTransform: "none",
   fontSize: "1rem",
@@ -33,7 +40,7 @@ const tabStyle = (currentValue, tabId) => ({
 
 const STORAGE_KEY = "services_active_tab";
 
-const BaseTabContent = ({ title, serviceAPI, columns, DetailDialog }) => {
+const BaseTabContent = ({ title, serviceAPI, columns, DetailDialog, currentTabId }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -65,14 +72,18 @@ const BaseTabContent = ({ title, serviceAPI, columns, DetailDialog }) => {
   const handleView = async (item) => {
     setViewItem(item);
     setLoadingDetail(true);
+    setRelatedReviews([]);
+
     try {
       if (item.service_id) {
-        const [serviceRes, reviewsRes] = await Promise.all([
-          ServiceService.getById(item.service_id),
-          ReviewService.getByService(item.service_id),
-        ]);
+        const serviceRes = await ServiceService.getById(item.service_id);
         setRelatedService(serviceRes.data);
-        setRelatedReviews(extractData(reviewsRes));
+
+        const paramKey = REVIEW_PARAM_MAP[currentTabId];
+        if (paramKey) {
+          const reviewRes = await ReviewService.getByDetail({ [paramKey]: item.id });
+          setRelatedReviews(extractData(reviewRes));
+        }
       }
     } catch (err) {
       console.error("Lỗi khi tải chi tiết:", err);
@@ -218,6 +229,7 @@ export default function Services() {
                 serviceAPI={tab.api}
                 columns={tab.cols}
                 DetailDialog={tab.dialog}
+                currentTabId={tab.id}
               />
             </Box>
           ),

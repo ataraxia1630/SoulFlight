@@ -2,8 +2,6 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import CloseIcon from "@mui/icons-material/Close";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import MenuIcon from "@mui/icons-material/Menu";
-import PersonIcon from "@mui/icons-material/Person";
-import SettingsIcon from "@mui/icons-material/Settings";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import {
   AppBar,
@@ -25,6 +23,7 @@ import { useTranslation } from "react-i18next";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/app/store";
 import { DrawerUserSection, UserMenu } from "./DrawerAndUser";
+import NotificationMenu from "./NotificationMenu";
 
 // import Logo from "@/assets/logo";
 
@@ -204,6 +203,9 @@ const Header = ({ drawerWidth = 0, onToggleSidebar, showMenuIcon = false }) => {
                 }}
               />
             )}
+
+            {user && <NotificationMenu />}
+
             {user ? (
               <Box sx={{ display: { xs: "none", sm: "block" } }}>
                 <UserMenu user={user} t={t} />

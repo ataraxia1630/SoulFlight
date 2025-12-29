@@ -3,6 +3,8 @@ import TravelerHome from "@/features/traveler/pages/Home";
 import Booking from "../../features/traveler/pages/Booking/Booking";
 // import CartPage from '../../features/traveler/pages/Cart/CartPage';
 import CheckoutPage from "../../features/traveler/pages/Checkout/CheckoutPage";
+import ExplorePlace from "../../features/traveler/pages/Place";
+import PlaceDetailsPage from "../../features/traveler/pages/Place/PlaceDetailPage";
 import ItinerariesListPage from "../../features/traveler/pages/Planner/ItinerariesListPage";
 import ItineraryPage from "../../features/traveler/pages/Planner/ItineraryPage";
 import MenuDetail from "../../features/traveler/pages/ServiceDetail/MenuDetail";
@@ -37,6 +39,8 @@ const mainRoutes = (
     <Route path="/checkout" element={<CheckoutPage />} />
     {/* <Route path="/payment/result" element={<PaymentResultPage />} /> */}
     {/* <Route path="/bookings/my" element={<BookingManagement />} /> */}
+    <Route path="place" element={<ExplorePlace />} />
+    <Route path="place/:id" element={<PlaceDetailsPage />} />
   </Route>
 );
 

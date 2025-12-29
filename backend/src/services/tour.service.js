@@ -64,7 +64,7 @@ const TourService = {
   getAll: async (travelerId) => {
     const tours = await prisma.tour.findMany({
       include: commonInclude(travelerId),
-      orderBy: { created_at: "desc" },
+      orderBy: { updated_at: "desc" },
     });
 
     // Cập nhật status
@@ -110,6 +110,7 @@ const TourService = {
     const tours = await prisma.tour.findMany({
       where: { service_id: parseInt(serviceId, 10) },
       include: commonInclude(travelerId),
+      orderBy: { updated_at: "desc" },
     });
 
     const now = new Date();
@@ -133,6 +134,7 @@ const TourService = {
     const tours = await prisma.tour.findMany({
       where: { Service: { provider_id: parseInt(providerId, 10) } },
       include: commonInclude(travelerId),
+      orderBy: { updated_at: "desc" },
     });
 
     const now = new Date();

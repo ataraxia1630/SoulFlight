@@ -24,8 +24,10 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { useAuthStore } from "@/app/store";
+import ReportService from "@/shared/services/report.service";
+import toast from "@/shared/utils/toast";
 
-const ProviderCard = ({ provider, onReportSubmit }) => {
+const ProviderCard = ({ provider }) => {
   const { user } = useAuthStore();
 
   const [openReport, setOpenReport] = useState(false);
@@ -42,16 +44,20 @@ const ProviderCard = ({ provider, onReportSubmit }) => {
     setReportReason("");
   };
 
-  const handleSubmitReport = () => {
+  const handleSubmitReport = async () => {
     if (!reportReason.trim()) return;
 
-    if (onReportSubmit) {
-      onReportSubmit({
-        providerId: provider.id,
-        reason: reportReason,
+    try {
+      await ReportService.create({
+        provider_id: provider.id,
+        content: reportReason,
       });
+      toast.success("Tố cáo đã được gửi. Chúng tôi sẽ xem xét sớm nhất có thể.");
+      handleCloseReport();
+    } catch (error) {
+      console.error(error);
+      toast.error("Có lỗi xảy ra khi gửi tố cáo.");
     }
-    handleCloseReport();
   };
 
   return (
