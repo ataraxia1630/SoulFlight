@@ -1,8 +1,17 @@
 const Joi = require("joi");
 
 const createBookingSchema = Joi.object({
+  vouchers: Joi.object()
+    .pattern(Joi.number(), Joi.string().allow("").trim())
+    .optional()
+    .default({}),
   voucherCode: Joi.string().optional().allow("").trim(),
 });
+
+const updateBookingInfoSchema = Joi.object({
+  notes: Joi.object().optional(),
+  voucherCode: Joi.string().optional().allow("").trim(),
+}).or("notes", "voucherCode");
 
 const updateStatusSchema = Joi.object({
   status: Joi.string()
@@ -31,7 +40,6 @@ const directRoomBookingSchema = Joi.object({
 
 const directTourBookingSchema = Joi.object({
   tourId: Joi.number().required(),
-  visitDate: Joi.date().iso().required(),
   quantity: Joi.number().min(1).required(),
   voucherCode: Joi.string().optional(),
   guestInfo: Joi.object({
@@ -76,6 +84,7 @@ const directMenuBookingSchema = Joi.object({
 
 module.exports = {
   createBookingSchema,
+  updateBookingInfoSchema,
   updateStatusSchema,
   cancelBookingSchema,
   directRoomBookingSchema,

@@ -8,10 +8,14 @@ export default defineConfig({
   resolve: {
     alias: {
       "react-map-gl": "react-map-gl/dist/esm/index.js",
-      "@": path.resolve(__dirname, "./src"), // @ sẽ trỏ thẳng tới folder src
       "@business": path.resolve(__dirname, "./src/features/business"),
       "@traveler": path.resolve(__dirname, "./src/features/traveler"),
       "@admin": path.resolve(__dirname, "./src/features/admin"),
+      "@": path.resolve(__dirname, "./src"),
     },
+  },
+  server: {
+    allowedHosts: ["brecken-unbartering-camilo.ngrok-free.dev", ".ngrok-free.dev"],
+    host: true,
   },
 });

@@ -519,7 +519,8 @@ model BookingItem {
   id            Int             @id @default(autoincrement())
   booking_id    String
   item_type     BookingItemType
-  item_id       Int // ID của Room/Tour/Ticket/MenuItem
+  item_id       Int
+  item_name     String?
   quantity      Int
   unit_price    Decimal         @db.Decimal(12, 2)
   total_price   Decimal         @db.Decimal(12, 2)

@@ -10,6 +10,7 @@ const TourService = {
 
   getById: async (id) => {
     const response = await api.get(`${API_BASE_URL}/${id}`);
+    console.log("TourService.getById response:", response.data);
     return response.data;
   },
 
@@ -21,6 +22,24 @@ const TourService = {
   delete: async (id) => {
     const response = await api.delete(`${API_BASE_URL}/${id}`);
     return response.data;
+  },
+
+  checkAvailability: async (tourId, quantity = 1) => {
+    const response = await api.get(`${API_BASE_URL}/${tourId}/availability`, {
+      params: { quantity },
+    });
+    return response.data;
+  },
+
+  bookTour: async (data) => {
+    try {
+      const response = await api.post("api/booking/direct/tour", data);
+      console.log("TourService.bookTour response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("TourService.bookTour error:", error);
+      throw new Error(error.response?.data?.message || error);
+    }
   },
 };
 

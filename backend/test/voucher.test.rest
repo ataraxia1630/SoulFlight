@@ -1,0 +1,370 @@
+### ============================================
+### VOUCHER API TESTS
+### ============================================
+@baseUrl = http://localhost:5000/api
+@adminToken = your_admin_token_here
+@providerToken = your_provider_token_here
+@travelerToken = your_traveler_token_here
+
+### ============================================
+### 1. PUBLIC ROUTES (Traveler)
+### ============================================
+
+### Get Available Vouchers (All)
+GET {{baseUrl}}/vouchers?page=1&limit=20
+
+### Get Available Vouchers for Specific Service
+GET {{baseUrl}}/vouchers?serviceId=5&page=1&limit=10
+
+### Get Voucher Detail
+GET {{baseUrl}}/vouchers/1
+
+### Check Voucher Validity
+POST {{baseUrl}}/vouchers/check
+Content-Type: application/json
+
+{
+  "code": "SUMMER2025",
+  "serviceId": 5,
+  "totalAmount": 1000000
+}
+
+### Check Global Voucher
+POST {{baseUrl}}/vouchers/check
+Content-Type: application/json
+
+{
+  "code": "NEWYEAR2025",
+  "totalAmount": 500000
+}
+
+### ============================================
+### 2. PROVIDER ROUTES
+### ============================================
+
+### Get My Vouchers (Provider)
+GET {{baseUrl}}/vouchers/provider/my?page=1&limit=20&status=active
+Authorization: Bearer {{providerToken}}
+
+### Get My Expired Vouchers
+GET {{baseUrl}}/vouchers/provider/my?status=expired
+Authorization: Bearer {{providerToken}}
+
+### Get My Upcoming Vouchers
+GET {{baseUrl}}/vouchers/provider/my?status=upcoming
+Authorization: Bearer {{providerToken}}
+
+### Create Voucher (Provider)
+# @name createProviderVoucher
+POST {{baseUrl}}/vouchers/provider
+Authorization: Bearer {{providerToken}}
+Content-Type: application/json
+
+{
+  "serviceId": 5,
+  "title": "Giảm giá mùa hè 2025",
+  "code": "SUMMER2025",
+  "discountPercent": 20,
+  "description": "Giảm 20% cho tất cả booking trong tháng 6-8/2025. Áp dụng cho khách sạn ABC.",
+  "validFrom": "2025-06-01T00:00:00.000Z",
+  "validTo": "2025-08-31T23:59:59.999Z",
+  "isGlobal": false,
+  "maxUses": 100
+}
+
+### Create Limited Time Voucher
+POST {{baseUrl}}/vouchers/provider
+Authorization: Bearer {{providerToken}}
+Content-Type: application/json
+
+{
+  "serviceId": 8,
+  "title": "Flash Sale - Giảm 50%",
+  "code": "FLASH50",
+  "discountPercent": 50,
+  "description": "Flash sale trong 24h! Giảm 50% cho 50 người đầu tiên.",
+  "validFrom": "2025-02-01T00:00:00.000Z",
+  "validTo": "2025-02-01T23:59:59.999Z",
+  "isGlobal": false,
+  "maxUses": 50
+}
+
+### Update Voucher (Provider)
+PATCH {{baseUrl}}/vouchers/provider/1
+Authorization: Bearer {{providerToken}}
+Content-Type: application/json
+
+{
+  "title": "Giảm giá mùa hè 2025 - UPDATED",
+  "discountPercent": 25,
+  "maxUses": 150
+}
+
+### Delete Voucher (Provider)
+DELETE {{baseUrl}}/vouchers/provider/5
+Authorization: Bearer {{providerToken}}
+
+### Get Voucher Stats (Provider)
+GET {{baseUrl}}/vouchers/provider/1/stats
+Authorization: Bearer {{providerToken}}
+
+### ============================================
+### 3. ADMIN ROUTES
+### ============================================
+
+### Get All Vouchers (Admin)
+GET {{baseUrl}}/vouchers/admin/all?page=1&limit=20
+Authorization: Bearer {{adminToken}}
+
+### Get Global Vouchers Only
+GET {{baseUrl}}/vouchers/admin/all?isGlobal=true
+Authorization: Bearer {{adminToken}}
+
+### Get Active Vouchers
+GET {{baseUrl}}/vouchers/admin/all?status=active
+Authorization: Bearer {{adminToken}}
+
+### Get Vouchers by Service
+GET {{baseUrl}}/vouchers/admin/all?serviceId=5
+Authorization: Bearer {{adminToken}}
+
+### Create Global Voucher (Admin Only)
+# @name createGlobalVoucher
+POST {{baseUrl}}/vouchers/admin
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "title": "Chào mừng năm mới 2025",
+  "code": "NEWYEAR2025",
+  "discountPercent": 15,
+  "description": "Giảm 15% cho tất cả dịch vụ trong tháng 1/2025. Áp dụng toàn hệ thống.",
+  "validFrom": "2025-01-01T00:00:00.000Z",
+  "validTo": "2025-01-31T23:59:59.999Z",
+  "isGlobal": true,
+  "maxUses": 1000
+}
+
+### Create Service-Specific Voucher (Admin)
+POST {{baseUrl}}/vouchers/admin
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "serviceId": 10,
+  "title": "Khuyến mãi đặc biệt",
+  "code": "SPECIAL2025",
+  "discountPercent": 30,
+  "description": "Giảm 30% cho dịch vụ premium",
+  "validFrom": "2025-03-01T00:00:00.000Z",
+  "validTo": "2025-03-31T23:59:59.999Z",
+  "isGlobal": false,
+  "maxUses": 200
+}
+
+### Update Voucher (Admin)
+PATCH {{baseUrl}}/vouchers/admin/1
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{
+  "discountPercent": 20,
+  "maxUses": 1500,
+  "validTo": "2025-02-28T23:59:59.999Z"
+}
+
+### Delete Voucher (Admin)
+DELETE {{baseUrl}}/vouchers/admin/10
+Authorization: Bearer {{adminToken}}
+
+### Get Voucher Stats (Admin)
+GET {{baseUrl}}/vouchers/admin/1/stats
+Authorization: Bearer {{adminToken}}
+
+### ============================================
+### 4. INTEGRATION WITH BOOKING
+### ============================================
+
+### Scenario: Apply Voucher to Direct Booking
+# Step 1: Check voucher
+POST {{baseUrl}}/vouchers/check
+Content-Type: application/json
+
+{
+  "code": "SUMMER2025",
+  "serviceId": 5,
+  "totalAmount": 2000000
+}
+
+# Step 2: Create booking with voucher
+POST {{baseUrl}}/bookings/direct/room
+Authorization: Bearer {{travelerToken}}
+Content-Type: application/json
+
+{
+  "roomId": 1,
+  "checkinDate": "2025-07-15",
+  "checkoutDate": "2025-07-18",
+  "quantity": 1,
+  "voucherCode": "SUMMER2025",
+  "guestInfo": {
+    "fullName": "Nguyen Van A",
+    "phone": "0901234567"
+  }
+}
+
+### Scenario: Apply Global Voucher to Cart Booking
+# Step 1: Add items to cart
+POST {{baseUrl}}/cart
+Authorization: Bearer {{travelerToken}}
+Content-Type: application/json
+
+{
+  "item_type": "TOUR",
+  "item_id": 5,
+  "quantity": 2,
+  "visit_date": "2025-01-15T08:00:00.000Z"
+}
+
+# Step 2: Create booking from cart with global voucher
+POST {{baseUrl}}/bookings
+Authorization: Bearer {{travelerToken}}
+Content-Type: application/json
+
+{
+  "voucherCode": "NEWYEAR2025"
+}
+
+### ============================================
+### 5. ERROR TESTING
+### ============================================
+
+### Error: Expired Voucher
+POST {{baseUrl}}/vouchers/check
+Content-Type: application/json
+
+{
+  "code": "EXPIRED2024",
+  "totalAmount": 500000
+}
+
+### Error: Invalid Voucher Code
+POST {{baseUrl}}/vouchers/check
+Content-Type: application/json
+
+{
+  "code": "INVALIDCODE",
+  "totalAmount": 500000
+}
+
+### Error: Voucher Not for This Service
+POST {{baseUrl}}/vouchers/check
+Content-Type: application/json
+
+{
+  "code": "SUMMER2025",
+  "serviceId": 999,
+  "totalAmount": 1000000
+}
+
+### Error: Duplicate Voucher Code
+POST {{baseUrl}}/vouchers/provider
+Authorization: Bearer {{providerToken}}
+Content-Type: application/json
+
+{
+  "serviceId": 5,
+  "title": "Test Duplicate",
+  "code": "SUMMER2025",
+  "discountPercent": 10,
+  "description": "This should fail",
+  "isGlobal": false
+}
+
+### Error: Provider Creating Global Voucher (Should Fail)
+POST {{baseUrl}}/vouchers/provider
+Authorization: Bearer {{providerToken}}
+Content-Type: application/json
+
+{
+  "title": "Try to create global",
+  "code": "GLOBALTRY",
+  "discountPercent": 10,
+  "description": "Should fail - only admin can create global",
+  "isGlobal": true
+}
+
+### Error: Invalid Discount Percent
+POST {{baseUrl}}/vouchers/provider
+Authorization: Bearer {{providerToken}}
+Content-Type: application/json
+
+{
+  "serviceId": 5,
+  "title": "Invalid Discount",
+  "code": "INVALID150",
+  "discountPercent": 150,
+  "description": "Should fail - discount > 100%",
+  "isGlobal": false
+}
+
+### Error: Delete Voucher In Use
+DELETE {{baseUrl}}/vouchers/provider/1
+Authorization: Bearer {{providerToken}}
+
+### ============================================
+### 6. ANALYTICS & REPORTING
+### ============================================
+
+### Get Top Performing Vouchers
+GET {{baseUrl}}/vouchers/admin/all?page=1&limit=10&sortBy=used_count
+Authorization: Bearer {{adminToken}}
+
+### Get Vouchers Expiring Soon (Next 7 Days)
+# Note: Implement custom endpoint if needed
+GET {{baseUrl}}/vouchers/admin/expiring-soon
+Authorization: Bearer {{adminToken}}
+
+### Get Voucher Usage Report
+GET {{baseUrl}}/vouchers/admin/1/stats
+Authorization: Bearer {{adminToken}}
+
+### Export Vouchers to CSV
+# Note: Implement custom endpoint
+GET {{baseUrl}}/vouchers/admin/export?format=csv
+Authorization: Bearer {{adminToken}}
+
+### ============================================
+### 7. BULK OPERATIONS (Future Feature)
+### ============================================
+
+### Bulk Create Vouchers
+# POST {{baseUrl}}/vouchers/admin/bulk
+# Authorization: Bearer {{adminToken}}
+# Content-Type: application/json
+# 
+# {
+#   "vouchers": [
+#     {
+#       "title": "Voucher 1",
+#       "code": "BULK001",
+#       "discountPercent": 10,
+#       ...
+#     },
+#     {
+#       "title": "Voucher 2",
+#       "code": "BULK002",
+#       "discountPercent": 15,
+#       ...
+#     }
+#   ]
+# }
+
+### Bulk Disable Vouchers
+# PATCH {{baseUrl}}/vouchers/admin/bulk-disable
+# Authorization: Bearer {{adminToken}}
+# Content-Type: application/json
+# 
+# {
+#   "voucherIds": [1, 2, 3, 4, 5]
+# }

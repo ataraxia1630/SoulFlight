@@ -10,6 +10,7 @@ const MenuService = {
 
   getById: async (id) => {
     const response = await api.get(`${API_BASE_URL}/${id}`);
+    console.log(response.data);
     return response.data;
   },
 
@@ -21,6 +22,17 @@ const MenuService = {
   delete: async (id) => {
     const response = await api.delete(`${API_BASE_URL}/${id}`);
     return response.data;
+  },
+
+  bookMenu: async (data) => {
+    try {
+      const response = await api.post("api/booking/direct/menu", data);
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error booking menu:", error);
+      throw error;
+    }
   },
 };
 

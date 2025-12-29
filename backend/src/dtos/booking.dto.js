@@ -10,6 +10,7 @@ class BookingItemDTO {
     this.checkoutDate = item.checkout_date;
     this.visitDate = item.visit_date;
     this.image = item.details?.image || null;
+    this.serviceId = item.details?.service_id || null;
   }
 
   static fromModel(item) {
@@ -26,16 +27,13 @@ class BookingDTO {
     this.finalAmount = Number(booking.final_amount);
     this.voucherCode = booking.voucher?.code || null;
     this.bookingDate = booking.booking_date;
-    this.providerName =
-      booking.provider?.user?.name || booking.provider?.name || "Unknown Provider";
+    this.providerName = booking.provider?.user?.name || "Unknown";
+    this.serviceId = booking.service_id;
+    this.serviceName = booking.service?.name || null;
+    this.expiryTime = booking.expiry_time;
     this.items = booking.items?.map(BookingItemDTO.fromModel) || [];
-    this.paymentStatus =
-      booking.payment?.status ||
-      (booking.payments && booking.payments.length > 0 ? booking.payments[0].status : null);
-
-    this.paymentId =
-      booking.payment?.id ||
-      (booking.payments && booking.payments.length > 0 ? booking.payments[0].id : null);
+    this.paymentStatus = booking.payment?.status || booking.payments?.[0]?.status || null;
+    this.paymentId = booking.payment?.id || booking.payments?.[0]?.id || null;
     this.notes = booking.notes;
     this.createdAt = booking.created_at;
     this.updatedAt = booking.updated_at;
