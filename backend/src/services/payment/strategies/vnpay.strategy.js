@@ -12,7 +12,7 @@ class VNPayStrategy extends BasePaymentStrategy {
       vnp_Amount: Math.round(Number(payment.amount) * 100),
       vnp_CreateDate: this.getVNPayDate(),
       vnp_CurrCode: "VND",
-      vnp_IpAddr: "127.0.0.1", // Trong production nên lấy IP thật của user
+      vnp_IpAddr: "127.0.0.1",
       vnp_Locale: "vn",
       vnp_OrderInfo: `Thanh toan ${bookings.length} booking`,
       vnp_OrderType: "other",
@@ -24,12 +24,12 @@ class VNPayStrategy extends BasePaymentStrategy {
     const sortedParams = this.sortObject(vnp_Params);
     const signData = qs.stringify(sortedParams, { encode: false });
     const hmac = crypto.createHmac("sha512", process.env.VNP_HASH_SECRET);
-    vnp_Params.vnp_SecureHash = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
+    const signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
+    sortedParams.vnp_SecureHash = signed;
 
-    const paymentUrl = `${process.env.VNP_URL}?${qs.stringify(vnp_Params, {
+    const paymentUrl = `${process.env.VNP_URL}?${qs.stringify(sortedParams, {
       encode: false,
     })}`;
-
     return { paymentUrl };
   }
 
@@ -133,12 +133,19 @@ class VNPayStrategy extends BasePaymentStrategy {
   }
 
   sortObject(obj) {
-    return Object.keys(obj)
-      .sort()
-      .reduce((res, key) => {
-        res[key] = obj[key];
-        return res;
-      }, {});
+    const sorted = {};
+    const str = [];
+    let key;
+    for (key in obj) {
+      if (Object.hasOwn(obj, key)) {
+        str.push(encodeURIComponent(key));
+      }
+    }
+    str.sort();
+    for (key = 0; key < str.length; key++) {
+      sorted[str[key]] = encodeURIComponent(obj[str[key]]).replace(/%20/g, "+");
+    }
+    return sorted;
   }
 
   getVNPayDate() {

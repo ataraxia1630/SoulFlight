@@ -77,6 +77,7 @@ const PaymentService = {
 
     // Attach paymentUrl vào payment object để DTO xử lý
     payment.paymentUrl = result.paymentUrl;
+    console.log("Created payment:", payment);
 
     return payment;
   },

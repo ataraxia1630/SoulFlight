@@ -31,11 +31,37 @@ const BookingController = {
     res.status(200).json(ApiResponse.success(BookingDTO.fromModel(booking)));
   }),
 
+  updateBookingInfo: catchAsync(async (req, res) => {
+    const travelerId = req.user.id;
+    const { bookingId } = req.params;
+    const { notes, voucherCode } = req.body;
+
+    const updatedBooking = await BookingService.updateBookingInfo(travelerId, bookingId, {
+      notes,
+      voucherCode,
+    });
+
+    res.status(200).json(
+      ApiResponse.success({
+        data: BookingDTO.fromModel(updatedBooking),
+        message: "Cập nhật thông tin booking thành công",
+      }),
+    );
+  }),
+
   createFromCart: catchAsync(async (req, res) => {
     const travelerId = req.user.id;
-    const { voucherCode } = req.body;
+    const { vouchers = {}, voucherCode } = req.body;
 
-    const booking = await BookingService.createBookingFromCart(travelerId, voucherCode);
+    let voucherMap = {};
+    if (voucherCode) {
+      voucherMap = null;
+    } else if (Object.keys(vouchers).length > 0) {
+      voucherMap = vouchers;
+    }
+
+    const booking = await BookingService.createBookingFromCart(travelerId, voucherMap);
+
     res.status(201).json(
       ApiResponse.success({
         message: "Booking created successfully",

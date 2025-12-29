@@ -6,6 +6,7 @@ const {
 } = require("../controllers/booking.controller");
 const {
   createBookingSchema,
+  updateBookingInfoSchema,
   cancelBookingSchema,
   updateStatusSchema,
   directMenuBookingSchema,
@@ -24,6 +25,12 @@ router.use(authorize);
 // === TRAVELER ROUTES ===
 router.get("/my", requiredRoles("TRAVELER"), BookingController.getMyBookings);
 router.get("/my/:bookingId", requiredRoles("TRAVELER"), BookingController.getBookingDetail);
+router.patch(
+  "/my/:bookingId",
+  requiredRoles("TRAVELER"),
+  validate(updateBookingInfoSchema),
+  BookingController.updateBookingInfo,
+);
 router.post(
   "/",
   requiredRoles("TRAVELER"),
