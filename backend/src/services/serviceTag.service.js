@@ -39,47 +39,46 @@ const ServiceTagService = {
       orderBy: [{ category: "asc" }, { name: "asc" }],
     });
 
-    const grouped = tags.reduce((acc, tag) => {
-      const groupKey = tag.category.split("/")[1];
-      const groupTitle = formatGroupTitle(groupKey);
-      if (!acc[groupTitle]) acc[groupTitle] = [];
-      acc[groupTitle].push({
-        id: tag.id,
-        name: tag.name,
-        display: toPascalCase(tag.name),
-      });
-      return acc;
-    }, {});
+    const groupTags = (tagList) => {
+      return tagList.reduce((acc, tag) => {
+        const parts = tag.category.split("/");
+        const groupKey = parts[1] || "others";
+        const groupTitle = formatGroupTitle(groupKey);
 
-    if (!mode) return { type, grouped };
+        if (!acc[groupTitle]) acc[groupTitle] = [];
+        acc[groupTitle].push({
+          id: tag.id,
+          name: tag.name,
+          display: toPascalCase(tag.name),
+        });
+        return acc;
+      }, {});
+    };
+
+    if (!mode) {
+      return { type, grouped: groupTags(tags) };
+    }
 
     if (mode === "model") {
+      const modelCategory = `${type}/model`;
+
       const modelTags = tags
-        .filter((t) => t.category === "stay/model")
+        .filter((t) => t.category === modelCategory)
         .map((t) => ({
           id: t.id,
           name: t.name,
           display: toPascalCase(t.name),
         }));
+
       return { type, models: modelTags };
     }
 
     if (mode === "other") {
-      const otherGrouped = tags
-        .filter((t) => t.category !== "stay/model")
-        .reduce((acc, tag) => {
-          const groupKey = tag.category.split("/")[1];
-          const groupTitle = formatGroupTitle(groupKey);
-          if (!acc[groupTitle]) acc[groupTitle] = [];
-          acc[groupTitle].push({
-            id: tag.id,
-            name: tag.name,
-            display: toPascalCase(tag.name),
-          });
-          return acc;
-        }, {});
+      const modelCategory = `${type}/model`;
 
-      return { type, grouped: otherGrouped };
+      const otherTags = tags.filter((t) => t.category !== modelCategory);
+
+      return { type, grouped: groupTags(otherTags) };
     }
   },
 

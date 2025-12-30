@@ -1,8 +1,9 @@
 const { Router } = require("express");
 const { PartnerRegistrationController } = require("../controllers/partnerRegistration.controller");
-// const validate = require('../middlewares/validate.middleware');
+const authorize = require("../middlewares/auth.middleware");
 
 const router = Router();
+router.use(authorize);
 
 router.post("/applicants", PartnerRegistrationController.sendApplicant);
 
