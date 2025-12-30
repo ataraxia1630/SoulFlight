@@ -16,8 +16,10 @@ class TourDTO {
     this.current_bookings = tour.current_bookings;
     this.available_slots = tour.max_participants - tour.current_bookings;
     this.status = tour.status;
+
     this.service_id = tour.service_id;
     this.service_name = tour.Service?.name || null;
+
     this.provider_name = tour.Service?.Provider?.user?.name || null;
     this.is_wishlisted = tour.Service?.Wishlists?.length > 0 || false;
 

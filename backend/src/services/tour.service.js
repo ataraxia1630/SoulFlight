@@ -23,6 +23,9 @@ const commonInclude = (travelerId) => ({
     include: {
       Place: true,
     },
+    orderBy: {
+      start_time: "asc",
+    },
   },
 });
 

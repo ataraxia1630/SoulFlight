@@ -101,7 +101,7 @@ const ReportService = {
         title: "Cảnh báo vi phạm",
         message:
           "Chúng tôi đã nhận được tố cáo về dịch vụ của bạn và đã tiến hành xử lý. Vui lòng tuân thủ quy định của hệ thống.",
-        type: "SYSTEM_INFO",
+        type: "REPORT_RESOLVED",
         relatedId: report.id,
       });
     }

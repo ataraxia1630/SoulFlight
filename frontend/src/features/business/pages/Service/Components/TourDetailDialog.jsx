@@ -10,7 +10,6 @@ import {
   Phone,
   RateReview,
   Star,
-  Store,
   TourOutlined,
 } from "@mui/icons-material";
 import {
@@ -29,12 +28,11 @@ import {
   Typography,
 } from "@mui/material";
 import { useState } from "react";
-import ProviderCard from "@/shared/components/service-detail/ProviderCard";
 import ReviewsList from "@/shared/components/service-detail/tabs/ReviewList";
 import formatPrice from "@/shared/utils/FormatPrice";
 import { formatDate, formatDateTime, getDurationText } from "@/shared/utils/formatDate";
 
-const TourDetailDialog = ({ open, onClose, data, service, provider, reviews }) => {
+const TourDetailDialog = ({ open, onClose, data, service, reviews }) => {
   const [tabValue, setTabValue] = useState(0);
 
   if (!data) return null;
@@ -106,7 +104,6 @@ const TourDetailDialog = ({ open, onClose, data, service, provider, reviews }) =
         >
           <Tab icon={<TourOutlined fontSize="small" />} iconPosition="start" label="Lịch trình" />
           <Tab icon={<Info fontSize="small" />} iconPosition="start" label="Dịch vụ" />
-          <Tab icon={<Store fontSize="small" />} iconPosition="start" label="Nhà cung cấp" />
           <Tab icon={<RateReview fontSize="small" />} iconPosition="start" label={`Đánh giá`} />
         </Tabs>
       </Box>
@@ -433,15 +430,8 @@ const TourDetailDialog = ({ open, onClose, data, service, provider, reviews }) =
           </Box>
         )}
 
-        {/* tab provider */}
-        {tabValue === 2 && (
-          <Box sx={{ px: 3 }}>
-            <ProviderCard provider={provider} />
-          </Box>
-        )}
-
         {/* tab review */}
-        {tabValue === 3 && (
+        {tabValue === 2 && (
           <Box sx={{ px: 3 }}>
             <ReviewsList reviews={reviews || []} />
           </Box>

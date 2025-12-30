@@ -7,6 +7,7 @@ import BusinessHome from "@/features/business/pages/Home";
 import ProviderApplicationDetail from "../../features/business/pages/Applicants/ProviderApplicationDetail";
 import ProviderApplicationsPage from "../../features/business/pages/Applicants/ProviderApplicationPage";
 import ProviderDraftsPage from "../../features/business/pages/Applicants/ProviderDraftPage";
+import Services from "../../features/business/pages/Service/Service";
 import PartnerRegistrationLayout from "../../layouts/PartnerRegistrationLayout";
 import { createAuthRoutes } from "./auth.route";
 import ProtectedRoute from "./ProtectedRoute";
@@ -39,6 +40,7 @@ const mainRoutes = (
     </Route>
 
     {/* add routes */}
+    <Route path="business/service" element={<Services />} />
   </Route>
 );
 
