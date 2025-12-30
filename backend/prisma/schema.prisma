@@ -154,6 +154,7 @@ model Service {
   location    String?
   rating      Float          @default(0)
   type_id     Int
+  model_tag   Int?
   provider_id Int
   price_min   Float?
   price_max   Float?
@@ -162,6 +163,7 @@ model Service {
   Type        ServiceType    @relation(fields: [type_id], references: [id])
   Provider    Provider       @relation(fields: [provider_id], references: [id])
   Tags        ServiceOnTag[]
+  ModelTag    ServiceTag?    @relation(fields: [model_tag], references: [id])
   Menus       Menu[]
   Tours       Tour[]
   Rooms       Room[]
@@ -179,6 +181,7 @@ model ServiceTag {
   created_at DateTime       @default(now())
   updated_at DateTime       @updatedAt
   Services   ServiceOnTag[]
+  services   Service[]
 
   @@unique([name, category])
 }
@@ -779,13 +782,13 @@ model SharedItinerary {
 }
 
 model TravelJournal {
-  id          Int      @id @default(autoincrement())
+  id          Int     @id @default(autoincrement())
   title       String
-  content     String?  @db.Text
+  content     String? @db.Text
   traveler_id Int
-  
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
 
-  traveler    Traveler @relation(fields: [traveler_id], references: [id], onDelete: Cascade)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  traveler Traveler @relation(fields: [traveler_id], references: [id], onDelete: Cascade)
 }
