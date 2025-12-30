@@ -300,6 +300,7 @@ const PartnerRegistrationService = {
     for (const serviceData of services) {
       try {
         const {
+          model,
           serviceName,
           description,
           location,
@@ -312,13 +313,18 @@ const PartnerRegistrationService = {
           tickets,
         } = serviceData;
 
+        const type = await prisma.serviceType.findUnique({
+          where: { name: model },
+        });
+
         const service = await prisma.service.create({
           data: {
             name: serviceName,
             description: description || null,
             location: formattedAddress || location,
             provider_id,
-            type_id: Number(modelTag) || 1,
+            model_tag: modelTag || null,
+            type_id: type.id,
           },
         });
 
@@ -366,6 +372,7 @@ const PartnerRegistrationService = {
               end_time: new Date(tour.endTime),
               max_participants: Number(tour.maxParticipants) || 10,
               places: tour.places || [],
+              // thiếu tourplaces
             };
 
             await TourService.create(tourData);
