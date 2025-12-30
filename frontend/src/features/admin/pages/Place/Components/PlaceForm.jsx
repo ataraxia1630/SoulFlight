@@ -43,6 +43,7 @@ const PlaceForm = () => {
   const theme = useTheme();
   const isEdit = Boolean(id);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const [formData, setFormData] = useState({
     name: "",
@@ -106,8 +107,9 @@ const PlaceForm = () => {
     if (name === "entry_fee") {
       const numValue = parseFloat(value);
       if (numValue < 0) {
-        toast.error("Giá vé không được nhỏ hơn 0");
-        return;
+        setErrors((prev) => ({ ...prev, entry_fee: "Giá vé không được nhỏ hơn 0" }));
+      } else {
+        setErrors((prev) => ({ ...prev, entry_fee: "" }));
       }
       setFormData((prev) => ({ ...prev, [name]: Number.isNaN(numValue) ? 0 : numValue }));
     } else {
@@ -232,7 +234,7 @@ const PlaceForm = () => {
             variant="contained"
             startIcon={<SaveIcon />}
             onClick={handleSubmit}
-            disabled={loading}
+            disabled={loading || Boolean(errors.entry_fee)}
           >
             {loading ? "Đang lưu..." : "Lưu lại"}
           </Button>
@@ -278,7 +280,11 @@ const PlaceForm = () => {
                   value={formData.entry_fee}
                   onChange={handleChange}
                   inputProps={{ min: 0 }}
-                  helperText={formData.entry_fee > 0 ? formatPrice(formData.entry_fee) : "Miễn phí"}
+                  error={Boolean(errors.entry_fee)}
+                  helperText={
+                    errors.entry_fee ||
+                    (formData.entry_fee > 0 ? formatPrice(formData.entry_fee) : "Miễn phí")
+                  }
                 />
                 <FormInput
                   name="address"

@@ -65,7 +65,7 @@ export default function Place() {
 
   return (
     <Box sx={{ width: "100%", p: 3 }}>
-      <PageHeaderWithAdd title="Địa điểm" onAdd={handleAdd} />
+      <PageHeaderWithAdd title="Địa Điểm" onAdd={handleAdd} />
 
       {loading ? (
         <CircularProgress sx={{ display: "block", mx: "auto", mt: 4 }} />

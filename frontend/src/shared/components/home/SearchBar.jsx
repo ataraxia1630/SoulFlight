@@ -18,26 +18,26 @@ const SearchBar = () => {
   const fields = [
     {
       icon: <LocationOn sx={{ color: "text.secondary", fontSize: 25 }} />,
-      title: "Location",
-      subtitle: "Add place",
+      title: "Địa Điểm",
+      subtitle: "Thêm vị trí",
       fieldType: "location",
     },
     {
       icon: <PaymentsIcon sx={{ color: "text.secondary", fontSize: 25 }} />,
-      title: "Price Min",
-      subtitle: "Add price",
+      title: "Giá nhỏ",
+      subtitle: "Thêm giá",
       fieldType: "priceMin",
     },
     {
       icon: <PaymentsIcon sx={{ color: "text.secondary", fontSize: 25 }} />,
-      title: "Price Max",
-      subtitle: "Add price",
+      title: "Giá lớn",
+      subtitle: "Thêm giá",
       fieldType: "priceMax",
     },
     {
       icon: <People sx={{ color: "text.secondary", fontSize: 25 }} />,
-      title: "Guests",
-      subtitle: "Add guests",
+      title: "Khách",
+      subtitle: "Thêm khách",
       fieldType: "guests",
     },
   ];

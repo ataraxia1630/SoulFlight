@@ -15,11 +15,11 @@ const ExploreHeader = ({ location, priceMin, priceMax, guests, totalResults, the
       >
         <Box sx={{ p: 4, pb: 2 }}>
           <Typography sx={{ fontSize: 14, fontWeight: 500, mb: 1, opacity: 0.9 }}>
-            Search results
+            Kết quả tìm kiếm
           </Typography>
 
           <Typography sx={{ fontSize: 36, fontWeight: 700, mb: 2 }}>
-            {location || "All locations"}
+            {location || "Tất cả địa điểm"}
           </Typography>
 
           <Box
@@ -34,11 +34,11 @@ const ExploreHeader = ({ location, priceMin, priceMax, guests, totalResults, the
               <Chip
                 label={
                   priceMin && priceMax
-                    ? `${priceMin.toLocaleString()} - ${priceMax.toLocaleString()} VND`
+                    ? `${priceMin.toLocaleString()} - ${priceMax.toLocaleString()} VNĐ`
                     : priceMin
-                      ? `From ${priceMin.toLocaleString()} VND`
+                      ? `Từ ${priceMin.toLocaleString()} VNĐ`
                       : priceMax
-                        ? `Up to ${priceMax.toLocaleString()} VND`
+                        ? `Đến ${priceMax.toLocaleString()} VNĐ`
                         : ""
                 }
                 sx={{
@@ -50,7 +50,7 @@ const ExploreHeader = ({ location, priceMin, priceMax, guests, totalResults, the
             )}
 
             <Chip
-              label={`${guests} guest${guests !== "1" ? "s" : ""}`}
+              label={`${guests} khách`}
               sx={{
                 bgcolor: "rgba(255,255,255,0.2)",
                 color: "text.contrast",
@@ -59,7 +59,7 @@ const ExploreHeader = ({ location, priceMin, priceMax, guests, totalResults, the
             />
 
             <Chip
-              label={`${totalResults} results found`}
+              label={`${totalResults} kết quả tìm được`}
               sx={{
                 bgcolor: "rgba(255,255,255,0.3)",
                 color: "text.contrast",

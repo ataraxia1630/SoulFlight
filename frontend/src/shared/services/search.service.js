@@ -1,48 +1,41 @@
 import api from "@/shared/utils/axiosInstance";
 
-const API_BASE_URL = "/api";
+const API_BASE_URL = "/api/search/services";
 
 const SearchService = {
-  search: async (type, payload = {}) => {
-    const url = `${API_BASE_URL}/search/${type}`;
-
-    if (payload.mode === "voice" || payload.mode === "image") {
+  searchServices: async (payload = {}) => {
+    // image search (file ảnh)
+    if (payload.mode === "image" && payload.file) {
       const formData = new FormData();
       formData.append("mode", payload.mode);
       formData.append("file", payload.file);
-      if (payload.keyword) formData.append("keyword", payload.keyword);
       if (payload.location) formData.append("location", payload.location);
 
-      Object.keys(payload).forEach((key) => {
-        if (!["mode", "file", "keyword", "location"].includes(key)) {
-          formData.append(key, payload[key]);
-        }
-      });
-
-      const response = await api.post(url, formData, {
+      const res = await api.post(API_BASE_URL, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      return response.data;
+      return res.data?.data || res.data;
     }
 
-    const response = await api.post(url, payload, {
+    // text/voice search (json)
+    const jsonPayload = {
+      keyword: payload.keyword || "",
+      location: payload.location || null,
+      priceMin: payload.priceMin || null,
+      priceMax: payload.priceMax || null,
+      guests: payload.guests || null,
+      mode: payload.mode || "text",
+      ...payload.filters,
+    };
+
+    const res = await api.post(API_BASE_URL, jsonPayload, {
       headers: { "Content-Type": "application/json" },
     });
-    return response.data;
+    return res.data?.data || res.data;
   },
 
   searchAll: async (payload = {}) => {
-    const types = ["services"];
-    const requests = types.map((type) =>
-      SearchService.search(type, payload).catch(() => ({ data: [] })),
-    );
-
-    const responses = await Promise.all(requests);
-
-    return types.reduce((acc, type, i) => {
-      acc[`${type}`] = responses[i]?.data || [];
-      return acc;
-    }, {});
+    return await SearchService.searchServices(payload);
   },
 };
 
