@@ -1,5 +1,7 @@
 import AddMenuStep from "./AddMenuStep";
 import AddRoomStep from "./AddRoomStep";
+import AddTicketStep from "./AddTicketStep";
+import AddTourStep from "./AddTourStep";
 import ModelTagStep from "./ModelTagStep";
 import ServiceInfoStep from "./ServiceInfoStep";
 import ServiceTagStep from "./ServiceTagStep";
@@ -53,6 +55,35 @@ const STEP_CONFIG = {
         title: "Service Tags",
       },
       { id: "menus", component: AddMenuStep, title: "Add Menus" },
+    ],
+  },
+
+  Tour: {
+    name: "Tour Model",
+    steps: [
+      { id: "service-info", component: ServiceInfoStep, title: "Service Info" },
+      { id: "model-tag", component: ModelTagStep, title: "Model Tag" },
+      { id: "service-tags", component: ServiceTagStep, title: "Service Tags" },
+      {
+        id: "tours",
+        component: AddTourStep,
+        title: "Add Tours",
+        fields: ["tours"],
+      },
+    ],
+  },
+
+  Leisure: {
+    name: "Leisure Model",
+    steps: [
+      { id: "service-info", component: ServiceInfoStep, title: "Service Info" },
+      { id: "model-tag", component: ModelTagStep, title: "Model Tag" },
+      {
+        id: "tickets",
+        component: AddTicketStep,
+        title: "Add Tickets",
+        fields: ["tickets"],
+      },
     ],
   },
 };
