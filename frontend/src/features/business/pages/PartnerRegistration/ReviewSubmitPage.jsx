@@ -1,14 +1,26 @@
 import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import AddIcon from "@mui/icons-material/Add";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import { Box, Button, Card, CardContent, Stack, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  CircularProgress,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useFormData } from "@/features/business/context/FormDataContext";
+import PartnerRegistrationAPI from "../../../../shared/services/partnerRegistration.service";
 
 export default function ReviewSubmitPage() {
   const theme = useTheme();
   const navigate = useNavigate();
   const { services = [], resetServices } = useFormData();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleAddAnotherService = () => {
     navigate("/business/partner-registration");
@@ -19,17 +31,44 @@ export default function ReviewSubmitPage() {
     navigate(`/business/partner-registration/${service.data.model.toLowerCase()}?edit=${index}`);
   };
 
-  const onSubmit = () => {
-    console.log("SUBMIT ALL SERVICES:", services);
-    alert("Đã gửi đơn đăng ký thành công!");
+  const handleSaveDraft = async () => {
+    if (services.length === 0) return;
 
-    // GỌI API Ở ĐÂY
-    // await api.submitPartnerApplication(services);
+    try {
+      setIsLoading(true);
+      // Gọi API lưu nháp
+      await PartnerRegistrationAPI.saveDraft(services);
+      alert("Đã lưu bản nháp thành công!");
+    } catch (error) {
+      console.error("Save draft error:", error);
+      const msg = error.response?.data?.message || "Lỗi khi lưu bản nháp";
+      alert(msg);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    // XÓA DỮ LIỆU SAU KHI SUBMIT
-    resetServices();
+  const onSubmit = async () => {
+    if (services.length === 0) return;
 
-    navigate("/business");
+    try {
+      setIsLoading(true);
+      console.log("SUBMIT ALL SERVICES:", services);
+
+      await PartnerRegistrationAPI.submitApplicant(services);
+
+      alert("Đã gửi đơn đăng ký thành công! Vui lòng chờ duyệt.");
+
+      resetServices();
+
+      navigate("/business/partner-registration/applications");
+    } catch (error) {
+      console.error("Submit error:", error);
+      const msg = error.response?.data?.message || "Gửi đơn thất bại. Vui lòng thử lại.";
+      alert(msg);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -52,6 +91,7 @@ export default function ReviewSubmitPage() {
                   startIcon={<VisibilityIcon />}
                   variant="outlined"
                   onClick={() => handleReviewService(index)}
+                  disabled={isLoading}
                 >
                   Review
                 </Button>
@@ -69,7 +109,12 @@ export default function ReviewSubmitPage() {
               p: 2,
             }}
           >
-            <Button fullWidth startIcon={<AddIcon />} onClick={handleAddAnotherService}>
+            <Button
+              fullWidth
+              startIcon={<AddIcon />}
+              onClick={handleAddAnotherService}
+              disabled={isLoading}
+            >
               Add another service
             </Button>
           </CardContent>
@@ -152,16 +197,16 @@ export default function ReviewSubmitPage() {
       </Box>
 
       <Box display="flex" justifyContent="center" gap={2}>
-        <Button variant="outlined" size="large">
-          Save Draft
+        <Button variant="outlined" size="large" onClick={handleSaveDraft}>
+          {isLoading ? <CircularProgress size={24} color="inherit" /> : "Save Draft"}
         </Button>
         <Button
           variant="contained"
           size="large"
           onClick={onSubmit}
-          disabled={services.length === 0}
+          disabled={services.length === 0 || isLoading}
         >
-          Confirm and Submit
+          {isLoading ? <CircularProgress size={24} color="inherit" /> : "Confirm and Submit"}
         </Button>
       </Box>
     </Box>
