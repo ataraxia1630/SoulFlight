@@ -11,7 +11,7 @@ const TagService = {
    */
   getByType: async ({ type, mode = null }) => {
     try {
-      const validTypes = ["stay", "fnb", "tour", "transport", "leisure33"];
+      const validTypes = ["stay", "fnb", "tour", "transport", "leisure"];
       if (!type || !validTypes.includes(type)) {
         throw new Error("type is required and must be valid");
       }

@@ -21,6 +21,8 @@ const { seedTours } = require("./tours");
 const { seedTourPlaces } = require("./tour_places");
 const { seedTickets } = require("./tickets");
 const { seedVouchers } = require("./vouchers");
+const { seedTourTagsV2 } = require("./tour.tags.v2");
+const { seedLeisureTags } = require("./ticket.tour");
 
 async function main() {
   console.log("Starting seed...");
@@ -79,6 +81,12 @@ async function main() {
 
   // 17. Vouchers (depend on Services)
   await seedVouchers(prisma);
+
+  //18. Tour Tags V2 (no dependencies)
+  await seedTourTagsV2(prisma);
+
+  //19. Leisure Tags (no dependencies)
+  await seedLeisureTags(prisma);
 
   console.log("All seeds completed!");
 }
