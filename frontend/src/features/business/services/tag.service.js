@@ -24,6 +24,7 @@ const TagService = {
       const params = new URLSearchParams();
       params.append("type", type);
       if (mode) params.append("mode", mode);
+      console.log("TagService.getByType params:", params.toString());
 
       const url = `${API_URL}/type?${params.toString()}`;
 
