@@ -18,7 +18,7 @@ const LoginPage = () => {
     setLoading(true);
     try {
       const role = await AuthService.login(formData.email, formData.password, formData.rememberMe);
-      showAlert("Login successful!", "success");
+      showAlert("Đăng nhập thành công!", "success");
       setTimeout(() => {
         setLoading(false);
         if (role === "ADMIN") navigate("/admin/dashboard");
@@ -26,7 +26,7 @@ const LoginPage = () => {
         else navigate("/");
       }, 2000);
     } catch (error) {
-      showAlert(error.response?.data?.message || "Invalid email or password!", "error");
+      showAlert(error.response?.data?.message || "Email hoặc mật khẩu sai!", "error");
       console.error("Error during login:", error);
     } finally {
       setLoading(false);

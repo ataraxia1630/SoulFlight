@@ -127,7 +127,7 @@ const PlaceDetailsPage = () => {
               sx={{
                 color: "white",
                 textShadow: "0 2px 10px rgba(0,0,0,0.5)",
-                fontSize: { xs: "1.8rem", md: "3rem" },
+                fontSize: { xs: "1.3rem", md: "2rem" },
                 mb: 1,
               }}
             >

@@ -3,6 +3,9 @@ import TravelerHome from "@/features/traveler/pages/Home";
 import Booking from "../../features/traveler/pages/Booking/Booking";
 // import CartPage from '../../features/traveler/pages/Cart/CartPage';
 import CheckoutPage from "../../features/traveler/pages/Checkout/CheckoutPage";
+import Journal from "../../features/traveler/pages/Journal";
+import JournalDetailPage from "../../features/traveler/pages/Journal/JournalDetailPage";
+import JournalEditorPage from "../../features/traveler/pages/Journal/JournalEditorPage";
 import ExplorePlace from "../../features/traveler/pages/Place";
 import PlaceDetailsPage from "../../features/traveler/pages/Place/PlaceDetailPage";
 import ItinerariesListPage from "../../features/traveler/pages/Planner/ItinerariesListPage";
@@ -41,6 +44,10 @@ const mainRoutes = (
     {/* <Route path="/bookings/my" element={<BookingManagement />} /> */}
     <Route path="place" element={<ExplorePlace />} />
     <Route path="place/:id" element={<PlaceDetailsPage />} />
+    <Route path="/journal" element={<Journal />} />
+    <Route path="/journal/:id" element={<JournalDetailPage />} />
+    <Route path="/journal/create" element={<JournalEditorPage />} />
+    <Route path="/journal/edit/:id" element={<JournalEditorPage />} />
   </Route>
 );
 

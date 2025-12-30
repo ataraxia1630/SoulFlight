@@ -34,7 +34,7 @@ const LeftSidebar = () => {
   const menuItems = [
     {
       text: "Nhật ký hành trình",
-      path: "/travel-diary",
+      path: "/journal",
       icon: <BookIcon />,
       subtitle: "Lưu giữ kỷ niệm",
     },

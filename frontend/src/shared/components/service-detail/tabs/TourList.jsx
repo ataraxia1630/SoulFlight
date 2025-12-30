@@ -10,12 +10,14 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/app/store";
 import formatPrice from "@/shared/utils/FormatPrice";
 import { formatDateTime, getDurationText } from "@/shared/utils/formatDate";
 
 const ToursList = ({ tours }) => {
   const { user } = useAuthStore();
+  const navigate = useNavigate();
 
   if (!tours || tours.length === 0) {
     return (
@@ -267,7 +269,7 @@ const ToursList = ({ tours }) => {
                     variant="contained"
                     color="primary"
                     disabled={!isAvailable}
-                    onClick={() => console.log("Book now:", tour.id)}
+                    onClick={() => navigate(`/tours/${tour.id}`)}
                     sx={{ textTransform: "none", fontWeight: 600 }}
                   >
                     {isAvailable ? "Đặt tour ngay" : "Đã hết / Ngưng"}

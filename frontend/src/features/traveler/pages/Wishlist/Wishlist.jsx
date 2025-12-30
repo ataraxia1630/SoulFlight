@@ -55,7 +55,7 @@ const Wishlist = () => {
 
   if (wishlist.length === 0) {
     return (
-      <Container maxWidth="md" sx={{ py: 8 }}>
+      <Container maxWidth="md" sx={{ py: 7 }}>
         <Fade in timeout={800}>
           <Box
             sx={{
@@ -110,7 +110,7 @@ const Wishlist = () => {
   }
 
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "background.default", py: 2 }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "background.default", py: 1 }}>
       <Container maxWidth="xl">
         <Fade in timeout={600}>
           <Box>

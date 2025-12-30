@@ -23,6 +23,7 @@ const reportRoutes = require("./report.routes");
 const wishlistRoutes = require("./wishlist.routes");
 const reviewRoutes = require("./review.routes");
 const voucherRoutes = require("./voucher.routes");
+const journalRoutes = require("./journal.routes");
 const partnerRegistrationRoutes = require("./partnerRegistration.route");
 
 function route(app) {
@@ -50,6 +51,7 @@ function route(app) {
   app.use("/api/wishlist", wishlistRoutes);
   app.use("/api/review", reviewRoutes);
   app.use("/api/voucher", voucherRoutes);
+  app.use("/api/journal", journalRoutes);
   app.use("/api/partner-registration", partnerRegistrationRoutes);
 
   // luôn để sau cùng
