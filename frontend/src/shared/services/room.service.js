@@ -18,6 +18,11 @@ const RoomService = {
     return response.data;
   },
 
+  getByProvider: async (providerId) => {
+    const response = await api.get(`${API_BASE_URL}/provider/${providerId}`);
+    return response.data;
+  },
+
   delete: async (id) => {
     const response = await api.delete(`${API_BASE_URL}/${id}`);
     return response.data;

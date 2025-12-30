@@ -1,20 +1,7 @@
-import { Chip, Stack, Typography } from "@mui/material";
+import { Chip, Typography } from "@mui/material";
 import formatPrice from "@/shared/utils/FormatPrice";
 import { getDurationText } from "@/shared/utils/formatDate";
 import StatusChip from "./StatusChip";
-
-const ProviderCell = ({ providerName, serviceName }) => (
-  <Stack spacing={0.5}>
-    <Typography variant="body2">{providerName || "-"}</Typography>
-    <Typography
-      variant="caption"
-      color="text.secondary"
-      sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
-    >
-      Service: {serviceName || "-"}
-    </Typography>
-  </Stack>
-);
 
 // tour
 export const tourColumns = [
@@ -34,17 +21,6 @@ export const tourColumns = [
     cell_align: "left",
     search: true,
     render: (value) => <Typography variant="body2">{value}</Typography>,
-  },
-  {
-    id: "provider_name",
-    label: "NHÀ CUNG CẤP",
-    width: "15%",
-    header_align: "left",
-    cell_align: "left",
-    search: true,
-    render: (_, row) => (
-      <ProviderCell providerName={row.provider_name} serviceName={row.service_name} />
-    ),
   },
   {
     id: "duration",
@@ -115,17 +91,6 @@ export const ticketColumns = [
     render: (value) => <Typography variant="body2">{value}</Typography>,
   },
   {
-    id: "provider_name",
-    label: "NHÀ CUNG CẤP",
-    width: "20%",
-    header_align: "left",
-    cell_align: "left",
-    search: true,
-    render: (_, row) => (
-      <ProviderCell providerName={row.provider_name} serviceName={row.service_name} />
-    ),
-  },
-  {
     id: "place",
     label: "ĐỊA ĐIỂM",
     width: "15%",
@@ -180,17 +145,6 @@ export const menuColumns = [
     render: (value) => <Typography variant="body2">{value}</Typography>,
   },
   {
-    id: "provider_name",
-    label: "NHÀ CUNG CẤP",
-    width: "25%",
-    header_align: "left",
-    cell_align: "left",
-    search: true,
-    render: (_, row) => (
-      <ProviderCell providerName={row.provider_name} serviceName={row.service_name} />
-    ),
-  },
-  {
     id: "cover_thumbnail",
     label: "ẢNH",
     width: "20%",
@@ -233,17 +187,6 @@ export const roomColumns = [
     cell_align: "left",
     search: true,
     render: (value) => <Typography variant="body2">{value}</Typography>,
-  },
-  {
-    id: "provider_name",
-    label: "NHÀ CUNG CẤP",
-    width: "20%",
-    header_align: "left",
-    cell_align: "left",
-    search: true,
-    render: (_, row) => (
-      <ProviderCell providerName={row.provider_name} serviceName={row.service_name} />
-    ),
   },
   {
     id: "total_rooms",

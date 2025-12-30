@@ -1,5 +1,9 @@
-import { Alert, Box, Tab, Tabs } from "@mui/material";
+import { AddCircleOutline } from "@mui/icons-material";
+import { Alert, Box, Button, Tab, Tabs, Typography } from "@mui/material";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import useAuthStore from "@/app/store/authStore";
 import DeleteConfirmDialog from "@/shared/components/DeleteConfirmDialog";
 import LoadingState from "@/shared/components/LoadingState";
 import PageHeaderWithAdd from "@/shared/components/PageHeaderWithAdd";
@@ -11,6 +15,7 @@ import ServiceService from "@/shared/services/service.service";
 import TicketService from "@/shared/services/ticket.service";
 import TourService from "@/shared/services/tour.service";
 import toast from "@/shared/utils/toast";
+
 import { menuColumns, roomColumns, ticketColumns, tourColumns } from "./Components/columnsConfig";
 import MenuDetailDialog from "./Components/MenuDetailDialog";
 import RoomDetailDialog from "./Components/RoomDetailDialog";
@@ -29,6 +34,13 @@ const REVIEW_PARAM_MAP = {
   stay: "roomId",
 };
 
+const REGISTRATION_PATH_MAP = {
+  tour: "tour",
+  leisure: "leisure",
+  fnb: "fnb",
+  stay: "stay",
+};
+
 const tabStyle = (currentValue, tabId) => ({
   textTransform: "none",
   fontSize: "1rem",
@@ -41,6 +53,9 @@ const tabStyle = (currentValue, tabId) => ({
 const STORAGE_KEY = "services_active_tab";
 
 const BaseTabContent = ({ title, serviceAPI, columns, DetailDialog, currentTabId }) => {
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
+
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -54,16 +69,22 @@ const BaseTabContent = ({ title, serviceAPI, columns, DetailDialog, currentTabId
   const [loadingDetail, setLoadingDetail] = useState(false);
 
   const loadData = useCallback(async () => {
+    if (!user?.id) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
-      const res = await serviceAPI.getAll();
+      const res = await serviceAPI.getByProvider(user.id);
       setData(extractData(res));
-    } catch {
+    } catch (err) {
+      console.error(err);
       setError(`Không thể tải danh sách ${title}.`);
     } finally {
       setLoading(false);
     }
-  }, [serviceAPI, title]);
+  }, [serviceAPI, title, user?.id]);
 
   useEffect(() => {
     loadData();
@@ -101,16 +122,57 @@ const BaseTabContent = ({ title, serviceAPI, columns, DetailDialog, currentTabId
   const handleConfirmDelete = async () => {
     try {
       await serviceAPI.delete(deleteItem.id);
-      toast.success("Xóa thành công!");
       loadData();
+      setOpenDeleteDialog(false);
+      toast.success("Xóa thành công!");
     } catch {
       toast.error("Xóa thất bại!");
-    } finally {
-      setOpenDeleteDialog(false);
     }
   };
 
+  const handleEdit = () => {
+    toast.info("Tính năng đang phát triển");
+  };
+
+  const handleRegisterService = () => {
+    const pathType = REGISTRATION_PATH_MAP[currentTabId] || currentTabId;
+    navigate(`/business/partner-registration/${pathType}`);
+  };
+
   if (loading) return <LoadingState />;
+
+  if (!loading && data.length === 0) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          py: 8,
+          bgcolor: "grey.50",
+          borderRadius: 2,
+          border: "1px dashed #ccc",
+        }}
+      >
+        <AddCircleOutline sx={{ fontSize: 60, color: "text.secondary", mb: 2, opacity: 0.5 }} />
+        <Typography variant="h6" color="text.secondary" gutterBottom>
+          Bạn chưa có dịch vụ {title} nào
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          Hãy đăng ký dịch vụ để bắt đầu tiếp cận khách hàng
+        </Typography>
+        <Button
+          variant="contained"
+          size="large"
+          onClick={handleRegisterService}
+          sx={{ textTransform: "none", fontWeight: 600, px: 4 }}
+        >
+          Đăng ký dịch vụ {title}
+        </Button>
+      </Box>
+    );
+  }
 
   return (
     <>
@@ -125,6 +187,7 @@ const BaseTabContent = ({ title, serviceAPI, columns, DetailDialog, currentTabId
         columns={columns}
         data={data}
         onView={handleView}
+        onEdit={handleEdit}
         onDelete={(item) => {
           setDeleteItem(item);
           setOpenDeleteDialog(true);
@@ -225,7 +288,6 @@ export default function Services() {
         (tab) =>
           tabValue === tab.id && (
             <Box key={tab.id} sx={{ pt: 3 }}>
-              {" "}
               <BaseTabContent
                 title={tab.title}
                 serviceAPI={tab.api}

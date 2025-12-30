@@ -17,7 +17,7 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function CustomTable({ columns, data, onView, onEdit, onDelete }) {
   const [page, setPage] = useState(0);
@@ -66,8 +66,12 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
 
   const handleChangePage = (_, newPage) => {
     setPage(newPage);
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
+  // biome-ignore lint/correctness/useExhaustiveDependencies: page is used as a semantic trigger to scroll to top when pagination changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [page]);
+
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
