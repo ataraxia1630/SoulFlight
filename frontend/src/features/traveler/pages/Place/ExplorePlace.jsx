@@ -1,4 +1,5 @@
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import ImageIcon from "@mui/icons-material/Image";
 import InfoIcon from "@mui/icons-material/Info";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SearchIcon from "@mui/icons-material/Search";
@@ -117,7 +118,7 @@ const ExplorePlaces = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Container maxWidth="xl" sx={{ py: 1 }}>
       <Box sx={{ mb: 5 }}>
         <Box sx={{ mb: 3 }}>
           <Typography variant="h4" fontWeight="bold" gutterBottom>
@@ -209,23 +210,41 @@ const ExplorePlaces = () => {
                           pt: "60%",
                         }}
                       >
-                        <CardMedia
-                          component="img"
-                          image={
-                            place.thumbnail ||
-                            place.main_image ||
-                            "https://via.placeholder.com/400x300"
-                          }
-                          alt={place.name}
-                          sx={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
-                        />
+                        {place.thumbnail || place.main_image ? (
+                          <CardMedia
+                            component="img"
+                            image={place.thumbnail || place.main_image}
+                            alt={place.name}
+                            sx={{
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                          />
+                        ) : (
+                          <Box
+                            sx={{
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
+                              bgcolor: "grey.100",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Stack alignItems="center" spacing={1} color="text.disabled">
+                              <ImageIcon fontSize="medium" />
+                              <Typography variant="h5">No image</Typography>
+                            </Stack>
+                          </Box>
+                        )}
+
                         <Chip
                           label={place.entry_fee ? formatPrice(place.entry_fee) : "Miễn phí"}
                           size="small"
@@ -247,10 +266,9 @@ const ExplorePlaces = () => {
                       <CardContent sx={{ flexGrow: 1, width: "100%", p: 2.5 }}>
                         <Typography
                           gutterBottom
-                          variant="h6"
-                          fontWeight="bold"
+                          variant="h5"
+                          fontWeight="semibold"
                           sx={{
-                            fontSize: "1.25rem",
                             lineHeight: 1.3,
                             display: "-webkit-box",
                             overflow: "hidden",

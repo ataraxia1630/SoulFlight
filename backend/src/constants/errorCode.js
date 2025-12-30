@@ -385,6 +385,13 @@ const ERROR_CODES = {
     statusCode: 403,
     code: "FORBIDDEN",
   },
+
+  // journal
+  JOURNAL_NOT_FOUND: {
+    message: "Nhật ký này không tồn tại",
+    statusCode: 404,
+    code: "JOURNAL_NOT_FOUND",
+  },
 };
 
 module.exports = { ERROR_CODES };
