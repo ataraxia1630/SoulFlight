@@ -135,6 +135,7 @@ model Traveler {
   sharedItineraries SharedItinerary[]
   reports_sent      Report[]          @relation("TravelerReports")
   reviews           Review[]
+  journals          TravelJournal[]
 }
 
 model ServiceType {
@@ -775,4 +776,16 @@ model SharedItinerary {
 
   @@unique([itinerary_id, shared_with_traveler_id])
   @@index([shared_with_traveler_id])
+}
+
+model TravelJournal {
+  id          Int      @id @default(autoincrement())
+  title       String
+  content     String?  @db.Text
+  traveler_id Int
+  
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  traveler    Traveler @relation(fields: [traveler_id], references: [id], onDelete: Cascade)
 }
