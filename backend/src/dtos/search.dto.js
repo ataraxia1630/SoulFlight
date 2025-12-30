@@ -1,33 +1,36 @@
-const { pickImage } = require("../utils/pickImage");
+// const { pickImage } = require("../utils/pickImage");
 
 const formatPrice = (price, currency = "VND", locale = "vi-VN") =>
   new Intl.NumberFormat(locale, { style: "currency", currency }).format(price);
 
 function SearchServiceDTO(services, travelerId = null) {
-  return Promise.all(
-    services.map(async (s) => ({
-      id: s.id,
-      name: s.name,
-      description: s.description || "",
-      location: s.location || "",
-      rating: s.rating,
-      type: s.Type?.name || "",
-      is_wishlisted: travelerId ? s.Wishlists && s.Wishlists.length > 0 : false,
-      provider: {
-        name: s.Provider?.user?.name || `Provider ${s.provider_id}`,
-      },
-      price_range:
-        s.price_min && s.price_max
-          ? `${formatPrice(s.price_min)} - ${formatPrice(s.price_max)}`
-          : null,
-      tags:
-        s.Tags?.map((serviceOnTag) => ({
-          name: serviceOnTag.Tag?.name,
-          category: serviceOnTag.Tag?.category,
-        })) || [],
-      image: await pickImage(s),
-    })),
-  );
+  return services.map((s) => ({
+    id: s.id,
+    name: s.name,
+    description: s.description || "",
+    location: s.location || "",
+    rating: s.rating,
+    type: s.Type?.name || "",
+    is_wishlisted: travelerId ? s.Wishlists && s.Wishlists.length > 0 : false,
+
+    provider: {
+      name: s.Provider?.user?.name || `Provider ${s.provider_id}`,
+      avatar: s.Provider?.logo_url,
+    },
+
+    price_range:
+      s.price_min !== null && s.price_max !== null
+        ? `${formatPrice(s.price_min)} - ${formatPrice(s.price_max)}`
+        : "Liên hệ",
+
+    tags:
+      s.Tags?.map((serviceOnTag) => ({
+        name: serviceOnTag.Tag?.name,
+        category: serviceOnTag.Tag?.category,
+      })) || [],
+
+    image: s._mainImage || "https://via.placeholder.com/400x300.png?text=No+Image",
+  }));
 }
 
 function SearchVoucherDTO(vouchers) {

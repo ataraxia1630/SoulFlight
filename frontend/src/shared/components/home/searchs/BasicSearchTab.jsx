@@ -56,11 +56,11 @@ const BasicSearchTab = ({ searchParams, setSearchParams, activeField }) => {
       <Box>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
           <LocationOn sx={{ color: "primary.main" }} />
-          <Typography sx={{ fontWeight: 600 }}>Location</Typography>
+          <Typography sx={{ fontWeight: 600 }}>Địa Điểm</Typography>
         </Box>
         <FormInput
           name="location"
-          placeholder={focus.location || searchParams.location ? "" : "Where are you going?"}
+          placeholder={focus.location || searchParams.location ? "" : "Bạn muốn đi đâu?"}
           value={searchParams.location || ""}
           onChange={handleChange}
           onFocus={() => setFocus((f) => ({ ...f, location: true }))}
@@ -73,13 +73,11 @@ const BasicSearchTab = ({ searchParams, setSearchParams, activeField }) => {
         <Box sx={{ flex: 1 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
             <PaymentsIcon sx={{ color: "primary.main" }} />
-            <Typography sx={{ fontWeight: 600 }}>Price Min</Typography>
+            <Typography sx={{ fontWeight: 600 }}>Giá Nhỏ Nhất</Typography>
           </Box>
           <FormInput
             name="priceMin"
-            placeholder={
-              focus.priceMin || searchParams.priceMinDisplay ? "" : "Enter minimum price"
-            }
+            placeholder={focus.priceMin || searchParams.priceMinDisplay ? "" : "Nhập giá nhỏ nhất"}
             value={searchParams.priceMinDisplay || ""}
             onChange={(e) => handlePriceChange("priceMin", e.target.value)}
             onFocus={() => setFocus((f) => ({ ...f, priceMin: true }))}
@@ -91,13 +89,11 @@ const BasicSearchTab = ({ searchParams, setSearchParams, activeField }) => {
         <Box sx={{ flex: 1 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
             <PaymentsIcon sx={{ color: "primary.main" }} />
-            <Typography sx={{ fontWeight: 600 }}>Price Max</Typography>
+            <Typography sx={{ fontWeight: 600 }}>Giá Lớn Nhất</Typography>
           </Box>
           <FormInput
             name="priceMax"
-            placeholder={
-              focus.priceMax || searchParams.priceMaxDisplay ? "" : "Enter maximum price"
-            }
+            placeholder={focus.priceMax || searchParams.priceMaxDisplay ? "" : "Nhập giá lớn nhất"}
             value={searchParams.priceMaxDisplay || ""}
             onChange={(e) => handlePriceChange("priceMax", e.target.value)}
             onFocus={() => setFocus((f) => ({ ...f, priceMax: true }))}
@@ -110,7 +106,7 @@ const BasicSearchTab = ({ searchParams, setSearchParams, activeField }) => {
       <Box>
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
           <People sx={{ color: "primary.main" }} />
-          <Typography sx={{ fontWeight: 600 }}>Guests</Typography>
+          <Typography sx={{ fontWeight: 600 }}>Số Khách</Typography>
         </Box>
         <Paper
           elevation={0}
@@ -125,7 +121,7 @@ const BasicSearchTab = ({ searchParams, setSearchParams, activeField }) => {
             borderColor: "border.light",
           }}
         >
-          <Typography>Number of guests</Typography>
+          <Typography>Số lượng khách</Typography>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <IconButton
               size="small"

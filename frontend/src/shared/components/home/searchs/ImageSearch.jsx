@@ -38,7 +38,7 @@ const ImageSearch = ({ imageFile, setImageFile }) => {
       {!imageFile ? (
         <>
           <Typography sx={{ mb: 2, fontSize: 14, color: "text.secondary" }}>
-            Upload an image to search
+            Tải ảnh lên để tìm kiếm
           </Typography>
 
           <Button
@@ -52,7 +52,7 @@ const ImageSearch = ({ imageFile, setImageFile }) => {
               color: "text.contrast",
             }}
           >
-            Choose Image
+            Chọn Hình Ảnh
             <input type="file" accept="image/*" hidden onChange={handleImageUpload} />
           </Button>
         </>
@@ -83,7 +83,7 @@ const ImageSearch = ({ imageFile, setImageFile }) => {
             }}
             onClick={() => setImageFile(null)}
           >
-            Change Image
+            Thay Đổi Hình Ảnh
           </Button>
         </>
       )}

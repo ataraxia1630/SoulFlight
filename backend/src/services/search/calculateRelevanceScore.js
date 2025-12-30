@@ -1,110 +1,64 @@
 const stringSimilarity = require("string-similarity");
 
-const calculateRelevanceScore = (item, intent, entityType = "service") => {
+const calculateRelevanceScore = (item, intent) => {
   let score = 0;
-  const { query, location, priceMin, priceMax, guests, pet_friendly } = intent;
+  const { query, location, priceMin, priceMax } = intent;
 
-  const hasLocationFilter = location !== null && location !== undefined;
-  const hasPriceFilter = priceMin !== null || priceMax !== null;
-  const hasGuestsFilter = guests !== null && guests !== undefined;
-  const hasPetFilter = pet_friendly === true;
+  if (location) {
+    const itemLoc = (item.location || item.Provider?.province || "").toLowerCase();
+    const searchLoc = location.toLowerCase();
 
-  const hasAnyFilter = hasLocationFilter || hasPriceFilter || hasGuestsFilter || hasPetFilter;
-
-  // location
-  const loc = location?.toLowerCase()?.trim();
-  if (loc) {
-    const locFields = {
-      service: [item.location, item.Provider?.province],
-      room: [item.service?.location, item.service?.Provider?.province],
-      place: [item.address],
-      provider: [item.province],
-      default: [
-        item.address,
-        item.location,
-        item.Service?.location,
-        item.service?.location,
-        item.Place?.address,
-      ],
-    };
-
-    const locationText = (locFields[entityType] || locFields.default)
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-
-    const locSim = stringSimilarity.compareTwoStrings(locationText, loc);
-
-    if (locationText.includes(loc)) score += 300;
-    else if (locSim > 0.5) score += 150;
-    else score += 50;
-  }
-
-  // price
-  if (hasPriceFilter) {
-    const min = parseFloat(priceMin) || 0;
-    const max = parseFloat(priceMax) || Infinity;
-
-    const priceByType = {
-      service: () =>
-        item.price_min && item.price_max
-          ? (parseFloat(item.price_min) + parseFloat(item.price_max)) / 2
-          : parseFloat(item.price_min || item.price_max),
-      room: () => parseFloat(item.price_per_night),
-      ticket: () => parseFloat(item.price),
-      tour: () => parseFloat(item.total_price),
-    };
-
-    const itemPrice = priceByType[entityType]?.() ?? null;
-
-    if (itemPrice !== null) {
-      if (itemPrice >= min && itemPrice <= max) score += 200;
-      else if (itemPrice < min * 1.5 && itemPrice > max / 1.5) score += 80;
-      else score += 20;
+    if (itemLoc.includes(searchLoc)) {
+      score += 300;
+    } else {
+      score -= 200;
     }
   }
 
-  if (entityType === "room" && hasGuestsFilter && item.max_adult_number) {
-    const guestCount = parseInt(guests, 10);
-    if (item.max_adult_number >= guestCount) score += 150;
-    else score += 30;
+  if (query) {
+    const q = query.toLowerCase();
+    const name = item.name?.toLowerCase() || "";
+    const type = item.Type?.name?.toLowerCase() || "";
+    const description = (item.description || "").toLowerCase();
+
+    const tags = item.Tags?.map((t) => t.Tag?.name?.toLowerCase()).join(" ") || "";
+
+    if (name.includes(q)) {
+      score += 100;
+    } else if (type.includes(q)) {
+      score += 80;
+    } else if (tags.includes(q)) {
+      score += 60;
+    } else {
+      const nameSim = stringSimilarity.compareTwoStrings(name, q);
+      const descSim = stringSimilarity.compareTwoStrings(description, q);
+
+      if (nameSim > 0.4) score += nameSim * 50;
+      else if (descSim > 0.3) score += descSim * 30;
+    }
   }
 
-  if (entityType === "room" && hasPetFilter) {
-    if (item.pet_allowed) score += 200;
-    else score += 30;
+  if (priceMin || priceMax) {
+    const userMin = parseFloat(priceMin) || 0;
+    const userMax = parseFloat(priceMax) || Infinity;
+
+    const itemMin = item.price_min || 0;
+    const itemMax = item.price_max || item.price_min || 0;
+
+    if (itemMax > 0) {
+      if (itemMin <= userMax && itemMax >= userMin) {
+        score += 50;
+      } else {
+        score -= 10;
+      }
+    }
   }
 
-  const q = query?.toLowerCase()?.trim();
-  if (q) {
-    const textFields = [
-      item.name,
-      item.title,
-      item.description,
-      item.service?.name,
-      item.Service?.name,
-      item.Type?.name,
-      item.Place?.name,
-      item.Tags?.map((t) => t.Tag?.name).join(" "),
-      item.provider?.name,
-    ]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase();
-
-    const similarity = stringSimilarity.compareTwoStrings(textFields, q);
-
-    if (similarity > 0.85) score += 100;
-    else if (similarity > 0.6) score += 60;
-    else if (textFields.includes(q)) score += 40;
-    else if (q.split(" ").some((word) => textFields.includes(word))) score += 20;
-    else if (hasAnyFilter) score += 10;
-  } else {
-    if (hasAnyFilter) score += 50;
-    else score += 10;
+  if (item.rating) {
+    score += item.rating * 2;
   }
 
-  return Math.max(score, 10);
+  return score;
 };
 
 module.exports = { calculateRelevanceScore };

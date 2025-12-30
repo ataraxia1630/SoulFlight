@@ -5,8 +5,8 @@ const TextSearch = ({ searchText, setSearchText }) => {
   return (
     <Box>
       <FormInput
-        label="Search text"
-        placeholder="Enter destination, hotel, restaurant..."
+        label="Tìm kiếm"
+        placeholder="Nhập địa điểm, khách sạn, nhà hàng..."
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
         multiline
