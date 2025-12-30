@@ -3,23 +3,20 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Box,
   Button,
-  Chip,
   FormControl,
   FormControlLabel,
   Grid,
   IconButton,
-  InputLabel,
-  MenuItem,
   Radio,
   RadioGroup,
-  Select,
   Stack,
   TextField,
   Typography,
 } from "@mui/material";
 import { useFormContext } from "react-hook-form";
+import fileToBase64 from "../../fileToBase64";
 
-const CURRENCIES = ["VND", "USD"];
+const CURRENCIES = ["VND"];
 
 export default function RoomForm({ roomIndex, onConfirm }) {
   const {
@@ -27,24 +24,46 @@ export default function RoomForm({ roomIndex, onConfirm }) {
     register,
     watch,
     setValue,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useFormContext();
+
   const roomErrors = errors.rooms?.[roomIndex];
+  const images = watch(`rooms.${roomIndex}.images`) || [];
 
   const handleConfirm = async () => {
+    console.log("=== DEBUG START ===");
+    console.log("1. Room index:", roomIndex);
+    console.log("2. Room data:", watch(`rooms.${roomIndex}`));
+    console.log("3. All form errors:", errors);
+    console.log("4. Rooms errors:", errors.rooms);
+
     const isRoomValid = await trigger(`rooms.${roomIndex}`);
+
+    console.log("5. Is valid:", isRoomValid);
+    console.log("6. Errors after trigger:", errors);
+
     if (isRoomValid) {
+      console.log("✅ VALID");
       onConfirm();
+    } else {
+      console.log("❌ INVALID");
     }
   };
 
-  const isEditing = watch(`rooms.${roomIndex}.name`)?.trim();
+  const handleImageUpload = async (files) => {
+    const fileArray = Array.from(files);
+    const base64Array = [];
 
-  const images = watch(`rooms.${roomIndex}.images`) || [];
+    for (const file of fileArray) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Image size should be less than 5MB");
+        continue;
+      }
+      const base64 = await fileToBase64(file);
+      base64Array.push(base64);
+    }
 
-  const handleImageUpload = (files) => {
-    const newImages = Array.from(files).map((file) => URL.createObjectURL(file));
-    setValue(`rooms.${roomIndex}.images`, [...images, ...newImages], {
+    setValue(`rooms.${roomIndex}.images`, [...images, ...base64Array], {
       shouldValidate: true,
     });
   };
@@ -60,28 +79,33 @@ export default function RoomForm({ roomIndex, onConfirm }) {
   return (
     <Box>
       <Grid container spacing={4}>
-        {/* Thông tin phòng */}
+        {/* Left: Room Information */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Typography variant="h6" gutterBottom>
-            Room Information
+            Thông tin phòng
           </Typography>
           <Stack spacing={2}>
             <TextField
-              label="Room name"
+              label="Tên phòng"
+              placeholder="VD: Phòng Deluxe"
               {...register(`rooms.${roomIndex}.name`)}
               error={!!roomErrors?.name}
               helperText={roomErrors?.name?.message}
+              fullWidth
             />
+
             <TextField
-              label="Description"
+              label="Mô tả"
+              placeholder="Mô tả về phòng..."
               multiline
               rows={3}
               {...register(`rooms.${roomIndex}.description`)}
+              fullWidth
             />
 
             <Box display="flex" gap={1} alignItems="center">
               <TextField
-                label="Price"
+                label="Giá phòng một đêm"
                 type="number"
                 sx={{ flex: 1 }}
                 {...register(`rooms.${roomIndex}.price`, {
@@ -90,21 +114,20 @@ export default function RoomForm({ roomIndex, onConfirm }) {
                 error={!!roomErrors?.price}
                 helperText={roomErrors?.price?.message}
               />
-              <FormControl sx={{ minWidth: 100 }}>
-                <InputLabel>Currency</InputLabel>
-                <Select {...register(`rooms.${roomIndex}.currency`)} defaultValue="VND">
-                  {CURRENCIES.map((c) => (
-                    <MenuItem key={c} value={c}>
-                      {c}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <Typography color="text.secondary">per night</Typography>
+              <Typography color="text.secondary">{CURRENCIES[0]}</Typography>
             </Box>
 
             <TextField
-              label="Bed number"
+              label="Tổng số phòng"
+              type="number"
+              {...register(`rooms.${roomIndex}.totalRooms`, {
+                valueAsNumber: true,
+              })}
+              helperText="Số phòng cùng loại này"
+            />
+
+            <TextField
+              label="Số lượng giường"
               type="number"
               {...register(`rooms.${roomIndex}.bedCount`, {
                 valueAsNumber: true,
@@ -113,12 +136,12 @@ export default function RoomForm({ roomIndex, onConfirm }) {
 
             <Box>
               <Typography variant="subtitle2" gutterBottom>
-                Guests
+                Số khách tối đa
               </Typography>
               <Grid container spacing={1}>
                 <Grid size={6}>
                   <TextField
-                    label="Adult"
+                    label="Người lớn"
                     type="number"
                     fullWidth
                     {...register(`rooms.${roomIndex}.guestAdult`, {
@@ -128,7 +151,7 @@ export default function RoomForm({ roomIndex, onConfirm }) {
                 </Grid>
                 <Grid size={6}>
                   <TextField
-                    label="Children"
+                    label="Trẻ em"
                     type="number"
                     fullWidth
                     {...register(`rooms.${roomIndex}.guestChild`, {
@@ -140,19 +163,25 @@ export default function RoomForm({ roomIndex, onConfirm }) {
             </Box>
 
             <FormControl component="fieldset">
-              <Typography variant="subtitle2">Pet allowed?</Typography>
-              <RadioGroup row {...register(`rooms.${roomIndex}.petAllowed`)} defaultValue={false}>
-                <FormControlLabel control={<Radio />} label="Yes" value={true} />
-                <FormControlLabel control={<Radio />} label="No" value={false} />
+              <Typography variant="subtitle2">Có cho phép mang thú cưng?</Typography>
+              <RadioGroup
+                row
+                value={watch(`rooms.${roomIndex}.petAllowed`) ?? false}
+                onChange={(e) =>
+                  setValue(`rooms.${roomIndex}.petAllowed`, e.target.value === "true")
+                }
+              >
+                <FormControlLabel control={<Radio />} label="Có" value={true} />
+                <FormControlLabel control={<Radio />} label="Không" value={false} />
               </RadioGroup>
             </FormControl>
           </Stack>
         </Grid>
 
-        {/* Hình ảnh */}
+        {/* Right: Images */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Typography variant="h6" gutterBottom>
-            Room Images
+            Hình ảnh phòng
           </Typography>
           <Box
             sx={{
@@ -166,7 +195,10 @@ export default function RoomForm({ roomIndex, onConfirm }) {
             onClick={() => document.getElementById(`upload-${roomIndex}`).click()}
           >
             <AddPhotoAlternateIcon sx={{ fontSize: 40, color: "text.secondary" }} />
-            <Typography>Click to upload images</Typography>
+            <Typography>Chọn ảnh để tải lên</Typography>
+            <Typography variant="caption" color="text.secondary">
+              Max 5MB mỗi ảnh, JPG/PNG
+            </Typography>
             <input
               id={`upload-${roomIndex}`}
               type="file"
@@ -199,11 +231,6 @@ export default function RoomForm({ roomIndex, onConfirm }) {
                   >
                     <DeleteIcon fontSize="small" />
                   </IconButton>
-                  <Chip
-                    label={i === 0 ? "Entrance" : i === 1 ? "Bedroom" : "Bathroom"}
-                    size="small"
-                    sx={{ position: "absolute", bottom: 4, left: 4 }}
-                  />
                 </Box>
               </Grid>
             ))}
@@ -216,15 +243,13 @@ export default function RoomForm({ roomIndex, onConfirm }) {
           )}
         </Grid>
       </Grid>
-      <Box mt={4} textAlign="right">
-        <Button
-          variant="contained"
-          size="large"
-          onClick={handleConfirm}
-          disabled={!isValid && Object.keys(roomErrors || {}).length > 0}
-          sx={{ minWidth: 160 }}
-        >
-          {isEditing ? "Cập nhật phòng" : "Thêm phòng"}
+
+      <Box mt={4} display="flex" justifyContent="flex-end" gap={2}>
+        <Button variant="outlined" size="large" onClick={onConfirm}>
+          Cancel
+        </Button>
+        <Button variant="contained" size="large" onClick={handleConfirm} sx={{ minWidth: 160 }}>
+          Save Room
         </Button>
       </Box>
     </Box>

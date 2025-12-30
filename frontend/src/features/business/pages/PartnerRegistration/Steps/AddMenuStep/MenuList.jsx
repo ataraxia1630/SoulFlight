@@ -1,22 +1,22 @@
 import AddIcon from "@mui/icons-material/Add";
 import { Box, Stack, Typography } from "@mui/material";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import { defaultRoom } from "../defaultValues";
+import { defaultMenu } from "../defaultValues";
 
-export default function RoomList({ onSelectRoom, selectedIndex }) {
+export default function MenuList({ onSelectMenu, selectedIndex }) {
   const { control, watch } = useFormContext();
-  const { fields, append } = useFieldArray({ control, name: "rooms" });
+  const { fields, append } = useFieldArray({ control, name: "menus" });
 
-  const handleAddRoom = () => {
-    append(defaultRoom);
-    onSelectRoom(fields.length);
+  const handleAddMenu = () => {
+    append(defaultMenu);
+    onSelectMenu(fields.length);
   };
 
   return (
     <Box display="flex" gap={3} flexWrap="wrap" justifyContent="center" mb={4}>
       {fields.map((field, index) => {
-        const room = watch(`rooms.${index}`);
-        const previewImg = room.images?.[0] || "/placeholder-room.jpg"; // fallback
+        const menu = watch(`menus.${index}`);
+        const previewImg = menu.coverImage || "/placeholder-menu.jpg";
 
         return (
           <Stack
@@ -33,7 +33,7 @@ export default function RoomList({ onSelectRoom, selectedIndex }) {
               transition: "all 0.2s",
               "&:hover": { borderColor: "primary.main" },
             }}
-            onClick={() => onSelectRoom(index)}
+            onClick={() => onSelectMenu(index)}
           >
             <Box
               sx={{
@@ -46,7 +46,7 @@ export default function RoomList({ onSelectRoom, selectedIndex }) {
             >
               <img
                 src={previewImg}
-                alt={room.name}
+                alt={menu.name}
                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
               />
             </Box>
@@ -55,13 +55,12 @@ export default function RoomList({ onSelectRoom, selectedIndex }) {
               noWrap
               sx={{ width: 120, textAlign: "center", fontWeight: 500 }}
             >
-              {room.name || `Phòng ${index + 1}`}
+              {menu.name || `Menu ${index + 1}`}
             </Typography>
           </Stack>
         );
       })}
 
-      {/* Nút Add */}
       <Stack
         alignItems="center"
         justifyContent="center"
@@ -76,11 +75,11 @@ export default function RoomList({ onSelectRoom, selectedIndex }) {
           transition: "all 0.2s",
           "&:hover": { borderColor: "primary.main", bgcolor: "grey.50" },
         }}
-        onClick={handleAddRoom}
+        onClick={handleAddMenu}
       >
         <AddIcon sx={{ fontSize: 40, color: "grey.500" }} />
         <Typography variant="subtitle2" color="text.secondary">
-          Thêm phòng
+          Thêm Menu
         </Typography>
       </Stack>
     </Box>

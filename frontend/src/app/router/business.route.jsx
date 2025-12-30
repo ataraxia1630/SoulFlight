@@ -4,6 +4,9 @@ import ReviewSubmitPage from "@business/pages/PartnerRegistration/ReviewSubmitPa
 import { Route } from "react-router-dom";
 import { FormDataProvider } from "@/features/business/context/FormDataContext";
 import BusinessHome from "@/features/business/pages/Home";
+import ProviderApplicationDetail from "../../features/business/pages/Applicants/ProviderApplicationDetail";
+import ProviderApplicationsPage from "../../features/business/pages/Applicants/ProviderApplicationPage";
+import ProviderDraftsPage from "../../features/business/pages/Applicants/ProviderDraftPage";
 import PartnerRegistrationLayout from "../../layouts/PartnerRegistrationLayout";
 import { createAuthRoutes } from "./auth.route";
 import ProtectedRoute from "./ProtectedRoute";
@@ -25,7 +28,14 @@ const mainRoutes = (
       <Route index element={<PartnerRegistration />} />
       <Route path="stay" element={<RegistrationWizard defaultModel="Stay" />} />
       <Route path="fnb" element={<RegistrationWizard defaultModel="FnB" />} />
+      <Route path="leisure" element={<RegistrationWizard defaultModel="Leisure" />} />
+      <Route path="tour" element={<RegistrationWizard defaultModel="Tour" />} />
       <Route path="review-submit" element={<ReviewSubmitPage />} />
+      <Route path="draft/:draftId" element={<RegistrationWizard />} />
+      <Route path="draft" element={<ProviderDraftsPage />} />
+      <Route path="applications/:applicationId" element={<ProviderApplicationDetail />} />
+      <Route path="applications" element={<ProviderApplicationsPage />} />
+      <Route path="applications/:applicationId/edit" element={<RegistrationWizard isEditMode />} />
     </Route>
 
     {/* add routes */}
