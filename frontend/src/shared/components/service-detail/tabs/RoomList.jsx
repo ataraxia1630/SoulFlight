@@ -17,18 +17,18 @@ import {
   Dialog,
   Divider,
   IconButton,
-  ImageList,
-  ImageListItem,
   Stack,
   Typography,
 } from "@mui/material";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/app/store";
 import formatPrice from "@/shared/utils/FormatPrice";
 
 const RoomsList = ({ rooms }) => {
   const [openImageObj, setOpenImageObj] = useState(null);
   const { user } = useAuthStore();
+  const navigate = useNavigate();
 
   const handleOpenImage = (imgUrl) => {
     setOpenImageObj(imgUrl);
@@ -67,19 +67,18 @@ const RoomsList = ({ rooms }) => {
           >
             <Box sx={{ width: { xs: "100%", sm: 300 }, flexShrink: 0 }}>
               {room.images && room.images.length > 0 ? (
-                <ImageList
+                <Box
                   sx={{
                     width: "100%",
                     height: { xs: 200, sm: 300 },
-                    m: 0,
-
-                    "&::-webkit-scrollbar": {
-                      width: "6px",
-                      height: "6px",
-                    },
-                    "&::-webkit-scrollbar-track": {
-                      background: "transparent",
-                    },
+                    overflowY: "auto",
+                    p: 0,
+                    display: "grid",
+                    gridTemplateColumns: room.images.length === 1 ? "1fr" : "repeat(2, 1fr)",
+                    autoRows: "150px",
+                    gap: 1,
+                    "&::-webkit-scrollbar": { width: "6px" },
+                    "&::-webkit-scrollbar-track": { background: "transparent" },
                     "&::-webkit-scrollbar-thumb": {
                       backgroundColor: "rgba(0,0,0,0.1)",
                       borderRadius: "10px",
@@ -88,54 +87,40 @@ const RoomsList = ({ rooms }) => {
                       backgroundColor: "rgba(0,0,0,0.5)",
                     },
                   }}
-                  cols={2}
-                  rowHeight={150}
-                  gap={2}
                 >
-                  {room.images.slice(0, 10).map((img) => (
-                    <ImageListItem
-                      key={img.id}
-                      onClick={() => handleOpenImage(img.url)}
-                      sx={{ cursor: "pointer", overflow: "hidden" }}
-                    >
-                      <button
-                        type="button"
-                        onMouseEnter={(e) => {
-                          e.currentTarget.firstChild.style.transform = "scale(1.1)";
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.firstChild.style.transform = "scale(1)";
-                        }}
-                        onFocus={(e) => {
-                          e.currentTarget.firstChild.style.transform = "scale(1.1)";
-                        }}
-                        onBlur={(e) => {
-                          e.currentTarget.firstChild.style.transform = "scale(1)";
-                        }}
-                        style={{
-                          all: "unset",
-                          cursor: "pointer",
-                          width: "100%",
+                  {room.images.slice(0, 10).map((img, index) => {
+                    const isOddTotal = room.images.length % 2 !== 0;
+                    const isFirstImage = index === 0;
+                    const shouldSpanFull = isOddTotal && isFirstImage && room.images.length > 1;
+
+                    return (
+                      <Box
+                        key={img.id}
+                        sx={{
+                          position: "relative",
+                          gridColumn: shouldSpanFull ? "span 2" : "span 1",
                           height: "100%",
-                          display: "block",
                           overflow: "hidden",
+                          cursor: "pointer",
                         }}
+                        onClick={() => handleOpenImage(img.url)}
                       >
-                        <img
+                        <Box
+                          component="img"
                           src={img.thumbnail_url || img.url}
-                          alt="Hình ảnh phòng"
-                          style={{
+                          alt={`Room image ${index + 1}`}
+                          sx={{
                             width: "100%",
                             height: "100%",
                             objectFit: "cover",
                             transition: "transform 0.3s ease",
-                            display: "block",
+                            "&:hover": { transform: "scale(1.1)" },
                           }}
                         />
-                      </button>
-                    </ImageListItem>
-                  ))}
-                </ImageList>
+                      </Box>
+                    );
+                  })}
+                </Box>
               ) : (
                 <Box
                   sx={{
@@ -319,7 +304,12 @@ const RoomsList = ({ rooms }) => {
                   >
                     Thêm vào giỏ
                   </Button>
-                  <Button variant="contained" size="small" disabled={!isAvailable}>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    disabled={!isAvailable}
+                    onClick={() => navigate(`/rooms/${room.id}`)}
+                  >
                     {isAvailable ? "Đặt phòng" : "Hết phòng"}
                   </Button>
                 </Box>

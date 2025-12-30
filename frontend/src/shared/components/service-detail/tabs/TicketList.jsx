@@ -11,11 +11,13 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/app/store";
 import formatPrice from "@/shared/utils/FormatPrice";
 
 const TicketsList = ({ tickets }) => {
   const { user } = useAuthStore();
+  const navigate = useNavigate();
 
   const formatOpeningHours = (hours) => {
     if (!hours) return "Chưa cập nhật";
@@ -192,7 +194,12 @@ const TicketsList = ({ tickets }) => {
                   >
                     Thêm vào giỏ
                   </Button>
-                  <Button variant="contained" size="small" disabled={!isAvailable}>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    disabled={!isAvailable}
+                    onClick={() => navigate(`/tickets/${ticket.id}`)}
+                  >
                     {isAvailable ? "Mua ngay" : "Tạm ngưng"}
                   </Button>
                 </Box>

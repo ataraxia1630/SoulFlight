@@ -9,6 +9,7 @@ import {
   Divider,
   Typography,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/app/store";
 import formatPrice from "@/shared/utils/FormatPrice";
 
@@ -32,6 +33,7 @@ const unitTranslation = {
 
 const MenusList = ({ menus }) => {
   const { user } = useAuthStore();
+  const navigate = useNavigate();
 
   if (!menus || menus.length === 0) {
     return (
@@ -220,7 +222,7 @@ const MenusList = ({ menus }) => {
                               size="small"
                               disableElevation
                               disabled={!isAvailable}
-                              onClick={() => console.log("Order now", item.id)}
+                              onClick={() => navigate(`/menus/${item.id}`)}
                               sx={{ textTransform: "none", fontWeight: 600 }}
                             >
                               Đặt ngay
