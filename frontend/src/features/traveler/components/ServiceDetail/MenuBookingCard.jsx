@@ -124,7 +124,7 @@ const MenuBookingCard = ({ menu, onAddToCart }) => {
           Chọn món ăn
         </Typography>
         <List disablePadding sx={{ mb: 2 }}>
-          {menu.items.map((item) => {
+          {menu?.items?.map((item) => {
             const selected = selectedItems.find((i) => i.id === item.id);
             return (
               <ListItem
