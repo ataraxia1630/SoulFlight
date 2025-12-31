@@ -36,8 +36,14 @@ const RoomService = {
   },
 
   bookRoom: async (data) => {
-    const response = await api.post("api/booking/direct/room", data);
-    return response.data;
+    try {
+      const response = await api.post("api/booking/direct/room", data);
+      console.log("Booking response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error booking room:", error);
+      throw new Error(error.response?.data?.message || error);
+    }
   },
 };
 

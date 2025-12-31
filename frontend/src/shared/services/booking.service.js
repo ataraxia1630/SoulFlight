@@ -15,7 +15,14 @@ export const bookingAPI = {
   },
 
   getMyBookings: async (params) => {
-    return await api.get(`${API_BASE_URL}/my`, { params });
+    try {
+      const response = await api.get(API_BASE_URL + "/my", { params });
+      console.log("Fetched my bookings:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching my bookings:", error);
+      throw new Error(error.response?.data?.message || error);
+    }
   },
 
   getBookingDetail: async (bookingId) => {

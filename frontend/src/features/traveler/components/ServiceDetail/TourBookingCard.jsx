@@ -25,7 +25,7 @@ const TourBookingCard = ({ tour, onAddToCart }) => {
   const [checkingAvailability, setCheckingAvailability] = useState(false);
   const [error, setError] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
-  const [appliedVoucher, setAppliedVoucher] = useState(null);
+  const [appliedVoucher, setAppliedVoucher] = useState("");
   const [_voucherLoading, setVoucherLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -74,7 +74,7 @@ const TourBookingCard = ({ tour, onAddToCart }) => {
   };
 
   const handleRemoveVoucher = () => {
-    setAppliedVoucher(null);
+    setAppliedVoucher("");
     toast.info("Đã hủy mã giảm giá");
   };
 
@@ -86,10 +86,10 @@ const TourBookingCard = ({ tour, onAddToCart }) => {
       const result = await TourService.bookTour({
         tourId: tour.id,
         quantity,
-        voucherCode: appliedVoucher?.code || null,
+        voucherCode: appliedVoucher?.code?.trim() || "",
       });
       toast.success("Tạo booking thành công!");
-      navigate(`/checkout?bookingIds=${result.data.booking.id}`);
+      navigate(`/checkout?bookingIds=${result.data.id}`);
     } catch (err) {
       toast.error(err.message || "Lỗi khi tạo booking");
       setError(err.message);

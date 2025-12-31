@@ -29,7 +29,7 @@ const directRoomBookingSchema = Joi.object({
   checkinDate: Joi.date().iso().required(),
   checkoutDate: Joi.date().iso().greater(Joi.ref("checkinDate")).required(),
   quantity: Joi.number().min(1).required(),
-  voucherCode: Joi.string().optional(),
+  voucherCode: Joi.string().optional().allow(""),
   guestInfo: Joi.object({
     fullName: Joi.string().required(),
     phone: Joi.string().required(),
@@ -41,7 +41,7 @@ const directRoomBookingSchema = Joi.object({
 const directTourBookingSchema = Joi.object({
   tourId: Joi.number().required(),
   quantity: Joi.number().min(1).required(),
-  voucherCode: Joi.string().optional(),
+  voucherCode: Joi.string().optional().allow(""),
   guestInfo: Joi.object({
     fullName: Joi.string().required(),
     phone: Joi.string().required(),
@@ -54,7 +54,7 @@ const directTicketBookingSchema = Joi.object({
   ticketId: Joi.number().required(),
   visitDate: Joi.date().iso().required(),
   quantity: Joi.number().min(1).required(),
-  voucherCode: Joi.string().optional(),
+  voucherCode: Joi.string().optional().allow(""),
   guestInfo: Joi.object({
     fullName: Joi.string().required(),
     phone: Joi.string().required(),
@@ -73,7 +73,7 @@ const directMenuBookingSchema = Joi.object({
     .min(1)
     .required(),
   visitDate: Joi.date().iso().optional(),
-  voucherCode: Joi.string().optional(),
+  voucherCode: Joi.string().optional().allow(""),
   guestInfo: Joi.object({
     fullName: Joi.string().required(),
     phone: Joi.string().required(),
