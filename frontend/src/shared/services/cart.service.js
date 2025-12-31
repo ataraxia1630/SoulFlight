@@ -21,7 +21,7 @@ export const CartService = {
 
   updateCartItem: async (itemId, data) => {
     try {
-      const response = await api.patch(`${API_BASE_URL}/${itemId}`, data);
+      const response = await api.put(`${API_BASE_URL}/${itemId}`, data);
       console.log("Update cart item response:", response);
       return response.data;
     } catch (error) {
