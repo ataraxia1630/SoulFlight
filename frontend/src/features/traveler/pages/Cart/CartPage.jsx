@@ -1,11 +1,4 @@
-import {
-  Add,
-  DeleteOutline,
-  Explore,
-  Remove,
-  ShoppingBagOutlined,
-  ShoppingCartCheckout,
-} from "@mui/icons-material";
+import { Explore, ShoppingBagOutlined, ShoppingCartCheckout } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -13,16 +6,18 @@ import {
   Container,
   Divider,
   Grid,
-  IconButton,
   Paper,
   Stack,
   Typography,
 } from "@mui/material";
-import { useEffect, useMemo, useState } from "react";
+import { debounce } from "lodash";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingState from "@/shared/components/LoadingState";
+import toast from "@/shared/utils/toast";
 import { CartService } from "../../../../shared/services/cart.service";
 import { voucherAPI } from "../../../../shared/services/voucher.service";
+import CartItem from "../../components/Cart/CartItem";
 import VoucherInput from "../../components/Cart/VoucherInput";
 
 const CartPage = () => {
@@ -31,29 +26,63 @@ const CartPage = () => {
   const [appliedVouchers, setAppliedVouchers] = useState({}); // { serviceId: voucherObject }
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchCart = async () => {
-      try {
-        const res = await CartService.getCart();
-        setCartData(res.data);
-      } catch (error) {
-        console.error("Lỗi tải giỏ hàng", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCart();
+  const fetchCart = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await CartService.getCart();
+      console.log("Giỏ hàng:", res.data);
+      setCartData(res.data);
+    } catch (error) {
+      toast.error(error.message || "Lỗi khi tải giỏ hàng");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const handleUpdateQuantity = async (itemId, newQty) => {
-    if (newQty < 1) return;
-    await CartService.updateCartItem(itemId, { quantity: newQty });
+  useEffect(() => {
     fetchCart();
+  }, [fetchCart]);
+
+  const debouncedUpdate = useMemo(
+    () =>
+      debounce(async (itemId, newQty) => {
+        try {
+          await CartService.updateCartItem(itemId, { quantity: newQty });
+          await fetchCart(true);
+          toast.success("Cập nhật thành công");
+        } catch (_error) {
+          toast.error("Cập nhật thất bại");
+          fetchCart();
+        }
+      }, 3000),
+    [fetchCart],
+  );
+
+  const handleUpdateQuantity = (itemId, newQty) => {
+    if (newQty < 1) return;
+
+    setCartData((prev) => ({
+      ...prev,
+      services: prev.services.map((s) => ({
+        ...s,
+        items: s.items.map((i) =>
+          i.id === itemId ? { ...i, quantity: newQty, total: i.price * newQty } : i,
+        ),
+      })),
+    }));
+
+    debouncedUpdate(itemId, newQty);
   };
 
   const handleRemoveItem = async (itemId) => {
-    await CartService.removeFromCart(itemId);
-    fetchCart();
+    try {
+      await CartService.removeFromCart(itemId);
+      toast.success("Đã xóa sản phẩm");
+      fetchCart(true);
+      window.dispatchEvent(new Event("cartUpdated"));
+    } catch (_error) {
+      toast.error("Lỗi khi xóa");
+    }
   };
 
   const handleApplyVoucher = async (serviceId, code, totalAmount) => {
@@ -168,52 +197,12 @@ const CartPage = () => {
                 <Divider sx={{ mb: 2 }} />
 
                 {service.items.map((item) => (
-                  <Box
+                  <CartItem
                     key={item.id}
-                    sx={{
-                      mb: 2,
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Box>
-                      <Typography variant="body1" fontWeight="medium">
-                        {item.itemName}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        Đơn giá: {item.price.toLocaleString()}đ | Loại: {item.itemType}
-                      </Typography>
-                    </Box>
-
-                    <Stack direction="row" alignItems="center" spacing={1}>
-                      <IconButton
-                        size="small"
-                        onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}
-                      >
-                        <Remove fontSize="small" />
-                      </IconButton>
-                      <Typography>{item.quantity}</Typography>
-                      <IconButton
-                        size="small"
-                        onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}
-                      >
-                        <Add fontSize="small" />
-                      </IconButton>
-                      <Typography
-                        sx={{
-                          minWidth: 80,
-                          textAlign: "right",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        {item.total.toLocaleString()}đ
-                      </Typography>
-                      <IconButton color="error" onClick={() => handleRemoveItem(item.id)}>
-                        <DeleteOutline />
-                      </IconButton>
-                    </Stack>
-                  </Box>
+                    item={item}
+                    onUpdate={handleUpdateQuantity}
+                    onRemove={handleRemoveItem}
+                  />
                 ))}
 
                 <Box sx={{ mt: 2, bgcolor: "grey.50", p: 2, borderRadius: 1 }}>

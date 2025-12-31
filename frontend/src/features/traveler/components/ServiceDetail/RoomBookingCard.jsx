@@ -93,19 +93,6 @@ const RoomBookingCard = ({ room, onAddToCart }) => {
 
   const finalTotal = appliedVoucher ? totalPrice - appliedVoucher.discount_amount : totalPrice;
 
-  const handleAddToCartClick = async () => {
-    setActionLoading(true);
-    try {
-      await onAddToCart({
-        checkinDate,
-        checkoutDate,
-        quantity,
-      });
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
   const handleBookNowClick = async () => {
     setActionLoading(true);
     try {
@@ -294,9 +281,14 @@ const RoomBookingCard = ({ room, onAddToCart }) => {
           <LoadingButton
             variant="outlined"
             fullWidth
-            onClick={handleAddToCartClick}
+            onClick={() =>
+              onAddToCart({
+                checkinDate,
+                checkoutDate,
+                quantity,
+              })
+            }
             disabled={!isValidDates || !isQuantityValid || checkingAvailability || actionLoading}
-            loading={actionLoading}
           >
             Thêm vào giỏ hàng
           </LoadingButton>

@@ -90,18 +90,6 @@ const TicketBookingCard = ({ ticket, onAddToCart }) => {
 
   const finalTotal = appliedVoucher ? totalPrice - appliedVoucher.discount_amount : totalPrice;
 
-  const handleAddToCartClick = async () => {
-    setActionLoading(true);
-    try {
-      await onAddToCart({ visitDate, quantity });
-      toast.success("Đã thêm vào giỏ hàng!");
-    } catch (err) {
-      toast.error(err.message || "Lỗi khi thêm vào giỏ");
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
   const handleBookNowClick = async () => {
     setActionLoading(true);
     try {
@@ -254,9 +242,8 @@ const TicketBookingCard = ({ ticket, onAddToCart }) => {
           <LoadingButton
             variant="outlined"
             fullWidth
-            onClick={handleAddToCartClick}
+            onClick={() => onAddToCart({ visitDate, quantity })}
             disabled={!isValidDate || !isQuantityValid || checkingAvailability || actionLoading}
-            loading={actionLoading}
           >
             Thêm vào giỏ hàng
           </LoadingButton>

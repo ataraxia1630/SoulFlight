@@ -80,18 +80,6 @@ const TourBookingCard = ({ tour, onAddToCart }) => {
 
   const finalTotal = appliedVoucher ? totalPrice - appliedVoucher.discount_amount : totalPrice;
 
-  const handleAddToCartClick = async () => {
-    setActionLoading(true);
-    try {
-      await onAddToCart({ quantity });
-      toast.success("Đã thêm vào giỏ hàng!");
-    } catch (err) {
-      toast.error(err.message || "Lỗi khi thêm vào giỏ");
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
   const handleBookNowClick = async () => {
     setActionLoading(true);
     try {
@@ -232,9 +220,8 @@ const TourBookingCard = ({ tour, onAddToCart }) => {
           <LoadingButton
             variant="outlined"
             fullWidth
-            onClick={handleAddToCartClick}
+            onClick={() => onAddToCart({ quantity })}
             disabled={!isQuantityValid || checkingAvailability || actionLoading}
-            loading={actionLoading}
           >
             Thêm vào giỏ hàng
           </LoadingButton>

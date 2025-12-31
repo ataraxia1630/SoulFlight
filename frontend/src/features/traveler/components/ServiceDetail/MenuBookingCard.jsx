@@ -66,18 +66,6 @@ const MenuBookingCard = ({ menu, onAddToCart }) => {
     voucherCode: appliedVoucher?.code || undefined,
   });
 
-  const handleAddToCartClick = async () => {
-    setActionLoading(true);
-    try {
-      await onAddToCart(formatDataForBE());
-      toast.success("Đã thêm vào giỏ hàng!");
-    } catch (err) {
-      toast.error(err.message || "Lỗi khi thêm vào giỏ");
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
   const handleBookNowClick = async () => {
     setActionLoading(true);
     try {
@@ -279,9 +267,8 @@ const MenuBookingCard = ({ menu, onAddToCart }) => {
           <LoadingButton
             variant="outlined"
             fullWidth
-            onClick={handleAddToCartClick}
+            onClick={() => onAddToCart(formatDataForBE())}
             disabled={selectedItems.length === 0 || !visitDate}
-            loading={actionLoading}
           >
             Thêm vào giỏ hàng
           </LoadingButton>
