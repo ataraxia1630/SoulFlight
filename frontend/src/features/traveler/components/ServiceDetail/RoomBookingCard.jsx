@@ -27,7 +27,7 @@ const RoomBookingCard = ({ room, onAddToCart }) => {
   const [checkingAvailability, setCheckingAvailability] = useState(false);
   const [error, setError] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
-  const [appliedVoucher, setAppliedVoucher] = useState(null);
+  const [appliedVoucher, setAppliedVoucher] = useState("");
   const [_voucherLoading, setVoucherLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -41,7 +41,7 @@ const RoomBookingCard = ({ room, onAddToCart }) => {
     : "";
 
   const handleRemoveVoucher = () => {
-    setAppliedVoucher(null);
+    setAppliedVoucher("");
     toast.info("Đã hủy mã giảm giá");
   };
 
@@ -101,7 +101,7 @@ const RoomBookingCard = ({ room, onAddToCart }) => {
         checkinDate,
         checkoutDate,
         quantity,
-        voucherCode: appliedVoucher?.code || null,
+        voucherCode: appliedVoucher?.code?.trim() || "",
       });
       toast.success("Tạo booking thành công!");
       navigate(`/checkout?bookingIds=${result.data.booking.id}`);

@@ -28,7 +28,7 @@ const TicketBookingCard = ({ ticket, onAddToCart }) => {
   const [checkingAvailability, setCheckingAvailability] = useState(false);
   const [error, setError] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
-  const [appliedVoucher, setAppliedVoucher] = useState(null);
+  const [appliedVoucher, setAppliedVoucher] = useState("");
   const [_voucherLoading, setVoucherLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -84,7 +84,7 @@ const TicketBookingCard = ({ ticket, onAddToCart }) => {
   };
 
   const handleRemoveVoucher = () => {
-    setAppliedVoucher(null);
+    setAppliedVoucher("");
     toast.info("Đã hủy mã giảm giá");
   };
 
@@ -97,7 +97,7 @@ const TicketBookingCard = ({ ticket, onAddToCart }) => {
         ticketId: ticket.id,
         visitDate,
         quantity,
-        voucherCode: appliedVoucher?.code || null,
+        voucherCode: appliedVoucher?.code?.trim() || "",
       });
       toast.success("Tạo booking thành công!");
       navigate(`/checkout?bookingIds=${result.data.booking.id}`);
