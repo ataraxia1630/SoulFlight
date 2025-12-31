@@ -79,7 +79,7 @@ const VoucherService = {
     return voucher;
   },
 
-  async getAvailableVouchers({ serviceId, page = 1, limit = 20 }) {
+  async getAvailableVouchers({ serviceId }) {
     const now = new Date();
 
     const where = {
@@ -98,7 +98,7 @@ const VoucherService = {
       ],
     };
 
-    const [vouchers, total] = await Promise.all([
+    const [vouchers] = await Promise.all([
       prisma.voucher.findMany({
         where,
         include: {
@@ -111,21 +111,10 @@ const VoucherService = {
           },
         },
         orderBy: [{ discount_percent: "desc" }, { created_at: "desc" }],
-        skip: (page - 1) * limit,
-        take: limit,
       }),
-      prisma.voucher.count({ where }),
     ]);
 
-    return {
-      vouchers,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
+    return vouchers;
   },
 
   async checkVoucher(code, serviceId = null, totalAmount = 0) {
@@ -231,7 +220,7 @@ const VoucherService = {
     return voucher;
   },
 
-  async getProviderVouchers(providerId, { page = 1, limit = 20, status }) {
+  async getProviderVouchers(providerId, { status }) {
     const where = {
       service: {
         provider_id: providerId,
@@ -240,16 +229,22 @@ const VoucherService = {
 
     const now = new Date();
     if (status === "active") {
-      where.OR = [
-        { valid_from: null, valid_to: null },
+      where.AND = [
         {
-          AND: [
-            { valid_from: { lte: now } },
-            { OR: [{ valid_to: null }, { valid_to: { gte: now } }] },
+          OR: [
+            { valid_from: null, valid_to: null },
+            {
+              AND: [
+                { valid_from: { lte: now } },
+                { OR: [{ valid_to: null }, { valid_to: { gte: now } }] },
+              ],
+            },
           ],
         },
+        {
+          OR: [{ max_uses: null }, { used_count: { lt: prisma.voucher.fields.max_uses } }],
+        },
       ];
-      where.OR = [{ max_uses: null }, { used_count: { lt: prisma.voucher.fields.max_uses } }];
     } else if (status === "expired") {
       where.valid_to = { lt: now };
     } else if (status === "upcoming") {
@@ -258,7 +253,7 @@ const VoucherService = {
       where.used_count = { gte: prisma.voucher.fields.max_uses };
     }
 
-    const [vouchers, total] = await Promise.all([
+    const [vouchers] = await Promise.all([
       prisma.voucher.findMany({
         where,
         include: {
@@ -273,24 +268,13 @@ const VoucherService = {
           },
         },
         orderBy: { created_at: "desc" },
-        skip: (page - 1) * limit,
-        take: limit,
       }),
-      prisma.voucher.count({ where }),
     ]);
 
-    return {
-      vouchers,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
+    return vouchers;
   },
 
-  async getAllVouchers({ page = 1, limit = 20, status, isGlobal, serviceId }) {
+  async getAllVouchers({ status, isGlobal, serviceId }) {
     const where = {};
 
     if (typeof isGlobal !== "undefined") {
@@ -303,20 +287,31 @@ const VoucherService = {
 
     const now = new Date();
     if (status === "active") {
-      where.OR = [
-        { valid_from: null, valid_to: null },
+      where.AND = [
         {
-          AND: [
-            { valid_from: { lte: now } },
-            { OR: [{ valid_to: null }, { valid_to: { gte: now } }] },
+          OR: [
+            { valid_from: null, valid_to: null },
+            {
+              AND: [
+                { valid_from: { lte: now } },
+                { OR: [{ valid_to: null }, { valid_to: { gte: now } }] },
+              ],
+            },
           ],
+        },
+        {
+          OR: [{ max_uses: null }, { used_count: { lt: prisma.voucher.fields.max_uses } }],
         },
       ];
     } else if (status === "expired") {
       where.valid_to = { lt: now };
+    } else if (status === "upcoming") {
+      where.valid_from = { gt: now };
+    } else if (status === "exhausted") {
+      where.used_count = { gte: prisma.voucher.fields.max_uses };
     }
 
-    const [vouchers, total] = await Promise.all([
+    const [vouchers] = await Promise.all([
       prisma.voucher.findMany({
         where,
         include: {
@@ -337,21 +332,10 @@ const VoucherService = {
           },
         },
         orderBy: { created_at: "desc" },
-        skip: (page - 1) * limit,
-        take: limit,
       }),
-      prisma.voucher.count({ where }),
     ]);
 
-    return {
-      vouchers,
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
+    return vouchers;
   },
 
   async updateVoucher(voucherId, userId, isAdmin, updateData) {
