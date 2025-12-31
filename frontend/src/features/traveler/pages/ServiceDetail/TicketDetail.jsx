@@ -5,6 +5,7 @@ import TicketBookingCard from "@traveler/components/ServiceDetail/TicketBookingC
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { CartService } from "@/shared/services/cart.service";
+import toast from "@/shared/utils/toast";
 import TicketService from "../../../../shared/services/ticket.service";
 
 const TicketDetail = () => {
@@ -34,18 +35,19 @@ const TicketDetail = () => {
   const handleAddToCart = async (bookingData) => {
     try {
       await CartService.addToCart({
-        item_type: "TICKET",
-        item_id: ticket.id,
+        itemType: "TICKET",
+        itemId: ticket.id,
         quantity: bookingData.quantity,
-        visit_date: bookingData.visitDate,
+        visitDate: bookingData.visitDate,
         note: "",
       });
 
-      setAlert({ type: "success", message: "Đã thêm vào giỏ hàng!" });
-      setTimeout(() => setAlert(null), 3000);
+      toast.success("Đã thêm vé vào giỏ hàng!");
+
+      window.dispatchEvent(new Event("cartUpdated"));
     } catch (err) {
       setAlert({ type: "error", message: err.message });
-      setTimeout(() => setAlert(null), 3000);
+      toast.error(err.message || "Lỗi khi thêm vé vào giỏ hàng");
     }
   };
 

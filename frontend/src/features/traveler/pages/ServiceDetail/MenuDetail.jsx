@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { CartService } from "@/shared/services/cart.service";
 import MenuService from "@/shared/services/menu.service";
+import toast from "@/shared/utils/toast";
 import ImageGallery from "../../components/ServiceDetail/ImageGallery";
 import MenuBookingCard from "../../components/ServiceDetail/MenuBookingCard";
 import ServiceInfo from "../../components/ServiceDetail/ServiceInfo";
@@ -33,12 +34,22 @@ const MenuDetail = () => {
 
   const handleAddToCart = async (bookingData) => {
     try {
-      await CartService.addToCart(bookingData);
-      setAlert({ type: "success", message: "Đã thêm vào giỏ hàng!" });
-      setTimeout(() => setAlert(null), 3000);
+      const addPromises = bookingData.items.map((item) =>
+        CartService.addToCart({
+          itemType: "MENU_ITEM",
+          itemId: item.menuItemId,
+          quantity: item.quantity,
+          visitDate: bookingData.visitDate,
+        }),
+      );
+
+      await Promise.all(addPromises);
+
+      toast.success("Đã thêm các món vào giỏ hàng!");
+
+      window.dispatchEvent(new Event("cartUpdated"));
     } catch (err) {
-      setAlert({ type: "error", message: err.message });
-      setTimeout(() => setAlert(null), 3000);
+      toast.error(err.message || "Lỗi khi thêm món vào giỏ hàng");
     }
   };
 

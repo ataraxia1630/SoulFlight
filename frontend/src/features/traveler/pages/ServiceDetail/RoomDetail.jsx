@@ -5,6 +5,7 @@ import ServiceInfo from "@traveler/components/ServiceDetail/ServiceInfo";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { CartService } from "@/shared/services/cart.service";
+import toast from "@/shared/utils/toast";
 import RoomService from "../../../../shared/services/room.service";
 
 const RoomDetail = () => {
@@ -34,19 +35,18 @@ const RoomDetail = () => {
   const handleAddToCart = async (bookingData) => {
     try {
       await CartService.addToCart({
-        item_type: "ROOM",
-        item_id: room.id,
+        itemType: "ROOM",
+        itemId: room.id,
         quantity: bookingData.quantity,
-        checkin_date: bookingData.checkinDate,
-        checkout_date: bookingData.checkoutDate,
-        note: bookingData.note,
+        checkinDate: bookingData.checkinDate,
+        checkoutDate: bookingData.checkoutDate,
       });
 
-      setAlert({ type: "success", message: "Đã thêm vào giỏ hàng!" });
-      setTimeout(() => setAlert(null), 3000);
+      toast.success("Đã thêm phòng vào giỏ hàng!");
+
+      window.dispatchEvent(new Event("cartUpdated"));
     } catch (err) {
-      setAlert({ type: "error", message: err.message });
-      setTimeout(() => setAlert(null), 3000);
+      toast.error(err.message || "Lỗi khi thêm phòng vào giỏ hàng");
     }
   };
 
