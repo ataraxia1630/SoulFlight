@@ -2,36 +2,37 @@ const { upsertMany } = require("./utils/upsertMany");
 
 const tourGuides = [
   {
-    name: "Nguyen Van An",
+    name: "Nguyễn Văn An",
     phone: "+84978123456",
     description:
-      "Experienced guide with 10 years in Mekong Delta tourism. Fluent in English, French, and Vietnamese.",
+      "Hướng dẫn viên có kinh nghiệm 10 năm trong du lịch Đồng Bằng Sông Cửu Long. Thành thạo tiếng Anh, Pháp và Việt.",
     image_url: "https://i.pravatar.cc/400?img=15",
   },
   {
-    name: "Tran Thi Binh",
+    name: "Trần Thị Bình",
     phone: "+84989234567",
     description:
-      "Local expert specializing in cultural tours and traditional villages. Speaks English and Japanese.",
+      "Chuyên gia địa phương về tour văn hóa và làng quê truyền thống. Nói tiếng Anh và Nhật Bản.",
     image_url: "https://i.pravatar.cc/400?img=45",
   },
   {
-    name: "Le Minh Chau",
+    name: "Lê Minh Châu",
     phone: "+84967345678",
     description:
-      "Adventure tour specialist with expertise in cycling and eco-tourism. English and German speaker.",
+      "Chuyên gia tour phiêu lưu với kinh nghiệm xe đạp và du lịch sinh thái. Nói tiếng Anh và Đức.",
     image_url: "https://i.pravatar.cc/400?img=52",
   },
   {
-    name: "Pham Thanh Dat",
+    name: "Phạm Thanh Đạt",
     phone: "+84956456789",
-    description: "Photographer and nature guide focusing on bird watching and wildlife tours.",
+    description:
+      "Hướng dẫn nhiếp ảnh và thiên nhiên chuyên quan sát chim và tour động vật hoang dã.",
     image_url: "https://i.pravatar.cc/400?img=13",
   },
   {
-    name: "Hoang Thi Em",
+    name: "Hoàng Thị Em",
     phone: "+84945567890",
-    description: "Food tour expert with deep knowledge of local cuisine and cooking traditions.",
+    description: "Chuyên gia tour ẩm thực với kiến thức sâu về nấu ăn truyền thống địa phương.",
     image_url: "https://i.pravatar.cc/400?img=48",
   },
 ];

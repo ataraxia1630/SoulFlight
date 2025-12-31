@@ -3,15 +3,15 @@ const { upsertMany } = require("./utils/upsertMany");
 const serviceTypes = [
   {
     name: "stay",
-    description: "Hotels, resorts, homestays, and other lodging services",
+    description: "Khách sạn, resort, homestay và các dịch vụ lưu trú khác",
   },
   {
     name: "fnb",
-    description: "Restaurants, cafes, bars, and dining experiences",
+    description: "Nhà hàng, quán cà phê, quầy bar và các trải nghiệm ẩm thực",
   },
   {
     name: "tour",
-    description: "Guided tours, excursions, and adventure activities",
+    description: "Các tour du lịch có hướng dẫn, chuyến tham quan và hoạt động khám phá",
   },
   {
     name: "leisure",

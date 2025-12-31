@@ -101,6 +101,83 @@ async function seedServiceOnTags(prisma) {
     { service_id: 13, tag_id: tagMap["local_experience_tour/theme"] },
     { service_id: 13, tag_id: tagMap["half_day_tour_tour/type"] },
     { service_id: 13, tag_id: tagMap["outdoor_tour/activity"] },
+
+    // === Service 14 - Mekong Delta Discovery ===
+    { service_id: 14, tag_id: tagMap["day_tour_tour/type"] },
+    { service_id: 14, tag_id: tagMap["floating_market_tour/attraction"] },
+    { service_id: 14, tag_id: tagMap["local_experience_tour/theme"] },
+    { service_id: 14, tag_id: tagMap["boat_tour_tour/activity"] },
+    { service_id: 14, tag_id: tagMap["culture_tour/theme"] },
+
+    // === Service 15 - Sunset River Cruise ===
+    { service_id: 15, tag_id: tagMap["river_cruise_tour/type"] },
+    { service_id: 15, tag_id: tagMap["romantic_tour/theme"] },
+    { service_id: 15, tag_id: tagMap["evening_tour_tour/time"] },
+    { service_id: 15, tag_id: tagMap["boat_tour_tour/activity"] },
+    { service_id: 15, tag_id: tagMap["sunset_tour/highlight"] },
+
+    // === Service 16 - Cycling Through Villages ===
+    { service_id: 16, tag_id: tagMap["cycling_tour_tour/type"] },
+    { service_id: 16, tag_id: tagMap["eco_tour_tour/theme"] },
+    { service_id: 16, tag_id: tagMap["local_experience_tour/theme"] },
+    { service_id: 16, tag_id: tagMap["half_day_tour_tour/type"] },
+    { service_id: 16, tag_id: tagMap["outdoor_tour/activity"] },
+
+    // === Service 14 - Mekong Delta Discovery ===
+    { service_id: 14, tag_id: tagMap["day_tour_tour/type"] },
+    { service_id: 14, tag_id: tagMap["floating_market_tour/attraction"] },
+    { service_id: 14, tag_id: tagMap["local_experience_tour/theme"] },
+    { service_id: 14, tag_id: tagMap["boat_tour_tour/activity"] },
+    { service_id: 14, tag_id: tagMap["culture_tour/theme"] },
+
+    // === Service 15 - Sunset River Cruise ===
+    { service_id: 15, tag_id: tagMap["river_cruise_tour/type"] },
+    { service_id: 15, tag_id: tagMap["romantic_tour/theme"] },
+    { service_id: 15, tag_id: tagMap["evening_tour_tour/time"] },
+    { service_id: 15, tag_id: tagMap["boat_tour_tour/activity"] },
+    { service_id: 15, tag_id: tagMap["sunset_tour/highlight"] },
+
+    // === Service 16 - Cycling Through Villages ===
+    { service_id: 16, tag_id: tagMap["cycling_tour_tour/type"] },
+    { service_id: 16, tag_id: tagMap["eco_tour_tour/theme"] },
+    { service_id: 16, tag_id: tagMap["local_experience_tour/theme"] },
+    { service_id: 16, tag_id: tagMap["half_day_tour_tour/type"] },
+    { service_id: 16, tag_id: tagMap["outdoor_tour/activity"] },
+
+    // === Service 17 - Spiritual Journey Sam Mountain ===
+    { service_id: 17, tag_id: tagMap["half_day_tour_tour/type"] },
+    { service_id: 17, tag_id: tagMap["culture_tour/theme"] },
+    { service_id: 17, tag_id: tagMap["guided_tour_tour/experience"] },
+    { service_id: 17, tag_id: tagMap["morning_tour_tour/time"] },
+    { service_id: 17, tag_id: tagMap["adventure_tour/theme"] },
+
+    // === Service 18 - Eco Tour Tra Su Forest ===
+    { service_id: 18, tag_id: tagMap["eco_tour_tour/theme"] },
+    { service_id: 18, tag_id: tagMap["day_tour_tour/type"] },
+    { service_id: 18, tag_id: tagMap["local_experience_tour/theme"] },
+    { service_id: 18, tag_id: tagMap["outdoor_tour/activity"] },
+    { service_id: 18, tag_id: tagMap["guided_tour_tour/experience"] },
+
+    // === Service 19 - Ha Long Bay Cruise ===
+    { service_id: 19, tag_id: tagMap["river_cruise_tour/type"] },
+    { service_id: 19, tag_id: tagMap["boat_tour_tour/activity"] },
+    { service_id: 19, tag_id: tagMap["multi_day_tour_tour/type"] },
+    { service_id: 19, tag_id: tagMap["scenic_tour/highlight"] },
+    { service_id: 19, tag_id: tagMap["group_tour_tour/experience"] },
+
+    // === Service 20 - Ancient Town Hoi An ===
+    { service_id: 20, tag_id: tagMap["day_tour_tour/type"] },
+    { service_id: 20, tag_id: tagMap["culture_tour/theme"] },
+    { service_id: 20, tag_id: tagMap["local_experience_tour/theme"] },
+    { service_id: 20, tag_id: tagMap["guided_tour_tour/experience"] },
+    { service_id: 20, tag_id: tagMap["group_tour_tour/experience"] },
+
+    // === Service 21 - Trekking Sapa ===
+    { service_id: 21, tag_id: tagMap["adventure_tour/theme"] },
+    { service_id: 21, tag_id: tagMap["multi_day_tour_tour/type"] },
+    { service_id: 21, tag_id: tagMap["outdoor_tour/activity"] },
+    { service_id: 21, tag_id: tagMap["guided_tour_tour/experience"] },
+    { service_id: 21, tag_id: tagMap["group_tour_tour/experience"] },
   ].filter((assoc) => assoc.tag_id);
 
   await upsertMany(prisma, prisma.serviceOnTag, associations, ["service_id", "tag_id"]);

@@ -32,6 +32,19 @@ const ServiceService = {
     return ServiceDTO.fromModel(service);
   },
 
+  getByProvider: async (providerId) => {
+    const services = await prisma.service.findMany({
+      where: {
+        provider_id: Number(providerId),
+      },
+      include: {
+        Provider: { include: { user: true } },
+        Type: true,
+      },
+    });
+    return ServiceDTO.fromList(services);
+  },
+
   create: async (serviceData) => {
     const service = await prisma.service.create({
       data: serviceData,
