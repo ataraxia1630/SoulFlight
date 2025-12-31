@@ -4,6 +4,7 @@ import CardTravelIcon from "@mui/icons-material/CardTravel";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import PlaceIcon from "@mui/icons-material/Place";
 import StarsIcon from "@mui/icons-material/Stars";
+import TimeToLeaveIcon from "@mui/icons-material/TimeToLeave";
 import {
   Avatar,
   alpha,
@@ -47,6 +48,11 @@ const LeftSidebar = () => {
       text: "Địa điểm du lịch",
       path: "/place",
       icon: <PlaceIcon />,
+    },
+    {
+      text: "Lịch sử booking",
+      path: "/booking/history",
+      icon: <TimeToLeaveIcon />,
     },
     {
       text: "Lịch trình của tôi",
