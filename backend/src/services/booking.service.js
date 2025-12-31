@@ -136,7 +136,7 @@ const BookingService = {
   createBookingFromCart: async (travelerId, voucherMap = {}) => {
     return await prisma.$transaction(async (tx) => {
       const cartItems = await tx.cartItem.findMany({
-        where: { traveler_id: travelerId },
+        where: { cart: { traveler_id: travelerId } },
         include: {
           room: {
             select: {
@@ -146,12 +146,14 @@ const BookingService = {
             },
           },
           tour: {
-            select: { service_id: true, service_price: true, name: true },
+            select: { service_id: true, total_price: true, name: true },
           },
           ticket: {
             select: { service_id: true, price: true, name: true },
           },
-          menu_item: { select: { service_id: true, price: true, name: true } },
+          menu_item: {
+            include: { Menu: { select: { service_id: true } } },
+          },
         },
       });
       if (!cartItems.length) throw new AppError(400, "Giỏ hàng rỗng");
@@ -163,17 +165,19 @@ const BookingService = {
           item.ticket?.service_id ||
           item.menu_item?.Menu?.service_id;
 
-        if (!serviceId) throw new AppError(400, "Item không có service_id");
+        if (!serviceId) throw new AppError(400, "Item không hợp lệ");
 
         if (!acc[serviceId]) acc[serviceId] = { serviceId, items: [] };
         acc[serviceId].items.push(item);
         return acc;
       }, {});
 
+      const createdBookings = [];
+
       for (const { serviceId, items } of Object.values(groups)) {
         const service = await tx.service.findUnique({
           where: { id: serviceId },
-          include: { provider: true },
+          include: { Provider: true },
         });
         if (!service) throw new AppError(404, `Service ${serviceId} không tồn tại`);
 
@@ -182,57 +186,48 @@ const BookingService = {
 
         for (const item of items) {
           let unitPrice = 0;
-          let itemName = "Unknown";
-          // let itemImage = null;
+          let itemName = "Dịch vụ";
 
-          if (item.room) {
-            const nights = calculateNights(item.checkin_date, item.checkout_date);
-            unitPrice = item.room.price_per_night * nights;
+          if (item.item_type === "ROOM") {
+            const nights = Math.max(
+              1,
+              Math.ceil(
+                (new Date(item.checkout_date) - new Date(item.checkin_date)) /
+                  (1000 * 60 * 60 * 24),
+              ),
+            );
+            unitPrice = Number(item.room.price_per_night);
             itemName = item.room.name;
-          } else if (item.tour) {
-            unitPrice = item.tour.service_price;
-            itemName = item.tour.name;
-          } else if (item.ticket) {
-            unitPrice = item.ticket.price;
-            itemName = item.ticket.name;
-          } else if (item.menu_item) {
-            unitPrice = item.menu_item.price;
-            itemName = item.menu_item.name;
-            // itemImage = item.menu_item.image_url || null;
+            totalAmount += unitPrice * nights * item.quantity;
+          } else {
+            unitPrice = item.tour?.total_price || item.ticket?.price || item.menu_item?.price || 0;
+            itemName = item.tour?.name || item.ticket?.name || item.menu_item?.name;
+            totalAmount += unitPrice * item.quantity;
           }
-
-          const itemTotal = unitPrice * item.quantity;
-          totalAmount += itemTotal;
 
           bookingItemsData.push({
             item_type: item.item_type,
+            item_id: item.item_id,
             item_name: itemName,
             quantity: item.quantity,
             unit_price: unitPrice,
-            total_price: itemTotal,
+            total_price: unitPrice * item.quantity,
             checkin_date: item.checkin_date,
             checkout_date: item.checkout_date,
             visit_date: item.visit_date,
-            note: item.note,
-            room_id: item.room_id,
-            tour_id: item.tour_id,
-            ticket_id: item.ticket_id,
-            menu_item_id: item.menu_item_id,
           });
         }
 
         let discountAmount = 0;
         let voucherId = null;
-        const voucherCodeForThisService =
-          typeof voucherMap === "object" && voucherMap !== null ? voucherMap[serviceId] : null;
+        const voucherCode = voucherMap[serviceId];
 
-        if (voucherCodeForThisService) {
+        if (voucherCode) {
           const voucher = await tx.voucher.findFirst({
             where: {
-              code: voucherCodeForThisService.toUpperCase(),
-              service_id: serviceId, // Chỉ áp dụng cho đúng service
+              code: voucherCode,
+              service_id: serviceId,
               is_active: true,
-              // Có thể thêm: start_date <= now <= end_date, used_count < max_uses, etc.
             },
           });
 
@@ -240,20 +235,13 @@ const BookingService = {
             discountAmount = totalAmount * (voucher.discount_percent / 100);
             voucherId = voucher.id;
 
-            // Tăng used_count
             await tx.voucher.update({
               where: { id: voucher.id },
               data: { used_count: { increment: 1 } },
             });
-          } else {
-            // Có thể log warning hoặc throw nếu muốn strict
-            console.warn(
-              `Voucher ${voucherCodeForThisService} không hợp lệ cho service ${serviceId}`,
-            );
           }
         }
 
-        // Tạo booking
         const booking = await tx.booking.create({
           data: {
             traveler_id: travelerId,
@@ -263,24 +251,33 @@ const BookingService = {
             discount_amount: discountAmount,
             final_amount: totalAmount - discountAmount,
             voucher_id: voucherId,
-            expiry_time: new Date(Date.now() + BOOKING_EXPIRY_MINUTES * 60 * 1000), // 30 phút
+            status: "PENDING",
+            expiry_time: new Date(Date.now() + BOOKING_EXPIRY_MINUTES * 60 * 1000),
             items: { create: bookingItemsData },
           },
           include: {
             items: true,
             voucher: true,
             service: { select: { id: true, name: true } },
-            provider: true,
+            provider: { include: { user: { select: { name: true } } } },
           },
         });
 
-        bookings.push(booking);
+        const enriched = BookingService.enrichBookingItems(booking);
+        createdBookings.push(enriched);
+        console.log("Created booking:", booking);
       }
 
-      // Xóa giỏ hàng
-      await tx.cartItem.deleteMany({ where: { traveler_id: travelerId } });
+      const itemIdsToDelete = cartItems.map((item) => item.id);
+      await tx.cartItem.deleteMany({
+        where: {
+          id: {
+            in: itemIdsToDelete,
+          },
+        },
+      });
 
-      return bookings.map(BookingService.enrichBookingItems);
+      return createdBookings;
     });
   },
 

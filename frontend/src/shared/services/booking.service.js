@@ -3,8 +3,15 @@ import api from "@/shared/utils/axiosInstance";
 const API_BASE_URL = "/api/booking";
 
 export const bookingAPI = {
-  createFromCart: async (voucherCode) => {
-    return await api.post(API_BASE_URL, { voucherCode });
+  createFromCart: async (vouchers) => {
+    try {
+      const response = await api.post(API_BASE_URL, { vouchers });
+      console.log("Created booking from cart:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating booking from cart:", error);
+      throw new Error(error.response?.data?.message || error);
+    }
   },
 
   getMyBookings: async (params) => {
