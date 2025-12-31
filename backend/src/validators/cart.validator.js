@@ -16,9 +16,9 @@ const addToCartSchema = Joi.object({
       });
     }
   }
-  if (["TOUR", "TICKET"].includes(value.itemType) && !value.visitDate) {
+  if (["MENU_ITEM", "TICKET"].includes(value.itemType) && !value.visitDate) {
     return helpers.error("any.custom", {
-      message: "visitDate is required for TOUR and TICKET",
+      message: "visitDate is required for TOUR and MENU_ITEM",
     });
   }
   return value;
