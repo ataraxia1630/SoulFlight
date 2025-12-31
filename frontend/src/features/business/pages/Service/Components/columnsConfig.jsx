@@ -14,6 +14,15 @@ export const tourColumns = [
     render: (index) => index + 1,
   },
   {
+    id: "service_name",
+    label: "TÊN DỊCH VỤ",
+    width: "15%",
+    header_align: "left",
+    cell_align: "left",
+    search: true,
+    render: (value) => <Typography variant="body2">{value}</Typography>,
+  },
+  {
     id: "name",
     label: "TÊN TOUR",
     width: "15%",
@@ -82,6 +91,15 @@ export const ticketColumns = [
     render: (index) => index + 1,
   },
   {
+    id: "service_name",
+    label: "TÊN DỊCH VỤ",
+    width: "15%",
+    header_align: "left",
+    cell_align: "left",
+    search: true,
+    render: (value) => <Typography variant="body2">{value}</Typography>,
+  },
+  {
     id: "name",
     label: "TÊN VÉ",
     width: "20%",
@@ -136,6 +154,15 @@ export const menuColumns = [
     cell_align: "center",
   },
   {
+    id: "service_name",
+    label: "TÊN DỊCH VỤ",
+    width: "15%",
+    header_align: "left",
+    cell_align: "left",
+    search: true,
+    render: (value) => <Typography variant="body2">{value}</Typography>,
+  },
+  {
     id: "name",
     label: "TÊN MENU",
     width: "25%",
@@ -178,6 +205,15 @@ export const roomColumns = [
     header_align: "center",
     cell_align: "center",
     render: (index) => index + 1,
+  },
+  {
+    id: "service_name",
+    label: "TÊN DỊCH VỤ",
+    width: "15%",
+    header_align: "left",
+    cell_align: "left",
+    search: true,
+    render: (value) => <Typography variant="body2">{value}</Typography>,
   },
   {
     id: "name",
