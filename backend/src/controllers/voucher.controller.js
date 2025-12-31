@@ -5,20 +5,13 @@ const { VoucherDTO } = require("../dtos/voucher.dto");
 
 const VoucherController = {
   getAvailableVouchers: catchAsync(async (req, res) => {
-    const { serviceId, page, limit } = req.query;
+    const { serviceId } = req.query;
 
-    const result = await VoucherService.getAvailableVouchers({
+    const vouchers = await VoucherService.getAvailableVouchers({
       serviceId: serviceId ? Number(serviceId) : null,
-      page: Number(page) || 1,
-      limit: Number(limit) || 20,
     });
 
-    res.json(
-      ApiResponse.success({
-        vouchers: VoucherDTO.fromList(result.vouchers),
-        pagination: result.pagination,
-      }),
-    );
+    res.json(ApiResponse.success(VoucherDTO.fromList(vouchers)));
   }),
 
   checkVoucher: catchAsync(async (req, res) => {
@@ -45,31 +38,20 @@ const VoucherController = {
     const { id } = req.params;
     const voucher = await VoucherService.getVoucherById(Number(id));
 
-    res.json(
-      ApiResponse.success({
-        voucher: VoucherDTO.fromModel(voucher),
-      }),
-    );
+    res.json(ApiResponse.success(VoucherDTO.fromModel(voucher)));
   }),
 };
 
 const ProviderVoucherController = {
   getMyVouchers: catchAsync(async (req, res) => {
     const providerId = req.user.id;
-    const { page, limit, status } = req.query;
+    const { status } = req.query;
 
-    const result = await VoucherService.getProviderVouchers(providerId, {
-      page: Number(page) || 1,
-      limit: Number(limit) || 20,
+    const vouchers = await VoucherService.getProviderVouchers(providerId, {
       status,
     });
 
-    res.json(
-      ApiResponse.success({
-        vouchers: VoucherDTO.fromList(result.vouchers),
-        pagination: result.pagination,
-      }),
-    );
+    res.json(ApiResponse.success(VoucherDTO.fromList(vouchers)));
   }),
 
   createVoucher: catchAsync(async (req, res) => {
@@ -123,22 +105,15 @@ const ProviderVoucherController = {
 
 const AdminVoucherController = {
   getAllVouchers: catchAsync(async (req, res) => {
-    const { page, limit, status, isGlobal, serviceId } = req.query;
+    const { status, isGlobal, serviceId } = req.query;
 
-    const result = await VoucherService.getAllVouchers({
-      page: Number(page) || 1,
-      limit: Number(limit) || 20,
+    const vouchers = await VoucherService.getAllVouchers({
       status,
       isGlobal,
       serviceId,
     });
 
-    res.json(
-      ApiResponse.success({
-        vouchers: VoucherDTO.fromList(result.vouchers),
-        pagination: result.pagination,
-      }),
-    );
+    res.json(ApiResponse.success(VoucherDTO.fromList(vouchers)));
   }),
 
   createVoucher: catchAsync(async (req, res) => {

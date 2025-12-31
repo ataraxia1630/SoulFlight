@@ -12,6 +12,11 @@ const ServiceService = {
     const response = await api.get(`${API_URL}/${id}`);
     return response.data;
   },
+
+  getByProvider: async (providerId) => {
+    const response = await api.get(`${API_URL}/provider/${providerId}`);
+    return response.data;
+  },
 };
 
 export default ServiceService;
