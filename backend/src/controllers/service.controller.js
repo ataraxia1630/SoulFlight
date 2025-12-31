@@ -14,6 +14,12 @@ const ServiceController = {
     res.status(200).json(ApiResponse.success(service));
   }),
 
+  getByProvider: catchAsync(async (req, res, _next) => {
+    const { providerId } = req.params;
+    const service = await ServiceService.getByProvider(Number(providerId));
+    res.status(200).json(ApiResponse.success(service));
+  }),
+
   create: catchAsync(async (req, res, _next) => {
     const serviceData = req.body;
     const newService = await ServiceService.create(serviceData);
