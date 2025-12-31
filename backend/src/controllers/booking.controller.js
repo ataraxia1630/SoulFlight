@@ -7,20 +7,13 @@ const { BookingDTO } = require("../dtos/booking.dto");
 const BookingController = {
   getMyBookings: catchAsync(async (req, res) => {
     const travelerId = req.user.id;
-    const { page = 1, limit = 10, status } = req.query;
+    const { status } = req.query;
 
-    const result = await BookingService.getBookingsByTraveler(travelerId, {
-      page: Number(page),
-      limit: Number(limit),
+    const bookings = await BookingService.getBookingsByTraveler(travelerId, {
       status,
     });
 
-    res.status(200).json(
-      ApiResponse.success({
-        bookings: BookingDTO.fromList(result.bookings),
-        pagination: result.pagination,
-      }),
-    );
+    res.status(200).json(ApiResponse.success(BookingDTO.fromList(bookings)));
   }),
 
   getBookingDetail: catchAsync(async (req, res) => {
@@ -41,12 +34,7 @@ const BookingController = {
       voucherCode,
     });
 
-    res.status(200).json(
-      ApiResponse.success({
-        data: BookingDTO.fromModel(updatedBooking),
-        message: "Cập nhật thông tin booking thành công",
-      }),
-    );
+    res.status(200).json(ApiResponse.success(BookingDTO.fromModel(updatedBooking)));
   }),
 
   createFromCart: catchAsync(async (req, res) => {
@@ -78,48 +66,28 @@ const BookingController = {
     const travelerId = req.user.id;
     const booking = await BookingService.createRoomBooking(travelerId, req.body);
 
-    res.status(201).json(
-      ApiResponse.success({
-        message: "Đặt phòng thành công",
-        booking: BookingDTO.fromModel(booking),
-      }),
-    );
+    res.status(201).json(ApiResponse.success(BookingDTO.fromModel(booking)));
   }),
 
   createTourBooking: catchAsync(async (req, res) => {
     const travelerId = req.user.id;
     const booking = await BookingService.createTourBooking(travelerId, req.body);
 
-    res.status(201).json(
-      ApiResponse.success({
-        message: "Đặt tour thành công",
-        booking: BookingDTO.fromModel(booking),
-      }),
-    );
+    res.status(201).json(ApiResponse.success(booking));
   }),
 
   createTicketBooking: catchAsync(async (req, res) => {
     const travelerId = req.user.id;
     const booking = await BookingService.createTicketBooking(travelerId, req.body);
 
-    res.status(201).json(
-      ApiResponse.success({
-        message: "Đặt vé thành công",
-        booking: BookingDTO.fromModel(booking),
-      }),
-    );
+    res.status(201).json(ApiResponse.success(BookingDTO.fromModel(booking)));
   }),
 
   createMenuBooking: catchAsync(async (req, res) => {
     const travelerId = req.user.id;
     const booking = await BookingService.createMenuBooking(travelerId, req.body);
 
-    res.status(201).json(
-      ApiResponse.success({
-        message: "Đặt món thành công",
-        booking: BookingDTO.fromModel(booking),
-      }),
-    );
+    res.status(201).json(ApiResponse.success(BookingDTO.fromModel(booking)));
   }),
 };
 
@@ -152,12 +120,7 @@ const ProviderBookingController = {
     const { status, note } = req.body;
 
     const booking = await BookingService.providerUpdateStatus(providerId, bookingId, status, note);
-    res.json(
-      ApiResponse.success({
-        message: "Booking status updated",
-        booking: BookingDTO.fromModel(booking),
-      }),
-    );
+    res.json(ApiResponse.success(BookingDTO.fromModel(booking)));
   }),
 };
 
@@ -177,7 +140,7 @@ const AdminBookingController = {
   forceUpdateStatus: catchAsync(async (req, res) => {
     const { status, note } = req.body;
     const booking = await BookingService.adminForceUpdateStatus(req.params.bookingId, status, note);
-    res.json(ApiResponse.success({ message: "Status forced updated", booking }));
+    res.json(ApiResponse.success(BookingDTO.fromModel(booking)));
   }),
 };
 

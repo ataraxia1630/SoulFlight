@@ -4,11 +4,11 @@ const { ERROR_CODES } = require("../constants/errorCode");
 const { BOOKING_EXPIRY_MINUTES } = require("../configs/booking.config");
 
 const BookingService = {
-  getBookingsByTraveler: async (travelerId, { page = 1, limit = 10, status } = {}) => {
+  getBookingsByTraveler: async (travelerId, { status } = {}) => {
     const where = { traveler_id: travelerId };
     if (status) where.status = status;
 
-    const [bookings, total] = await Promise.all([
+    const [bookings] = await Promise.all([
       prisma.booking.findMany({
         where,
         include: {
@@ -19,32 +19,19 @@ const BookingService = {
             },
           },
           voucher: true,
-          items: {
-            include: {
-              room: { include: { service: true } },
-              tour: true,
-              ticket: { include: { place: true } },
-              menu_item: true,
-            },
-          },
+          items: true,
           payment: { select: { id: true, status: true, method: true } },
         },
         orderBy: { booking_date: "desc" },
-        skip: (page - 1) * limit,
-        take: limit,
       }),
       prisma.booking.count({ where }),
     ]);
 
-    return {
-      bookings: bookings.map(BookingService.enrichBookingItems),
-      pagination: {
-        page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
+    const savedBookings = await Promise.all(
+      bookings.map((booking) => BookingService.enrichBookingItems(booking)),
+    );
+
+    return savedBookings;
   },
 
   getBookingDetail: async (travelerId, bookingId) => {
@@ -70,7 +57,7 @@ const BookingService = {
         ERROR_CODES.BOOKING_NOT_FOUND.code,
       );
 
-    return BookingService.enrichBookingItems(booking);
+    return await BookingService.enrichBookingItems(booking);
   },
 
   updateBookingInfo: async (travelerId, bookingId, data) => {
@@ -129,7 +116,7 @@ const BookingService = {
         },
       });
 
-      return BookingService.enrichBookingItems(updatedBooking);
+      return await BookingService.enrichBookingItems(updatedBooking);
     });
   },
 
@@ -520,33 +507,68 @@ const BookingService = {
     });
   },
 
-  enrichBookingItems: (booking) => {
-    if (booking.items) {
-      booking.items = booking.items.map((item) => {
-        let details = {};
-        if (item.room) {
-          details = {
-            name: item.room.name,
-            service_id: item.room.service_id,
-          };
-        } else if (item.tour) {
-          details = { name: item.tour.name, service_id: item.tour.service_id };
-        } else if (item.ticket) {
-          details = {
-            name: item.ticket.name,
-            place: item.ticket.Place?.name,
-            service_id: item.ticket.service_id,
-          };
-        } else if (item.menu_item) {
-          details = {
-            name: item.menu_item.name,
-            service_id: item.menu_item.Menu?.service_id,
-          };
-        }
-        return { ...item, details };
-      });
+  enrichBookingItems: async (booking) => {
+    if (!booking || !booking.items || !Array.isArray(booking.items)) {
+      return booking;
     }
-    return booking;
+
+    const enrichedItems = await Promise.all(
+      booking.items.map(async (item) => {
+        if (!item) return null;
+
+        const details = {
+          name: item.item_name || "Unknown Service",
+          image: null,
+        };
+
+        try {
+          if (item.item_type === "ROOM") {
+            const room = await prisma.room.findUnique({
+              where: { id: item.item_id },
+            });
+            if (room) {
+              details.name = room.name;
+              details.service_id = room.service_id;
+              // details.image = room.image_url; // Nếu room có ảnh
+            }
+          } else if (item.item_type === "TOUR") {
+            const tour = await prisma.tour.findUnique({
+              where: { id: item.item_id },
+            });
+            if (tour) {
+              details.name = tour.name;
+              details.service_id = tour.service_id;
+            }
+          } else if (item.item_type === "TICKET") {
+            const ticket = await prisma.ticket.findUnique({
+              where: { id: item.item_id },
+              include: { Place: true },
+            });
+            if (ticket) {
+              details.name = ticket.name;
+              details.place = ticket.Place?.name;
+              details.service_id = ticket.service_id;
+            }
+          } else if (item.item_type === "MENU_ITEM") {
+            const menuItem = await prisma.menuItem.findUnique({
+              where: { id: item.item_id },
+              include: { Menu: true },
+            });
+            if (menuItem) {
+              details.name = menuItem.name;
+              details.image = menuItem.image_url;
+              details.service_id = menuItem.Menu?.service_id;
+            }
+          }
+        } catch (err) {
+          console.error(`Lỗi khi enrich item ${item.id}:`, err);
+        }
+
+        return { ...item, ...details };
+      }),
+    );
+
+    return { ...booking, items: enrichedItems.filter((i) => i !== null) };
   },
 
   createRoomBooking: async (travelerId, bookingData) => {
@@ -1039,7 +1061,7 @@ const BookingService = {
       if (filters.to) where.booking_date.lte = new Date(filters.to);
     }
 
-    const [bookings, total] = await Promise.all([
+    const [bookings] = await Promise.all([
       prisma.booking.findMany({
         where,
         include: {
@@ -1048,18 +1070,14 @@ const BookingService = {
           payment: true,
         },
         orderBy: { booking_date: "desc" },
-        skip: (filters.page - 1) * filters.limit,
-        take: Number(filters.limit),
       }),
-      prisma.booking.count({ where }),
     ]);
 
-    return {
-      bookings: bookings.map(BookingService.enrichBookingItems),
-      total,
-      page: filters.page,
-      limit: filters.limit,
-    };
+    const enrichedBookings = await Promise.all(
+      bookings.map((booking) => BookingService.enrichBookingItems(booking)),
+    );
+
+    return enrichedBookings;
   },
 
   getBookingForProvider: async (providerId, bookingId) => {
@@ -1077,7 +1095,7 @@ const BookingService = {
       throw new AppError(404, "Booking not found", "BOOKING_NOT_FOUND");
     }
 
-    return BookingService.enrichBookingItems(booking);
+    return await BookingService.enrichBookingItems(booking);
   },
 
   providerUpdateStatus: async (providerId, bookingId, newStatus, note) => {
@@ -1144,10 +1162,7 @@ const BookingService = {
     if (filters.providerId) where.provider_id = Number(filters.providerId);
     if (filters.travelerId) where.traveler_id = Number(filters.travelerId);
 
-    const page = Number(filters.page) || 1;
-    const limit = Number(filters.limit) || 20;
-
-    const [bookings, total] = await Promise.all([
+    const [bookings] = await Promise.all([
       prisma.booking.findMany({
         where,
         include: {
@@ -1157,16 +1172,13 @@ const BookingService = {
           payment: true,
         },
         orderBy: { created_at: "desc" },
-        skip: (page - 1) * limit,
-        take: limit,
       }),
-      prisma.booking.count({ where }),
     ]);
 
-    return {
-      bookings: bookings.map(BookingService.enrichBookingItems),
-      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
-    };
+    const enrichedBookings = await Promise.all(
+      bookings.map((booking) => BookingService.enrichBookingItems(booking)),
+    );
+    return enrichedBookings;
   },
 
   getBookingDetailAdmin: async (bookingId) => {
@@ -1186,7 +1198,7 @@ const BookingService = {
       throw new AppError(404, "Booking not found", "BOOKING_NOT_FOUND");
     }
 
-    return BookingService.enrichBookingItems(booking);
+    return await BookingService.enrichBookingItems(booking);
   },
 
   adminForceUpdateStatus: async (bookingId, newStatus, note) => {
