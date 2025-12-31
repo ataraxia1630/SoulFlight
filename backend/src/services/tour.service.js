@@ -113,7 +113,6 @@ const TourService = {
     const tours = await prisma.tour.findMany({
       where: { service_id: parseInt(serviceId, 10) },
       include: commonInclude(travelerId),
-      orderBy: { updated_at: "desc" },
     });
 
     const now = new Date();
@@ -128,6 +127,16 @@ const TourService = {
         t.status = "NO_LONGER_PROVIDED";
       });
     }
+
+    tours.sort((a, b) => {
+      const isAvailableA = a.status === "AVAILABLE";
+      const isAvailableB = b.status === "AVAILABLE";
+
+      if (isAvailableA !== isAvailableB) {
+        return Number(isAvailableB) - Number(isAvailableA);
+      }
+      return new Date(b.updated_at) - new Date(a.updated_at);
+    });
 
     await attachPlaceImages(tours);
     return TourDTO.fromList(tours);

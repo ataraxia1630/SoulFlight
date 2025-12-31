@@ -292,7 +292,15 @@ const RoomService = {
     const rooms = await prisma.room.findMany({
       where: { service_id },
       include: roomInclude(travelerId),
-      orderBy: { updated_at: "desc" },
+    });
+    rooms.sort((a, b) => {
+      const isAvailableA = a.status === "AVAILABLE";
+      const isAvailableB = b.status === "AVAILABLE";
+
+      if (isAvailableA !== isAvailableB) {
+        return Number(isAvailableB) - Number(isAvailableA);
+      }
+      return new Date(b.updated_at) - new Date(a.updated_at);
     });
     const roomsWithImages = await attachImagesList({ entities: rooms, type: "Room" });
     return RoomDTO.fromList(roomsWithImages);

@@ -86,7 +86,16 @@ const TicketService = {
         Service: { provider_id: parseInt(providerId, 10) },
       },
       include: commonInclude(travelerId),
-      orderBy: { updated_at: "desc" },
+    });
+
+    tickets.sort((a, b) => {
+      const isAvailableA = a.status === "AVAILABLE";
+      const isAvailableB = b.status === "AVAILABLE";
+
+      if (isAvailableA !== isAvailableB) {
+        return Number(isAvailableB) - Number(isAvailableA);
+      }
+      return new Date(b.updated_at) - new Date(a.updated_at);
     });
 
     await attachPlaceImages(tickets);
