@@ -38,57 +38,74 @@ const CartService = {
 
   getCartByTravelerId: async (travelerId) => {
     try {
-      const cart = await CartService.getOrCreateCart(travelerId);
+      const cart = await prisma.cart.findUnique({
+        where: { traveler_id: travelerId },
+        include: {
+          items: {
+            include: {
+              room: { include: { service: true } },
+              tour: { include: { Service: true } },
+              ticket: { include: { Service: true } },
+              menu_item: { include: { Menu: { include: { Service: true } } } },
+            },
+          },
+        },
+      });
 
-      if (!cart.items || cart.items.length === 0) {
-        return { id: cart.id, traveler_id: cart.traveler_id, items: [] };
-      }
+      if (!cart) return { items: [] };
 
-      const enrichedItems = await Promise.all(
-        cart.items.map(async (item) => {
-          try {
-            let price = 0;
-            let details = { providerId: null, providerName: "Unknown" };
+      const enrichedItems = cart.items.map((item) => {
+        let price = 0;
+        let serviceInfo = null;
+        let name = "";
 
-            if (item.item_type === "ROOM" && item.room) {
-              price = Number(item.room[0].price_per_night || 0);
-              details = {
-                providerId: item.room.service?.provider_id,
-                providerName: item.room.service?.Provider?.name || "Unknown",
-                name: item.room.name,
-                image: item.room.images?.[0]?.url,
-              };
-            }
+        if (item.item_type === "ROOM" && item.room) {
+          price = Number(item.room.price_per_night);
+          serviceInfo = item.room.service;
+          name = item.room.name;
+        } else if (item.item_type === "TOUR" && item.tour) {
+          price = Number(item.tour.total_price);
+          serviceInfo = item.tour.Service;
+          name = item.tour.name;
+        } else if (item.item_type === "TICKET" && item.ticket) {
+          price = Number(item.ticket.price);
+          serviceInfo = item.ticket.Service;
+          name = item.ticket.name;
+        } else if (item.item_type === "MENU_ITEM" && item.menu_item) {
+          price = Number(item.menu_item.price);
+          serviceInfo = item.menu_item.Menu?.Service;
+          name = item.menu_item.name;
+        }
 
-            return {
-              id: item.id,
-              item_type: item.item_type,
-              item_id: item.item_id,
-              quantity: item.quantity,
-              checkin_date: item.checkin_date,
-              checkout_date: item.checkout_date,
-              visit_date: item.visit_date,
-              note: item.note,
-              price,
-              total: price * item.quantity,
-              details,
-            };
-          } catch (itemError) {
-            console.error("Lỗi khi enrich item ID", item.id, ":", itemError);
-            return {
-              ...item,
-              price: 0,
-              total: 0,
-              details: { providerId: null, providerName: "Error" },
-            };
-          }
-        }),
-      );
+        return {
+          ...item,
+          price,
+          total: price * item.quantity,
+          serviceId: serviceInfo?.id,
+          serviceName: serviceInfo?.name,
+          itemName: name,
+        };
+      });
+
+      const groupedByService = enrichedItems.reduce((acc, item) => {
+        const sId = item.serviceId || "unknown";
+        if (!acc[sId]) {
+          acc[sId] = {
+            serviceId: sId,
+            serviceName: item.serviceName || "Dịch vụ không xác định",
+            items: [],
+            serviceTotal: 0,
+          };
+        }
+        acc[sId].items.push(item);
+        acc[sId].serviceTotal += item.total;
+        return acc;
+      }, {});
 
       return {
         id: cart.id,
         traveler_id: cart.traveler_id,
-        items: enrichedItems,
+        services: Object.values(groupedByService),
       };
     } catch (_error) {
       throw new AppError(500, "Không thể tải giỏ hàng", "CART_LOAD_FAILED");

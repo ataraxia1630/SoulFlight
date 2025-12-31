@@ -8,6 +8,7 @@ import ProviderApplicationDetail from "../../features/business/pages/Applicants/
 import ProviderApplicationsPage from "../../features/business/pages/Applicants/ProviderApplicationPage";
 import ProviderDraftsPage from "../../features/business/pages/Applicants/ProviderDraftPage";
 import Services from "../../features/business/pages/Service/Service";
+import Voucher from "../../features/business/pages/Voucher/Voucher";
 import PartnerRegistrationLayout from "../../layouts/PartnerRegistrationLayout";
 import { createAuthRoutes } from "./auth.route";
 import ProtectedRoute from "./ProtectedRoute";
@@ -41,6 +42,7 @@ const mainRoutes = (
 
     {/* add routes */}
     <Route path="business/service" element={<Services />} />
+    <Route path="business/voucher" element={<Voucher />} />
   </Route>
 );
 
