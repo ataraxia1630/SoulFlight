@@ -13,7 +13,7 @@ import {
   Stepper,
   Typography,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Countdown from "react-countdown";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { bookingAPI } from "../../../../shared/services/booking.service";
@@ -26,8 +26,10 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  const bookingIdsParam = searchParams.get("bookingIds");
-  const bookingIds = bookingIdsParam ? bookingIdsParam.split(",") : [];
+  const bookingIds = useMemo(() => {
+    const param = searchParams.get("bookingIds");
+    return param ? param.split(",") : [];
+  }, [searchParams]);
 
   const [activeStep, setActiveStep] = useState(0);
   const [bookings, setBookings] = useState([]);
