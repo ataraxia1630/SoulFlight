@@ -14,9 +14,10 @@ import { debounce } from "lodash";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoadingState from "@/shared/components/LoadingState";
+import { bookingAPI } from "@/shared/services/booking.service";
+import { CartService } from "@/shared/services/cart.service";
+import { voucherAPI } from "@/shared/services/voucher.service";
 import toast from "@/shared/utils/toast";
-import { CartService } from "../../../../shared/services/cart.service";
-import { voucherAPI } from "../../../../shared/services/voucher.service";
 import CartItem from "../../components/Cart/CartItem";
 import VoucherInput from "../../components/Cart/VoucherInput";
 
@@ -96,6 +97,32 @@ const CartPage = () => {
       delete newState[serviceId];
       return newState;
     });
+  };
+
+  const handleCheckout = async () => {
+    try {
+      setLoading(true);
+      const voucherMap = {};
+      Object.keys(appliedVouchers).forEach((serviceId) => {
+        voucherMap[serviceId] = appliedVouchers[serviceId].code;
+      });
+
+      const response = await bookingAPI.createFromCart(voucherMap);
+      const createdBookings = response.data;
+      console.log("Created bookings from cart:", createdBookings);
+
+      if (createdBookings && createdBookings.length > 0) {
+        const bookingIds = createdBookings.map((b) => b.id).join(",");
+
+        toast.success("Đang chuyển đến trang thanh toán...");
+
+        navigate(`/checkout?bookingIds=${bookingIds}`);
+      }
+    } catch (error) {
+      toast.error(error.message || "Không thể tạo đơn hàng. Vui lòng thử lại.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const checkoutSummary = useMemo(() => {
@@ -246,6 +273,7 @@ const CartPage = () => {
                 fullWidth
                 startIcon={<ShoppingCartCheckout />}
                 sx={{ mt: 2 }}
+                onClick={handleCheckout}
               >
                 Thanh toán ngay
               </Button>
