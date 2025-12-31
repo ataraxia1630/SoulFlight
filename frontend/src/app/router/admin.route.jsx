@@ -10,6 +10,7 @@ import ServiceTypes from "@admin/pages/ServiceTypes";
 import Users from "@admin/pages/Users";
 import { Route } from "react-router-dom";
 import AdminHome from "@/features/admin/pages/Home";
+import Voucher from "../../features/admin/pages/Voucher/Voucher";
 import ProtectedRoute from "./ProtectedRoute";
 
 const adminRoutes = (
@@ -27,6 +28,7 @@ const adminRoutes = (
     <Route path="admin/place/create" element={<PlaceForm />} />
     <Route path="admin/place/edit/:id" element={<PlaceForm />} />
     <Route path="admin/place/:id" element={<PlaceDetail />} />
+    <Route path="admin/voucher" element={<Voucher />} />
   </Route>
 );
 
