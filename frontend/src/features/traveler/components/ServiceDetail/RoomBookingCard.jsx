@@ -104,7 +104,7 @@ const RoomBookingCard = ({ room, onAddToCart }) => {
         voucherCode: appliedVoucher?.code?.trim() || "",
       });
       toast.success("Tạo booking thành công!");
-      navigate(`/checkout?bookingIds=${result.data.booking.id}`);
+      navigate(`/checkout?bookingIds=${result.data.id}`);
     } catch (err) {
       toast.error(err.message || "Lỗi khi tạo booking");
       setError(err.message);
