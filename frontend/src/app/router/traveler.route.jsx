@@ -1,6 +1,6 @@
 import { Route } from "react-router-dom";
 import TravelerHome from "@/features/traveler/pages/Home";
-import Booking from "../../features/traveler/pages/Booking/Booking";
+import BookingHistory from "../../features/traveler/pages/Booking/BookingHistory";
 import CartPage from "../../features/traveler/pages/Cart/CartPage";
 import CheckoutPage from "../../features/traveler/pages/Checkout/CheckoutPage";
 import Journal from "../../features/traveler/pages/Journal";
@@ -18,7 +18,6 @@ import Wishlist from "../../features/traveler/pages/Wishlist";
 import { createAuthRoutes } from "./auth.route";
 import ProtectedRoute from "./ProtectedRoute";
 
-// import BookingManagement from '../../features/traveler/pages/Booking/BookingManagement';
 // import PaymentResultPage from '../../features/traveler/pages/Checkout/PaymentResultPage';
 
 const USER_TYPE = "traveler";
@@ -26,7 +25,6 @@ const USER_TYPE = "traveler";
 const mainRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["TRAVELER"]} />}>
     <Route path="traveler" element={<TravelerHome />} />
-    <Route path="booking" element={<Booking />} />
     <Route path="itineraries" element={<ItinerariesListPage />} />
     <Route path="itinerary/:id" element={<ItineraryPage />} />
     <Route path="travel-planner" element={<ItineraryPage />} />
@@ -37,8 +35,8 @@ const mainRoutes = (
     <Route path="/menus/:menuId" element={<MenuDetail />} />
     <Route path="/cart" element={<CartPage />} />
     <Route path="/checkout" element={<CheckoutPage />} />
+    <Route path="/booking/history" element={<BookingHistory />} />
     {/* <Route path="/payment/result" element={<PaymentResultPage />} /> */}
-    {/* <Route path="/bookings/my" element={<BookingManagement />} /> */}
     <Route path="place" element={<ExplorePlace />} />
     <Route path="place/:id" element={<PlaceDetailsPage />} />
     <Route path="/journal" element={<Journal />} />
