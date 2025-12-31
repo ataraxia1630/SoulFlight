@@ -60,14 +60,9 @@ const BookingController = {
       voucherMap = vouchers;
     }
 
-    const booking = await BookingService.createBookingFromCart(travelerId, voucherMap);
+    const bookings = await BookingService.createBookingFromCart(travelerId, voucherMap);
 
-    res.status(201).json(
-      ApiResponse.success({
-        message: "Booking created successfully",
-        booking: BookingDTO.fromModel(booking),
-      }),
-    );
+    res.status(201).json(ApiResponse.success(BookingDTO.fromList(bookings)));
   }),
 
   cancelBooking: catchAsync(async (req, res) => {
