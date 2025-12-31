@@ -50,8 +50,24 @@ const MenuService = {
     const menus = await prisma.menu.findMany({
       where: { service_id: parseInt(serviceId, 10) },
       include: menuInclude(travelerId),
-      orderBy: { updated_at: "desc" },
     });
+
+    menus.sort((a, b) => {
+      const countAvailableA = a.MenuItems
+        ? a.MenuItems.filter((item) => item.status === "AVAILABLE").length
+        : 0;
+
+      const countAvailableB = b.MenuItems
+        ? b.MenuItems.filter((item) => item.status === "AVAILABLE").length
+        : 0;
+
+      if (countAvailableB !== countAvailableA) {
+        return countAvailableB - countAvailableA;
+      }
+
+      return new Date(b.updated_at) - new Date(a.updated_at);
+    });
+
     return MenuDTO.fromList(menus);
   },
 
