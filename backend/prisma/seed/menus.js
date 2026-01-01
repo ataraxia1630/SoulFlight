@@ -1,10 +1,10 @@
 const { upsertMany } = require("./utils/upsertMany");
 
 const menus = [
-  // Phở Góc Trung Tâm (service_id: 8)
+  // ========== Service ID 8: Phở Góc Trung Tâm ==========
   {
     name: "Thực Đơn Phở Truyền Thống",
-    description: "Phở Việt nam ngon lạc lẽu với nhiều loại thịt",
+    description: "Phở Việt nam ngon với nhiều loại thịt",
     cover_url: "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43",
     service_id: 8,
   },
@@ -15,7 +15,7 @@ const menus = [
     service_id: 8,
   },
 
-  // Nhà Hàng Phở Góc (service_id: 9)
+  // ========== Service ID 9: Nhà Hàng Phở Góc ==========
   {
     name: "Món Ăn Fusion",
     description: "Ẩm thực Việt Nam hiện đại với hương vị quốc tế",
@@ -29,7 +29,7 @@ const menus = [
     service_id: 9,
   },
 
-  // Phở Góc Sân Thượng (service_id: 10)
+  // ========== Service ID 10: Phở Góc Sân Thượng ==========
   {
     name: "Thực Đơn Ăn Uống Tinh Tế",
     description: "Món ăn Việt nam tinh xảo cho những dịp đặc biệt",
@@ -43,7 +43,7 @@ const menus = [
     service_id: 10,
   },
 
-  // Quán Cà Phê Phở Góc (service_id: 11)
+  // ========== Service ID 11: Quán Cà Phê Phở Góc ==========
   {
     name: "Lựa Chọn Cà Phê",
     description: "Cà phê Việt nam truyền thống và hiện đại",
@@ -57,7 +57,7 @@ const menus = [
     service_id: 11,
   },
 
-  // Phở Góc Đồ Ăn Đường Phố (service_id: 12)
+  // ========== Service ID 12: Phở Góc Đồ Ăn Đường Phố ==========
   {
     name: "Các Món Ăn Đường Phố",
     description: "Những món ăn đường phố Việt Nam yêu thích",

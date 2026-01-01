@@ -1,4 +1,4 @@
-import { AccessTime, AddShoppingCart, AttachMoney, Info, LocationOn } from "@mui/icons-material";
+import { AccessTime, ArrowForward, AttachMoney, Info, LocationOn } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -187,18 +187,13 @@ const TicketsList = ({ tickets }) => {
                   }}
                 >
                   <Button
-                    variant="outlined"
-                    size="small"
-                    startIcon={<AddShoppingCart />}
-                    disabled={!isAvailable}
-                  >
-                    Thêm vào giỏ
-                  </Button>
-                  <Button
                     variant="contained"
                     size="small"
+                    disableElevation
                     disabled={!isAvailable}
                     onClick={() => navigate(`/tickets/${ticket.id}`)}
+                    endIcon={isAvailable ? <ArrowForward /> : null}
+                    sx={{ fontWeight: 600 }}
                   >
                     {isAvailable ? "Mua ngay" : "Tạm ngưng"}
                   </Button>

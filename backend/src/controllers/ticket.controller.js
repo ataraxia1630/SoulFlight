@@ -1,4 +1,4 @@
-const TicketService = require("../services/ticket.service");
+const { TicketService } = require("../services/ticket.service");
 const catchAsync = require("../utils/catchAsync");
 const { success } = require("../utils/ApiResponse");
 

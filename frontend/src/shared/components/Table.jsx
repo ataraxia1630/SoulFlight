@@ -79,6 +79,7 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
 
   const renderActions = (row) => {
     const actions = [];
+    const isNoLongerProvided = row.status === "NO_LONGER_PROVIDED";
 
     if (onView) {
       actions.push(
@@ -99,17 +100,27 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
 
     if (onEdit) {
       actions.push(
-        <Tooltip key="edit" title="Chỉnh sửa">
-          <IconButton
-            size="small"
-            onClick={() => onEdit(row)}
-            sx={{
-              color: "primary.main",
-              "&:hover": { backgroundColor: "rgba(30, 155, 205, 0.08)" },
-            }}
-          >
-            <EditIcon fontSize="small" />
-          </IconButton>
+        <Tooltip
+          key="edit"
+          title={
+            isNoLongerProvided ? "Dịch vụ đã ngừng cung cấp - Không thể chỉnh sửa" : "Chỉnh sửa"
+          }
+        >
+          <span>
+            <IconButton
+              size="small"
+              onClick={() => onEdit(row)}
+              disabled={isNoLongerProvided}
+              sx={{
+                color: isNoLongerProvided ? "text.disabled" : "primary.main",
+                "&:hover": {
+                  backgroundColor: isNoLongerProvided ? "transparent" : "rgba(30, 155, 205, 0.08)",
+                },
+              }}
+            >
+              <EditIcon fontSize="small" />
+            </IconButton>
+          </span>
         </Tooltip>,
       );
     }

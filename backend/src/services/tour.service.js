@@ -3,6 +3,7 @@ const AppError = require("../utils/AppError");
 const { ERROR_CODES } = require("../constants/errorCode");
 const { TourDTO } = require("../dtos/tour.dto");
 const { attachImagesList } = require("../utils/attachImage");
+const cron = require("node-cron");
 
 // lấy ảnh từ place
 const commonInclude = (travelerId) => ({
@@ -347,4 +348,28 @@ const TourService = {
   },
 };
 
-module.exports = { TourService };
+const startTourStatusCron = () => {
+  // Chạy mỗi 5 phút
+  cron.schedule("*/5 * * * *", async () => {
+    try {
+      const now = new Date();
+      const result = await prisma.tour.updateMany({
+        where: {
+          end_time: { lt: now },
+          status: "AVAILABLE",
+        },
+        data: {
+          status: "NO_LONGER_PROVIDED",
+        },
+      });
+
+      if (result.count > 0) {
+        console.log(`[TourCron] Đã tự động đóng ${result.count} tour hết hạn.`);
+      }
+    } catch (error) {
+      console.error("[TourCron] Lỗi khi update trạng thái tour:", error);
+    }
+  });
+};
+
+module.exports = { TourService, startTourStatusCron };

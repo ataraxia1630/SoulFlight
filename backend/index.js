@@ -7,6 +7,9 @@ require("./src/configs/gemini");
 
 const route = require("./src/routes/index");
 const { startBookingCleanupCron, stopBookingCleanupCron } = require("./src/schedules");
+const { startTourStatusCron } = require("./src/services/tour.service");
+const { startTicketExtensionCron } = require("./src/services/ticket.service");
+const { startRoomExtensionCron } = require("./src/services/room.service");
 
 const app = express();
 
@@ -30,6 +33,9 @@ app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 startBookingCleanupCron();
+startTourStatusCron();
+startTicketExtensionCron();
+startRoomExtensionCron();
 
 // Graceful shutdown
 const gracefulShutdown = (signal) => {

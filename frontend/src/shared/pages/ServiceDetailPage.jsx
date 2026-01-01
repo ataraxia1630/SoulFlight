@@ -1,27 +1,6 @@
-import {
-  ArrowBack,
-  CalendarMonth,
-  East,
-  Favorite,
-  FavoriteBorder,
-  Share,
-} from "@mui/icons-material";
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  IconButton,
-  Paper,
-  Stack,
-  Typography,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import { format } from "date-fns";
-import { vi as viLocale } from "date-fns/locale";
+import { ArrowBack, Favorite, FavoriteBorder, Share } from "@mui/icons-material";
+import { Box, Button, Container, Grid, IconButton } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
-import { DateRangePicker } from "react-date-range";
 import { useParams } from "react-router-dom";
 import { useAuthStore } from "@/app/store";
 import "react-date-range/dist/styles.css";
@@ -44,8 +23,6 @@ import TourService from "../services/tour.service.js";
 const ServiceDetailPage = () => {
   const { id } = useParams();
   const { user } = useAuthStore();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [service, setService] = useState(null);
   const [rooms, setRooms] = useState([]);
@@ -56,14 +33,6 @@ const ServiceDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const [toggleLoading, setToggleLoading] = useState(false);
-
-  const [dateRange, setDateRange] = useState([
-    {
-      startDate: new Date(),
-      endDate: new Date(new Date().setDate(new Date().getDate() + 1)),
-      key: "selection",
-    },
-  ]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -116,7 +85,7 @@ const ServiceDetailPage = () => {
     try {
       setToggleLoading(true);
 
-      const res = await WishlistService.toggle(parseInt(id));
+      const res = await WishlistService.toggle(parseInt(id, 10));
       const isLiked = res.data?.liked;
       const message = res.data.message;
 
@@ -147,7 +116,7 @@ const ServiceDetailPage = () => {
   if (loading) return <LoadingState />;
   if (!service) return <EmptyState message="Không tìm thấy dịch vụ" />;
 
-  const typeName = service.type?.name;
+  // const typeName = service.type?.name;
 
   return (
     <Box sx={{ bgcolor: "background.default", minHeight: "100vh", py: 1 }}>
@@ -188,7 +157,7 @@ const ServiceDetailPage = () => {
           <Grid>
             <ServiceHeader service={service} reviews={reviews} />
 
-            {["stay", "tour", "leisure"].includes(typeName) && (
+            {/* {["stay", "tour", "leisure"].includes(typeName) && (
               <Paper
                 elevation={0}
                 sx={{
@@ -463,7 +432,7 @@ const ServiceDetailPage = () => {
                   />
                 </Box>
               </Paper>
-            )}
+            )} */}
 
             <ServiceTabs
               serviceId={id}
@@ -472,7 +441,7 @@ const ServiceDetailPage = () => {
               tours={tours}
               tickets={tickets}
               reviews={reviews}
-              bookingDates={dateRange[0]}
+              // bookingDates={dateRange[0]}
               onRefresh={() => fetchAllData(true)}
             />
 

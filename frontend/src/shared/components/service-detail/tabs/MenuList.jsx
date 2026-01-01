@@ -1,4 +1,4 @@
-import { AddShoppingCart } from "@mui/icons-material";
+import { ArrowForward } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -54,24 +54,66 @@ const MenusList = ({ menus }) => {
               {menu.cover_url && (
                 <CardMedia
                   component="img"
-                  image={menu.cover_thumbnail}
+                  image={menu.cover_thumbnail || menu.cover_url}
                   alt={menu.name}
                   sx={{
                     width: 120,
                     height: 120,
                     borderRadius: 2,
                     objectFit: "cover",
+                    flexShrink: 0,
                   }}
                 />
               )}
-              <Box sx={{ flex: 1 }}>
-                <Typography variant="h5" fontWeight={700} gutterBottom>
-                  {menu.name}
-                </Typography>
-                {menu.description && (
-                  <Typography variant="body1" color="text.secondary">
-                    {menu.description}
+
+              <Box
+                sx={{
+                  flex: 1,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  minHeight: 120,
+                }}
+              >
+                <Box>
+                  <Typography variant="h5" fontWeight={700} gutterBottom>
+                    {menu.name}
                   </Typography>
+                  {menu.description && (
+                    <Typography
+                      variant="body1"
+                      color="text.secondary"
+                      sx={{
+                        display: "-webkit-box",
+                        overflow: "hidden",
+                        WebkitBoxOrient: "vertical",
+                        WebkitLineClamp: 2,
+                      }}
+                    >
+                      {menu.description}
+                    </Typography>
+                  )}
+                </Box>
+
+                {user?.role === "TRAVELER" && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "flex-end",
+                      mt: 1,
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      size="small"
+                      disableElevation
+                      onClick={() => navigate(`/menus/${menu.id}`)}
+                      endIcon={<ArrowForward />}
+                      sx={{ fontWeight: 600 }}
+                    >
+                      Xem & Đặt món
+                    </Button>
+                  </Box>
                 )}
               </Box>
             </Box>
@@ -203,32 +245,6 @@ const MenusList = ({ menus }) => {
                             / {unitTranslation[item.unit] || item.unit}
                           </Typography>
                         </Typography>
-
-                        {user?.role === "TRAVELER" && (
-                          <Box sx={{ display: "flex", gap: 1 }}>
-                            <Button
-                              variant="outlined"
-                              size="small"
-                              startIcon={<AddShoppingCart />}
-                              disabled={!isAvailable}
-                              onClick={() => console.log("Add to cart", item.id)}
-                              sx={{ textTransform: "none", fontWeight: 600 }}
-                            >
-                              Thêm vào giỏ
-                            </Button>
-
-                            <Button
-                              variant="contained"
-                              size="small"
-                              disableElevation
-                              disabled={!isAvailable}
-                              onClick={() => navigate(`/menus/${item.id}`)}
-                              sx={{ textTransform: "none", fontWeight: 600 }}
-                            >
-                              Đặt ngay
-                            </Button>
-                          </Box>
-                        )}
                       </Box>
                     </Box>
                   </Card>
