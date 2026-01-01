@@ -19,10 +19,10 @@ const PaymentMethodSelector = ({ selectedMethod, onChange }) => {
     },
     {
       id: "BLOCKCHAIN",
-      name: "Cryptocurrency",
+      name: "Travel Token",
       description: "Thanh toán bằng tiền điện tử",
       icon: <CurrencyBitcoin sx={{ fontSize: 30, color: "#f7931a" }} />,
-      enabled: false,
+      enabled: true,
     },
   ];
 
