@@ -14,6 +14,7 @@ import MenuDetail from "../../features/traveler/pages/ServiceDetail/MenuDetail";
 import RoomDetail from "../../features/traveler/pages/ServiceDetail/RoomDetail";
 import TicketDetail from "../../features/traveler/pages/ServiceDetail/TicketDetail";
 import TourDetail from "../../features/traveler/pages/ServiceDetail/TourDetail";
+import WalletPage from "../../features/traveler/pages/Wallet/WalletPage";
 import Wishlist from "../../features/traveler/pages/Wishlist";
 import { createAuthRoutes } from "./auth.route";
 import ProtectedRoute from "./ProtectedRoute";
@@ -36,6 +37,7 @@ const mainRoutes = (
     <Route path="/cart" element={<CartPage />} />
     <Route path="/checkout" element={<CheckoutPage />} />
     <Route path="/booking/history" element={<BookingHistory />} />
+    <Route path="/wallet" element={<WalletPage />} />
     {/* <Route path="/payment/result" element={<PaymentResultPage />} /> */}
     <Route path="place" element={<ExplorePlace />} />
     <Route path="place/:id" element={<PlaceDetailsPage />} />

@@ -17,4 +17,41 @@ router.post("/", validate(createPaymentSchema), PaymentController.createPayment)
 router.get("/", PaymentController.getPayments);
 router.get("/:id", PaymentController.getPayment);
 
+//Blockchain
+const blockchainRouter = Router();
+
+blockchainRouter.post(
+  "/execute",
+  authorize,
+  requiredRoles("TRAVELER"),
+  PaymentController.executeBlockchainPayment,
+);
+
+blockchainRouter.get("/balance/:walletAddress", authorize, PaymentController.getWalletBalance);
+
+blockchainRouter.post(
+  "/connect",
+  authorize,
+  requiredRoles("TRAVELER"),
+  PaymentController.connectWallet,
+);
+
+blockchainRouter.post(
+  "/disconnect",
+  authorize,
+  requiredRoles("TRAVELER"),
+  PaymentController.disconnectWallet,
+);
+
+blockchainRouter.get(
+  "/transactions",
+  authorize,
+  requiredRoles("TRAVELER"),
+  PaymentController.getBlockchainTransactions,
+);
+
+blockchainRouter.get("/verify/:txHash", authorize, PaymentController.verifyTransaction);
+
+router.use("/blockchain", blockchainRouter);
+
 module.exports = router;

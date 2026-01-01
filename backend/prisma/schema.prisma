@@ -102,40 +102,45 @@ model User {
 }
 
 model Provider {
-  id               Int       @id
-  description      String?
-  logo_url         String?
-  website_link     String?
-  address          String?
-  id_card          String    @unique
-  province         String
-  country          String
-  establish_year   Int
-  created_at       DateTime  @default(now())
-  updated_at       DateTime  @updatedAt
-  user             User      @relation(fields: [id], references: [id])
-  Services         Service[]
-  bookings         Booking[]
-  reports_received Report[]  @relation("ProviderReports")
+  id                     Int                     @id
+  description            String?
+  logo_url               String?
+  website_link           String?
+  address                String?
+  id_card                String                  @unique
+  province               String
+  country                String
+  establish_year         Int
+  created_at             DateTime                @default(now())
+  updated_at             DateTime                @updatedAt
+  user                   User                    @relation(fields: [id], references: [id])
+  Services               Service[]
+  bookings               Booking[]
+  reports_received       Report[]                @relation("ProviderReports")
+  blockchain_wallet      String?                 @unique
+  blockchainTransactions BlockchainTransaction[]
 }
 
 model Traveler {
-  id                Int               @id
-  gender            Gender?
-  dob               DateTime?
-  location          String?
-  avatar_url        String?
-  created_at        DateTime          @default(now())
-  updated_at        DateTime          @updatedAt
-  user              User              @relation(fields: [id], references: [id])
-  cart              Cart?
-  bookings          Booking[]         @relation("TravelerBookings")
-  wishlists         Wishlist[]
-  itineraries       Itinerary[]
-  sharedItineraries SharedItinerary[]
-  reports_sent      Report[]          @relation("TravelerReports")
-  reviews           Review[]
-  journals          TravelJournal[]
+  id                     Int                     @id
+  gender                 Gender?
+  dob                    DateTime?
+  location               String?
+  avatar_url             String?
+  created_at             DateTime                @default(now())
+  updated_at             DateTime                @updatedAt
+  user                   User                    @relation(fields: [id], references: [id])
+  cart                   Cart?
+  bookings               Booking[]               @relation("TravelerBookings")
+  wishlists              Wishlist[]
+  itineraries            Itinerary[]
+  sharedItineraries      SharedItinerary[]
+  reports_sent           Report[]                @relation("TravelerReports")
+  reviews                Review[]
+  journals               TravelJournal[]
+  blockchain_wallet      String?                 @unique
+  wallet_balance         Decimal                 @default(0) @db.Decimal(20, 8)
+  blockchainTransactions BlockchainTransaction[]
 }
 
 model ServiceType {
@@ -559,18 +564,21 @@ enum PaymentStatus {
 }
 
 model Payment {
-  id             String        @id @default(cuid())
-  amount         Decimal       @db.Decimal(12, 2)
-  method         PaymentMethod
-  status         PaymentStatus @default(PENDING)
-  transaction_id String? // Mã giao dịch từ cổng thanh toán
-  paid_at        DateTime?
-  payload        Json? // Lưu toàn bộ response từ cổng (dùng để debug)
+  id                    String        @id @default(cuid())
+  amount                Decimal       @db.Decimal(12, 2)
+  method                PaymentMethod
+  status                PaymentStatus @default(PENDING)
+  transaction_id        String? // Mã giao dịch từ cổng thanh toán
+  paid_at               DateTime?
+  payload               Json? // Lưu toàn bộ response từ cổng (dùng để debug)
+  blockchain_tx_hash    String? // Hash transaction blockchain
+  blockchain_booking_id String?
 
   bookings Booking[] @relation("PaymentToBookings")
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at            DateTime               @default(now())
+  updated_at            DateTime               @updatedAt
+  blockchainTransaction BlockchainTransaction?
 
   @@index([status])
   @@index([transaction_id])
@@ -791,4 +799,51 @@ model TravelJournal {
   updated_at DateTime @updatedAt
 
   traveler Traveler @relation(fields: [traveler_id], references: [id], onDelete: Cascade)
+}
+
+model BlockchainTransaction {
+  id            String             @id @default(cuid())
+  tx_hash       String             @unique
+  from_address  String
+  to_address    String
+  amount_tpt    Decimal            @db.Decimal(20, 8)
+  amount_vnd    Decimal            @db.Decimal(15, 2)
+  tx_type       TransactionType
+  status        BlockchainTxStatus @default(PENDING)
+  block_number  Int?
+  gas_used      String?
+  gas_price     String?
+  error_message String?
+
+  payment_id String?  @unique
+  payment    Payment? @relation(fields: [payment_id], references: [id])
+
+  traveler_id Int?
+  traveler    Traveler? @relation(fields: [traveler_id], references: [id])
+
+  provider_id Int?
+  provider    Provider? @relation(fields: [provider_id], references: [id])
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([from_address])
+  @@index([to_address])
+  @@index([tx_hash])
+}
+
+enum TransactionType {
+  PAYMENT // Thanh toán booking
+  REFUND // Hoàn tiền
+  TRANSFER // Chuyển token
+  CASHBACK // Nhận cashback
+  AIRDROP // Nhận airdrop test
+}
+
+enum BlockchainTxStatus {
+  PENDING // Đang chờ xác nhận
+  CONFIRMING // Đang confirm trên blockchain
+  CONFIRMED // Đã confirm
+  FAILED // Thất bại
+  REVERTED // Bị revert
 }
