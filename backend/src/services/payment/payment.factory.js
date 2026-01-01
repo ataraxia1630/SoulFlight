@@ -1,12 +1,12 @@
 const VNPayStrategy = require("./strategies/vnpay.strategy");
-// const BlockchainStrategy = require('./strategies/blockchain.strategy');
+const BlockchainStrategy = require("./strategies/blockchain.strategy");
 // const CashStrategy = require('./strategies/cash.strategy');
 
 const strategies = {
   VNPAY: new VNPayStrategy(),
   MOMO: null,
   ZALOPAY: null,
-  BLOCKCHAIN: null,
+  BLOCKCHAIN: new BlockchainStrategy(),
   CASH: null,
   BANK_TRANSFER: null, // xử lý như CASH
 };
