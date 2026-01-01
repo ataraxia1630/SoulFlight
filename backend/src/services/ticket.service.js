@@ -3,6 +3,8 @@ const AppError = require("../utils/AppError");
 const { TicketDTO } = require("../dtos/ticket.dto");
 const { ERROR_CODES } = require("../constants/errorCode");
 const { attachImagesList } = require("../utils/attachImage");
+const { generateTicketAvailable } = require("../utils/generateTicketAvailable");
+const cron = require("node-cron");
 
 const commonInclude = (travelerId) => ({
   Service: {
@@ -103,16 +105,24 @@ const TicketService = {
   },
 
   create: async (data) => {
-    const ticket = await prisma.ticket.create({
-      data: {
-        service_id: parseInt(data.service_id, 10),
-        place_id: parseInt(data.place_id, 10),
-        name: data.name,
-        description: data.description || null,
-        price: parseFloat(data.price),
-        status: data.status || "AVAILABLE",
-      },
-      include: commonInclude(null),
+    const { max_count, ...ticketData } = data;
+
+    const ticket = await prisma.$transaction(async (tx) => {
+      const createdTicket = await tx.ticket.create({
+        data: {
+          service_id: parseInt(ticketData.service_id, 10),
+          place_id: parseInt(ticketData.place_id, 10),
+          name: ticketData.name,
+          description: ticketData.description || null,
+          price: parseFloat(ticketData.price),
+          status: ticketData.status || "AVAILABLE",
+        },
+        include: commonInclude(null),
+      });
+
+      await generateTicketAvailable(createdTicket.id, max_count, createdTicket.price, tx);
+
+      return createdTicket;
     });
 
     return TicketService.getById(ticket.id);
@@ -238,4 +248,67 @@ const TicketService = {
   },
 };
 
-module.exports = TicketService;
+const startTicketExtensionCron = () => {
+  // chạy mỗi ngày lúc 0h00
+  cron.schedule("0 0 * * *", async () => {
+    try {
+      console.log("[TicketCron] Checking for tickets needing extension...");
+
+      const tickets = await prisma.ticket.findMany({
+        where: { status: "AVAILABLE" },
+        select: { id: true, price: true },
+      });
+
+      const thresholdDate = new Date();
+      thresholdDate.setDate(thresholdDate.getDate() + 30);
+
+      let extendedCount = 0;
+
+      for (const ticket of tickets) {
+        const lastAvail = await prisma.ticketAvailability.findFirst({
+          where: { ticket_id: ticket.id },
+          orderBy: { date: "desc" },
+          select: { date: true, max_count: true },
+        });
+
+        // chọn ngày bắt đầu tạo bảng availability
+        if (!lastAvail || lastAvail.date < thresholdDate) {
+          let startDate = new Date();
+          startDate.setHours(0, 0, 0, 0);
+
+          if (lastAvail) {
+            const nextDayAfterOldLimit = new Date(lastAvail.date);
+            nextDayAfterOldLimit.setDate(nextDayAfterOldLimit.getDate() + 1);
+            nextDayAfterOldLimit.setHours(0, 0, 0, 0);
+
+            if (nextDayAfterOldLimit > startDate) {
+              startDate = nextDayAfterOldLimit;
+            }
+          }
+
+          await prisma.$transaction(async (tx) => {
+            await generateTicketAvailable(
+              ticket.id,
+              lastAvail ? lastAvail.max_count : null,
+              ticket.price,
+              tx,
+              startDate,
+            );
+          });
+
+          extendedCount++;
+        }
+      }
+
+      if (extendedCount > 0) {
+        console.log(`[TicketCron] Extended availability for ${extendedCount} tickets.`);
+      } else {
+        console.log("[TicketCron] No tickets need extension.");
+      }
+    } catch (error) {
+      console.error("[TicketCron] Error extending tickets:", error);
+    }
+  });
+};
+
+module.exports = { TicketService, startTicketExtensionCron };

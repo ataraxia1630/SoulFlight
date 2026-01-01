@@ -1,9 +1,9 @@
-const generateAvailable = async (roomId, totalRooms, pricePerNight, tx) => {
-  const start = new Date();
+const generateAvailable = async (roomId, totalRooms, pricePerNight, tx, customStartDate = null) => {
+  const start = customStartDate ? new Date(customStartDate) : new Date();
   start.setHours(0, 0, 0, 0);
 
-  const end = new Date();
-  end.setFullYear(end.getFullYear() + 2);
+  const end = new Date(start);
+  end.setFullYear(end.getFullYear() + 1);
 
   const availabilityData = [];
   const date = new Date(start);
@@ -13,8 +13,9 @@ const generateAvailable = async (roomId, totalRooms, pricePerNight, tx) => {
       room_id: roomId,
       date: new Date(date),
       available_count: totalRooms,
-      price_override: pricePerNight,
+      price_override: parseFloat(pricePerNight),
     });
+
     date.setDate(date.getDate() + 1);
   }
 
@@ -22,6 +23,7 @@ const generateAvailable = async (roomId, totalRooms, pricePerNight, tx) => {
   for (let i = 0; i < availabilityData.length; i += chunkSize) {
     await tx.roomAvailability.createMany({
       data: availabilityData.slice(i, i + chunkSize),
+      skipDuplicates: true,
     });
   }
 };

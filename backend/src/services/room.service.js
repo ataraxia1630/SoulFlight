@@ -7,6 +7,7 @@ const { getDateRange } = require("../utils/date");
 const { generateAvailable } = require("../utils/generateAvailable");
 const { attachImages, attachImagesList } = require("../utils/attachImage");
 const { uploadImages, updateImageList } = require("../utils/imageHandler");
+const cron = require("node-cron");
 
 const roomInclude = (travelerId) => ({
   facilities: { include: { facility: true } },
@@ -318,4 +319,62 @@ const RoomService = {
   },
 };
 
-module.exports = RoomService;
+const startRoomExtensionCron = () => {
+  // chạy mỗi ngày một lần vào lúc 00:30 (tránh trùng giờ với TicketCron)
+  cron.schedule("30 0 * * *", async () => {
+    try {
+      console.log("[RoomCron] Checking for rooms needing extension...");
+
+      const rooms = await prisma.room.findMany({
+        where: {
+          status: "AVAILABLE",
+          service: { status: "AVAILABLE" },
+        },
+        select: { id: true, total_rooms: true, price_per_night: true },
+      });
+
+      const thresholdDate = new Date();
+      thresholdDate.setHours(0, 0, 0, 0);
+      const warningLimit = new Date(thresholdDate);
+      warningLimit.setDate(warningLimit.getDate() + 30);
+
+      let extendedCount = 0;
+
+      for (const room of rooms) {
+        const lastAvail = await prisma.roomAvailability.findFirst({
+          where: { room_id: room.id },
+          orderBy: { date: "desc" },
+          select: { date: true },
+        });
+
+        if (!lastAvail || lastAvail.date < warningLimit) {
+          let startDate = new Date(thresholdDate);
+
+          if (lastAvail) {
+            const nextDayAfterOldLimit = new Date(lastAvail.date);
+            nextDayAfterOldLimit.setDate(nextDayAfterOldLimit.getDate() + 1);
+            nextDayAfterOldLimit.setHours(0, 0, 0, 0);
+
+            if (nextDayAfterOldLimit > startDate) {
+              startDate = nextDayAfterOldLimit;
+            }
+          }
+
+          await prisma.$transaction(async (tx) => {
+            await generateAvailable(room.id, room.total_rooms, room.price_per_night, tx, startDate);
+          });
+
+          extendedCount++;
+        }
+      }
+
+      if (extendedCount > 0) {
+        console.log(`[RoomCron] Extended availability for ${extendedCount} rooms.`);
+      }
+    } catch (error) {
+      console.error("[RoomCron] Error extending rooms:", error);
+    }
+  });
+};
+
+module.exports = { RoomService, startRoomExtensionCron };

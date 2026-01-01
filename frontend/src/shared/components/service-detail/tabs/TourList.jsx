@@ -1,4 +1,4 @@
-import { AccessTime, AddShoppingCart, Event, Map as MapIcon, People } from "@mui/icons-material";
+import { AccessTime, ArrowForward, Event, Map as MapIcon, People } from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -255,22 +255,14 @@ const ToursList = ({ tours }) => {
                   }}
                 >
                   <Button
-                    variant="outlined"
-                    color="primary"
-                    startIcon={<AddShoppingCart />}
-                    disabled={!isAvailable}
-                    onClick={() => console.log("Add to cart:", tour.id)}
-                    sx={{ textTransform: "none", fontWeight: 600 }}
-                  >
-                    Thêm vào giỏ
-                  </Button>
-
-                  <Button
                     variant="contained"
                     color="primary"
+                    size="small"
+                    disableElevation
                     disabled={!isAvailable}
                     onClick={() => navigate(`/tours/${tour.id}`)}
-                    sx={{ textTransform: "none", fontWeight: 600 }}
+                    endIcon={isAvailable ? <ArrowForward /> : null}
+                    sx={{ fontWeight: 600 }}
                   >
                     {isAvailable ? "Đặt tour ngay" : "Đã hết / Ngưng"}
                   </Button>

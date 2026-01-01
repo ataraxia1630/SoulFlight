@@ -1,4 +1,4 @@
-const RoomService = require("../services/room.service");
+const { RoomService } = require("../services/room.service");
 const catchAsync = require("../utils/catchAsync");
 const { success } = require("../utils/ApiResponse");
 

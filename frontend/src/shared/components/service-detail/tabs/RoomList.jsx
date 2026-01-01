@@ -1,5 +1,5 @@
 import {
-  AddShoppingCart,
+  ArrowForward,
   Bed,
   Close as CloseIcon,
   Hotel,
@@ -297,18 +297,13 @@ const RoomsList = ({ rooms }) => {
                   }}
                 >
                   <Button
-                    variant="outlined"
-                    size="small"
-                    startIcon={<AddShoppingCart />}
-                    disabled={!isAvailable}
-                  >
-                    Thêm vào giỏ
-                  </Button>
-                  <Button
                     variant="contained"
                     size="small"
+                    disableElevation
                     disabled={!isAvailable}
                     onClick={() => navigate(`/rooms/${room.id}`)}
+                    endIcon={isAvailable ? <ArrowForward /> : null}
+                    sx={{ fontWeight: 600 }}
                   >
                     {isAvailable ? "Đặt phòng" : "Hết phòng"}
                   </Button>

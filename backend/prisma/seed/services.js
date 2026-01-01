@@ -1,8 +1,9 @@
 const { upsertMany } = require("./utils/upsertMany");
 
 const services = [
-  // ========== Dịch Vụ Lưu Trú (provider_id: 2) ==========
+  // ========== Dịch Vụ Lưu Trú (Type ID: 1, Provider ID: 2) ==========
   {
+    id: 1,
     name: "Khách Sạn Sunrise Grand",
     description: "Khách sạn 5 sao sang trọng tại trung tâm Sài Gòn với bể bơi trên mái và spa",
     location: "123 Nguyễn Huệ, Quận 1, TP HCM",
@@ -11,6 +12,7 @@ const services = [
     provider_id: 2,
   },
   {
+    id: 2,
     name: "Resort Bãi Biển Sunrise",
     description: "Thiên đường bãi biển với bãi biển riêng tư và các hoạt động nước",
     location: "Bãi Trường, Phú Quốc",
@@ -19,6 +21,7 @@ const services = [
     provider_id: 2,
   },
   {
+    id: 3,
     name: "Khách Sạn Boutique Sunrise",
     description: "Khách sạn boutique quyến rũ với thiết kế truyền thống Việt Nam",
     location: "45 Phạm Bội Châu, Hội An",
@@ -27,6 +30,7 @@ const services = [
     provider_id: 2,
   },
   {
+    id: 4,
     name: "Lều Núi Sunrise",
     description: "Khu nghỉ dưỡng yên tĩnh trên núi với view thung lũng tuyệt đẹp",
     location: "Sapa, Lào Cai",
@@ -35,6 +39,7 @@ const services = [
     provider_id: 2,
   },
   {
+    id: 5,
     name: "Căn Hộ Phục Vụ Sunrise",
     description: "Căn hộ phục vụ hiện đại cho những người lưu trú dài hạn",
     location: "Quận 2, TP HCM",
@@ -43,6 +48,7 @@ const services = [
     provider_id: 2,
   },
   {
+    id: 6,
     name: "Resort Hạ Long",
     description: "Resort 4 sao tại Hạ Long với view vịnh đẹp và dịch vụ đẳng cấp",
     location: "Hạ Long, Quảng Ninh",
@@ -51,6 +57,7 @@ const services = [
     provider_id: 2,
   },
   {
+    id: 7,
     name: "Khách Sạn Nha Trang",
     description: "Khách sạn biển Nha Trang với phòng thoáng đãng và bãi biển riêng",
     location: "Nha Trang, Khánh Hòa",
@@ -59,8 +66,9 @@ const services = [
     provider_id: 2,
   },
 
-  // ========== Dịch Vụ Ăn Uống (provider_id: 4) ==========
+  // ========== Dịch Vụ Ăn Uống (Type ID: 2, Provider ID: 4) ==========
   {
+    id: 8,
     name: "Phở Góc Trung Tâm",
     description: "Phở Việt nam ngon lạc lẽu với công thức gia đình hơn 50 năm",
     location: "789 Lê Lợi, Quận 3, TP HCM",
@@ -69,6 +77,7 @@ const services = [
     provider_id: 4,
   },
   {
+    id: 9,
     name: "Nhà Hàng Phở Góc",
     description: "Ẩm thực Việt Nam hiện đại với hương vị truyền thống",
     location: "12 Đồng Khởi, Quận 1, TP HCM",
@@ -77,6 +86,7 @@ const services = [
     provider_id: 4,
   },
   {
+    id: 10,
     name: "Phở Góc Sân Thượng",
     description: "Nhà hàng ăn uống tinh tế với view thành phố tuyệt đẹp",
     location: "56 Nguyễn Huệ, Quận 1, TP HCM",
@@ -85,6 +95,7 @@ const services = [
     provider_id: 4,
   },
   {
+    id: 11,
     name: "Quán Cà Phê Phở Góc",
     description: "Quán cà phê chuyên về văn hóa cà phê Việt Nam",
     location: "23 Pasteur, Quận 1, TP HCM",
@@ -93,6 +104,7 @@ const services = [
     provider_id: 4,
   },
   {
+    id: 12,
     name: "Phở Góc Đồ Ăn Đường Phố",
     description: "Trải nghiệm ẩm thực đường phố Việt Nam",
     location: "89 Bùi Viện, Quận 1, TP HCM",
@@ -101,6 +113,7 @@ const services = [
     provider_id: 4,
   },
   {
+    id: 13,
     name: "Nhà Hàng Cơm Tấm Hội An",
     description: "Cơm tấm truyền thống Hội An với thịt nướng thơm ngon",
     location: "Hội An, Quảng Nam",
@@ -109,6 +122,7 @@ const services = [
     provider_id: 4,
   },
   {
+    id: 14,
     name: "Quán Ẩm Thực Sapa",
     description: "Ẩm thực dân tộc Tây Bắc tại Sapa",
     location: "Sapa, Lào Cai",
@@ -117,8 +131,9 @@ const services = [
     provider_id: 4,
   },
 
-  // ========== Dịch Vụ Du Lịch & Hoạt Động (provider_id: 3) ==========
+  // ========== Dịch Vụ TOUR (Type ID: 3, Provider ID: 3) ==========
   {
+    id: 15,
     name: "Khám Phá Đồng Bằng Sông Cửu Long",
     description: "Tour toàn ngày khám phá chợ nổi Cái Răng và các làng quê địa phương",
     location: "Cần Thơ",
@@ -127,6 +142,7 @@ const services = [
     provider_id: 3,
   },
   {
+    id: 16,
     name: "Du Thuyền Hoàng Hôn",
     description: "Du thuyền lãng mạn tối chiều trên sông Cửu Long với bữa tối và nhạc sống",
     location: "Bến Tre",
@@ -135,6 +151,7 @@ const services = [
     provider_id: 3,
   },
   {
+    id: 17,
     name: "Tour Đạp Xe Qua Làng Quê",
     description: "Khám phá cuộc sống nông thôn Đồng Bằng bằng xe đạp",
     location: "Vĩnh Long",
@@ -143,7 +160,8 @@ const services = [
     provider_id: 3,
   },
   {
-    name: "Hành Trình Tâm Linh Núi Sam",
+    id: 18,
+    name: "Hành Trình Tâm Linh Núi Sam (Tour)",
     description: "Du lịch cáp treo lên Núi Sam với tham quan các chùa chiền linh thiêng",
     location: "Châu Đốc, An Giang",
     rating: 0,
@@ -151,6 +169,7 @@ const services = [
     provider_id: 3,
   },
   {
+    id: 19,
     name: "Eco Tour Rừng Tràm Trà Sư",
     description: "Khám phá rừng tràm với quan sát chim và tài liệu thiên nhiên",
     location: "Tịnh Biên, An Giang",
@@ -158,28 +177,51 @@ const services = [
     type_id: 3,
     provider_id: 3,
   },
+
+  // ========== Dịch Vụ LEISURE / TICKET (Type ID: 4, Provider ID: 3) ==========
   {
-    name: "Tour Hạ Long Bay",
+    id: 20,
+    name: "Khu Du Lịch Núi Sam (Vé)",
+    description: "Điểm đến tâm linh và cáp treo Núi Sam",
+    location: "Châu Đốc, An Giang",
+    rating: 0,
+    type_id: 4,
+    provider_id: 3,
+  },
+  {
+    id: 21,
+    name: "Khu Bảo Tồn Rừng Tràm Trà Sư (Vé)",
+    description: "Điểm tham quan sinh thái rừng tràm",
+    location: "Tịnh Biên, An Giang",
+    rating: 0,
+    type_id: 4,
+    provider_id: 3,
+  },
+  {
+    id: 22,
+    name: "Tour Hạ Long Bay (Vé Tàu/Tham Quan)",
     description: "Du thuyền khám phá vịnh Hạ Long - Di sản thế giới UNESCO",
     location: "Hạ Long, Quảng Ninh",
     rating: 0,
-    type_id: 3,
+    type_id: 4,
     provider_id: 3,
   },
   {
-    name: "Khám Phá Phố Cổ Hội An",
+    id: 23,
+    name: "Khám Phá Phố Cổ Hội An (Vé)",
     description: "Thăm thú phố cổ Hội An với kiến trúc độc đáo",
     location: "Hội An, Quảng Nam",
     rating: 0,
-    type_id: 3,
+    type_id: 4,
     provider_id: 3,
   },
   {
-    name: "Trekking Sapa",
+    id: 24,
+    name: "Trekking Sapa (Vé/Dịch vụ)",
     description: "Trekking núi Sapa với hướng dẫn du lịch địa phương",
     location: "Sapa, Lào Cai",
     rating: 0,
-    type_id: 3,
+    type_id: 4,
     provider_id: 3,
   },
 ];

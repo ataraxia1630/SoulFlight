@@ -1,7 +1,7 @@
 const { upsertMany } = require("./utils/upsertMany");
 
 const rooms = [
-  // Khách Sạn Sunrise Grand (service_id: 1)
+  // ========== Service ID 1: Khách Sạn Sunrise Grand ==========
   {
     service_id: 1,
     name: "Phòng Deluxe View Thành Phố",
@@ -43,7 +43,7 @@ const rooms = [
     bed_number: 2,
   },
 
-  // Resort Bãi Biển Sunrise (service_id: 2)
+  // ========== Service ID 2: Resort Bãi Biển Sunrise ==========
   {
     service_id: 2,
     name: "Bungalow View Biển",
@@ -85,7 +85,7 @@ const rooms = [
     bed_number: 3,
   },
 
-  // Khách Sạn Boutique Sunrise (service_id: 3)
+  // ========== Service ID 3: Khách Sạn Boutique Sunrise ==========
   {
     service_id: 3,
     name: "Phòng Di Sản",
@@ -127,7 +127,7 @@ const rooms = [
     bed_number: 2,
   },
 
-  // Lều Núi Sunrise (service_id: 4)
+  // ========== Service ID 4: Lều Núi Sunrise ==========
   {
     service_id: 4,
     name: "Phòng View Thung Lũng",
@@ -169,7 +169,7 @@ const rooms = [
     bed_number: 4,
   },
 
-  // Căn Hộ Phục Vụ Sunrise (service_id: 5)
+  // ========== Service ID 5: Căn Hộ Phục Vụ Sunrise ==========
   {
     service_id: 5,
     name: "Studio Apartment",
@@ -201,7 +201,7 @@ const rooms = [
     bed_number: 3,
   },
 
-  // Resort Hạ Long (service_id: 6)
+  // ========== Service ID 6: Resort Hạ Long ==========
   {
     service_id: 6,
     name: "Phòng View Vịnh",
@@ -233,7 +233,7 @@ const rooms = [
     bed_number: 2,
   },
 
-  // Khách Sạn Nha Trang (service_id: 7)
+  // ========== Service ID 7: Khách Sạn Nha Trang ==========
   {
     service_id: 7,
     name: "Phòng Biển Nha Trang",

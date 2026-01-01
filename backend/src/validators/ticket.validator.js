@@ -6,6 +6,7 @@ const createTicketSchema = Joi.object({
   price: Joi.number().positive().precision(2).required(),
   service_id: Joi.number().integer().required(),
   place_id: Joi.number().integer().required(),
+  max_count: Joi.number().integer().optional(),
 });
 
 const updateTicketSchema = Joi.object({
@@ -14,6 +15,7 @@ const updateTicketSchema = Joi.object({
   price: Joi.number().positive().precision(2).optional(),
   service_id: Joi.number().integer().optional(),
   place_id: Joi.number().integer().optional(),
+  max_count: Joi.number().integer().optional(),
 });
 
 module.exports = {

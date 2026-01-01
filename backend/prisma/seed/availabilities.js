@@ -1,76 +1,88 @@
-// const { upsertMany } = require("./utils/upsertMany");
+// Tạo availability cho phòng (room_id 1-25) - 1 năm từ hôm nay
+const generateRoomAvailabilities = () => {
+  const availabilities = [];
+  const startDate = new Date();
+  startDate.setHours(0, 0, 0, 0);
 
-// Tạo availability cho phòng (room_id 1-30)
-const roomAvailabilities = [];
-for (let roomId = 1; roomId <= 30; roomId++) {
-  for (let i = 0; i < 60; i++) {
-    const date = new Date("2025-01-15");
-    date.setDate(date.getDate() + i);
-    roomAvailabilities.push({
-      room_id: roomId,
-      date: date,
-      available_count: Math.floor(Math.random() * 3) + 1, // 1-3 phòng trống
-      price_override: Math.random() > 0.7 ? Math.floor(Math.random() * 50000) + 50000 : null,
-    });
-  }
-}
+  const endDate = new Date(startDate);
+  endDate.setFullYear(endDate.getFullYear() + 1);
 
-// Tạo availability cho ticket (ticket_id 1-10)
-const ticketAvailabilities = [];
-for (let ticketId = 1; ticketId <= 10; ticketId++) {
-  for (let i = 0; i < 60; i++) {
-    const date = new Date("2025-01-15");
-    date.setDate(date.getDate() + i);
-    ticketAvailabilities.push({
-      ticket_id: ticketId,
-      date: date,
-      available_count: Math.floor(Math.random() * 20) + 10, // 10-30 vé
-      max_count: 50,
-      price_override: Math.random() > 0.8 ? Math.floor(Math.random() * 30000) + 30000 : null,
-    });
+  for (let roomId = 1; roomId <= 25; roomId++) {
+    const date = new Date(startDate);
+
+    while (date <= endDate) {
+      availabilities.push({
+        room_id: roomId,
+        date: new Date(date),
+        available_count: Math.floor(Math.random() * 3) + 1, // 1-3 phòng trống
+        price_override: null,
+      });
+
+      date.setDate(date.getDate() + 1);
+    }
   }
-}
+
+  return availabilities;
+};
+
+// Tạo availability cho ticket (ticket_id 1-16) - 1 năm từ hôm nay
+const generateTicketAvailabilities = () => {
+  const availabilities = [];
+  const startDate = new Date();
+  startDate.setHours(0, 0, 0, 0);
+
+  const endDate = new Date(startDate);
+  endDate.setFullYear(endDate.getFullYear() + 1);
+
+  for (let ticketId = 1; ticketId <= 16; ticketId++) {
+    const date = new Date(startDate);
+
+    while (date <= endDate) {
+      availabilities.push({
+        ticket_id: ticketId,
+        date: new Date(date),
+        available_count: 50,
+        max_count: 50,
+        price_override: null,
+      });
+
+      date.setDate(date.getDate() + 1);
+    }
+  }
+
+  return availabilities;
+};
 
 async function seedRoomAvailabilities(prisma) {
   console.log("Seeding room availabilities...");
-  for (const item of roomAvailabilities) {
-    await prisma.roomAvailability
-      .upsert({
-        where: {
-          room_id_date: {
-            room_id: item.room_id,
-            date: item.date,
-          },
-        },
-        update: item,
-        create: item,
-      })
-      .catch((_e) => {
-        // Ignore unique constraint errors - some dates might already exist
-      });
+
+  const roomAvailabilities = generateRoomAvailabilities();
+
+  const chunkSize = 300;
+  for (let i = 0; i < roomAvailabilities.length; i += chunkSize) {
+    await prisma.roomAvailability.createMany({
+      data: roomAvailabilities.slice(i, i + chunkSize),
+      skipDuplicates: true,
+    });
   }
-  console.log(`Seeded ${roomAvailabilities.length} room availabilities`);
+
+  console.log(`Seeded ${roomAvailabilities.length} room availabilities (1 năm)`);
 }
 
 async function seedTicketAvailabilities(prisma) {
   console.log("Seeding ticket availabilities...");
-  for (const item of ticketAvailabilities) {
-    await prisma.ticketAvailability
-      .upsert({
-        where: {
-          ticket_id_date: {
-            ticket_id: item.ticket_id,
-            date: item.date,
-          },
-        },
-        update: item,
-        create: item,
-      })
-      .catch((_e) => {
-        // Ignore unique constraint errors
-      });
+
+  const ticketAvailabilities = generateTicketAvailabilities();
+
+  const chunkSize = 300;
+  for (let i = 0; i < ticketAvailabilities.length; i += chunkSize) {
+    await prisma.ticketAvailability.createMany({
+      data: ticketAvailabilities.slice(i, i + chunkSize),
+      skipDuplicates: true,
+    });
   }
-  console.log(`Seeded ${ticketAvailabilities.length} ticket availabilities`);
+
+  console.log(`Seeded ${ticketAvailabilities.length} ticket availabilities (1 năm)`);
 }
 
 module.exports = {

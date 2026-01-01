@@ -81,7 +81,7 @@ const places = [
     entry_fee: 0,
   },
   {
-    name: "Mộ Thoại Ngộc Hầu",
+    name: "Mộ Thoại Ngọc Hầu",
     description: "Lăng mộ tướng Việt nổi tiếng",
     address: "Núi Sam, Châu Đốc",
     opening_hours: {
