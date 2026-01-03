@@ -319,12 +319,6 @@ const VoucherService = {
             select: {
               id: true,
               name: true,
-              Provider: {
-                select: {
-                  id: true,
-                  user: { select: { name: true } },
-                },
-              },
             },
           },
           _count: {
@@ -334,7 +328,7 @@ const VoucherService = {
         orderBy: { created_at: "desc" },
       }),
     ]);
-
+    console.log("All vouchers fetched:", vouchers);
     return vouchers;
   },
 

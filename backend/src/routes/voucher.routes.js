@@ -48,24 +48,14 @@ router.get(
 );
 
 // ========== ADMIN ROUTES ==========
-router.get("/admin/all", requiredRoles("ADMIN"), AdminVoucherController.getAllVouchers);
+router.get("/admin/all", AdminVoucherController.getAllVouchers);
 
-router.post(
-  "/admin",
-  requiredRoles("ADMIN"),
-  validate(createVoucherSchema),
-  AdminVoucherController.createVoucher,
-);
+router.post("/admin", validate(createVoucherSchema), AdminVoucherController.createVoucher);
 
-router.patch(
-  "/admin/:id",
-  requiredRoles("ADMIN"),
-  validate(updateVoucherSchema),
-  AdminVoucherController.updateVoucher,
-);
+router.patch("/admin/:id", validate(updateVoucherSchema), AdminVoucherController.updateVoucher);
 
-router.delete("/admin/:id", requiredRoles("ADMIN"), AdminVoucherController.deleteVoucher);
+router.delete("/admin/:id", AdminVoucherController.deleteVoucher);
 
-router.get("/admin/:id/stats", requiredRoles("ADMIN"), AdminVoucherController.getVoucherStats);
+router.get("/admin/:id/stats", AdminVoucherController.getVoucherStats);
 
 module.exports = router;

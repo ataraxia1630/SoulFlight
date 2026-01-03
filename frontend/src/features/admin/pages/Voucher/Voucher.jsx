@@ -1,7 +1,6 @@
 import { Alert, Box } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 
-import useAuthStore from "@/app/store/authStore";
 import DeleteConfirmDialog from "@/shared/components/DeleteConfirmDialog";
 import LoadingState from "@/shared/components/LoadingState";
 import PageHeaderWithAdd from "@/shared/components/PageHeaderWithAdd";
@@ -12,7 +11,6 @@ import { columns } from "./columns";
 import DetailDialog from "./components/DetailDialog";
 
 export default function Voucher() {
-  const { user } = useAuthStore();
   const [vouchers, setVouchers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -25,13 +23,13 @@ export default function Voucher() {
     setLoading(true);
     setError("");
     try {
-      const res = await voucherAPI.getVouchers({ businessId: user?.id });
+      const res = await voucherAPI.getVouchersAdmin();
       setVouchers(res.data || []);
     } catch (err) {
       setError(err.message || "Đã có lỗi xảy ra khi tải danh sách voucher.");
     }
     setLoading(false);
-  }, [user?.id]);
+  }, []);
 
   useEffect(() => {
     fetchVouchers();
@@ -50,10 +48,10 @@ export default function Voucher() {
   const handleSubmitDetail = async (data) => {
     try {
       if (editingVoucher) {
-        await voucherAPI.updateVoucher(editingVoucher.id, data);
+        await voucherAPI.updateVoucherAdmin(editingVoucher.id, data);
         toast.success("Cập nhật voucher thành công!");
       } else {
-        await voucherAPI.createVoucher(data);
+        await voucherAPI.createVoucherAdmin(data);
         toast.success("Tạo voucher mới thành công!");
       }
       setOpenDetailDialog(false);
@@ -66,7 +64,7 @@ export default function Voucher() {
   const handleConfirmDelete = async () => {
     if (!deleteItem) return;
     try {
-      await voucherAPI.deleteVoucher(deleteItem.id);
+      await voucherAPI.deleteVoucherAdmin(deleteItem.id);
       toast.success("Xóa voucher thành công!");
       setOpenDeleteDialog(false);
       fetchVouchers();

@@ -106,7 +106,11 @@ const ProviderVoucherController = {
 const AdminVoucherController = {
   getAllVouchers: catchAsync(async (req, res) => {
     const { status, isGlobal, serviceId } = req.query;
-
+    console.log("Admin getAllVouchers called with:", {
+      status,
+      isGlobal,
+      serviceId,
+    });
     const vouchers = await VoucherService.getAllVouchers({
       status,
       isGlobal,
