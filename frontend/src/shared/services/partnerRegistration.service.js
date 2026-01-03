@@ -84,25 +84,43 @@ const PartnerRegistrationAPI = {
 
   // Get all applicants with filters
   getAllApplicants: async (params = {}) => {
-    const response = await api.get(`${API_BASE_URL}/admin/applicants`, {
-      params,
-    });
-    return response.data;
+    try {
+      const response = await api.get(`${API_BASE_URL}/applicants/all`, {
+        params,
+      });
+      console.log("getAllApplicants response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("getAllApplicants error:", error);
+      throw new Error(error.response?.data?.message || error);
+    }
   },
 
   // Get single applicant detail
-  getApplicantById: async (applicant_id) => {
-    const response = await api.get(`${API_BASE_URL}/admin/applicants/${applicant_id}`);
-    return response.data;
+  getApplicationById: async (applicant_id) => {
+    try {
+      const response = await api.get(`${API_BASE_URL}/applicants/${applicant_id}`);
+      console.log("getApplicantById response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("getApplicantById error:", error);
+      throw new Error(error.response?.data?.message || error);
+    }
   },
 
   // Review applicant (approve/reject/require_info)
   reviewApplicant: async (applicant_id, status, admin_feedback) => {
-    const response = await api.post(`${API_BASE_URL}/admin/applicants/${applicant_id}/review`, {
-      status,
-      admin_feedback,
-    });
-    return response.data;
+    try {
+      const response = await api.post(`${API_BASE_URL}/applicants/${applicant_id}/review`, {
+        status,
+        admin_feedback,
+      });
+      console.log("reviewApplicant response:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("reviewApplicant error:", error);
+      throw new Error(error.response?.data?.message || error);
+    }
   },
 };
 
