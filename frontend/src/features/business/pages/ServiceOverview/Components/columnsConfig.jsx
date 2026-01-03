@@ -1,5 +1,5 @@
 import { Star } from "@mui/icons-material";
-import { Avatar, Box, Chip, Typography } from "@mui/material";
+import { Box, Chip, Typography } from "@mui/material";
 import formatPrice from "@/shared/utils/FormatPrice";
 
 const columnConfig = [
@@ -30,24 +30,6 @@ const columnConfig = [
     ),
   },
   {
-    id: "provider.name",
-    label: "NHÀ CUNG CẤP",
-    width: "20%",
-    header_align: "left",
-    cell_align: "left",
-    search: true,
-    render: (_value, row) => (
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <Avatar
-          src={row.provider?.logo_url}
-          alt={row.provider?.name}
-          sx={{ width: 24, height: 24 }}
-        />
-        <Typography variant="body2">{row.provider?.name || "N/A"}</Typography>
-      </Box>
-    ),
-  },
-  {
     id: "type.name",
     label: "LOẠI",
     width: "10%",
@@ -67,7 +49,7 @@ const columnConfig = [
   {
     id: "price",
     label: "KHOẢNG GIÁ",
-    width: "18%",
+    width: "25%",
     header_align: "center",
     cell_align: "center",
     render: (_value, row) => (
