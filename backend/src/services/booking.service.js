@@ -1057,6 +1057,8 @@ const BookingService = {
           traveler: { include: { user: true } },
           items: true,
           payment: true,
+          service: true,
+          provider: { include: { user: true } },
         },
         orderBy: { booking_date: "desc" },
       }),
@@ -1066,6 +1068,7 @@ const BookingService = {
       bookings.map((booking) => BookingService.enrichBookingItems(booking)),
     );
 
+    console.log("Bookings for provider:", enrichedBookings);
     return enrichedBookings;
   },
 
@@ -1074,6 +1077,7 @@ const BookingService = {
       where: { id: bookingId, provider_id: providerId },
       include: {
         traveler: { include: { user: true } },
+        provider: { include: { user: true } },
         items: true,
         payment: true,
         voucher: true,
@@ -1153,6 +1157,7 @@ const BookingService = {
           provider: { include: { user: true } },
           items: true,
           payment: true,
+          service: true,
         },
         orderBy: { created_at: "desc" },
       }),
@@ -1165,7 +1170,7 @@ const BookingService = {
   },
 
   getBookingDetailAdmin: async (bookingId) => {
-    const booking = await prisma.booking.findUnique({
+    const booking = await prisma.booking.findFirst({
       where: { id: bookingId },
       include: {
         traveler: { include: { user: true } },
@@ -1173,7 +1178,6 @@ const BookingService = {
         items: true,
         payment: true,
         voucher: true,
-        reviews: true,
       },
     });
 
