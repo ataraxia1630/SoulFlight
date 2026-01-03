@@ -23,6 +23,13 @@ const RoomService = {
     return response.data;
   },
 
+  update: async (id, formData) => {
+    const response = await api.put(`${API_BASE_URL}/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    return response.data;
+  },
+
   delete: async (id) => {
     const response = await api.delete(`${API_BASE_URL}/${id}`);
     return response.data;

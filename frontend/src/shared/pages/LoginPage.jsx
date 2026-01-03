@@ -22,7 +22,7 @@ const LoginPage = () => {
       setTimeout(() => {
         setLoading(false);
         if (role === "ADMIN") navigate("/admin/partner-registration");
-        else if (role === "PROVIDER") navigate("/business/dashboard");
+        else if (role === "PROVIDER") navigate("/business/partner-registration");
         else navigate("/");
       }, 2000);
     } catch (error) {

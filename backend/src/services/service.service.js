@@ -22,7 +22,6 @@ const ServiceService = {
         Provider: { include: { user: true } },
         Type: true,
       },
-      orderBy: { updated_at: "desc" },
     });
     if (!service) {
       throw new AppError(

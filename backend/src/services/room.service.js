@@ -110,6 +110,7 @@ const RoomService = {
 
   update: async (id, data, files = [], imageUpdates = []) => {
     const roomId = parseInt(id, 10);
+
     const exists = await prisma.room.findUnique({ where: { id: roomId } });
     if (!exists) {
       throw new AppError(
@@ -119,61 +120,88 @@ const RoomService = {
       );
     }
 
+    // xử lý Facilities (Connect/Disconnect)
+    let connectIds = data.connectFacilities || data["connectFacilities[]"] || [];
+    let disconnectIds = data.disconnectFacilities || data["disconnectFacilities[]"] || [];
+
+    if (!Array.isArray(connectIds)) connectIds = [connectIds];
+    if (!Array.isArray(disconnectIds)) disconnectIds = [disconnectIds];
+
+    // lọc giá trị rỗng
+    connectIds = connectIds.filter((i) => i).map((i) => parseInt(i, 10));
+    disconnectIds = disconnectIds.filter((i) => i).map((i) => parseInt(i, 10));
+
     const {
-      connectFacilities,
-      disconnectFacilities,
+      connectFacilities: _connectFacilities,
+      disconnectFacilities: _disconnectFacilities,
       imageActions: _imageActions,
       service_id,
+      total_rooms: _total_rooms, // không update total room
       ...roomData
     } = data;
 
-    await prisma.$transaction(async (tx) => {
-      const updateData = {
-        ...roomData,
-        ...(roomData.price_per_night && {
-          price_per_night: parseFloat(roomData.price_per_night),
-        }),
-        ...(service_id && {
-          service: { connect: { id: parseInt(service_id, 10) } },
-        }),
-        facilities: {
-          create: (connectFacilities || []).map((id) => ({
-            facility: { connect: { id: parseInt(id, 10) } },
-          })),
-          delete: (disconnectFacilities || []).map((id) => ({
-            roomId_facilityId: {
-              room_id: roomId,
-              facility_id: parseInt(id, 10),
-            },
-          })),
-        },
-      };
+    try {
+      await prisma.$transaction(async (tx) => {
+        const updateData = {
+          ...roomData,
 
-      await tx.room.update({
-        where: { id: roomId },
-        data: updateData,
+          price_per_night: parseFloat(roomData.price_per_night),
+          size_sqm:
+            roomData.size_sqm && roomData.size_sqm !== "null"
+              ? parseFloat(roomData.size_sqm)
+              : null,
+
+          bed_number: parseInt(roomData.bed_number, 10),
+          max_adult_number: parseInt(roomData.max_adult_number, 10),
+          max_children_number: parseInt(roomData.max_children_number, 10),
+
+          pet_allowed: String(roomData.pet_allowed) === "true",
+
+          ...(service_id && {
+            service: { connect: { id: parseInt(service_id, 10) } },
+          }),
+
+          facilities: {
+            create: connectIds.map((fid) => ({
+              facility: { connect: { id: fid } },
+            })),
+            delete: disconnectIds.map((fid) => ({
+              roomId_facilityId: {
+                room_id: roomId,
+                facility_id: fid,
+              },
+            })),
+          },
+        };
+
+        await tx.room.update({
+          where: { id: roomId },
+          data: updateData,
+        });
+
+        if (imageUpdates.length > 0) {
+          await updateImageList(tx, roomId, "Room", imageUpdates);
+        }
       });
 
-      if (imageUpdates.length > 0) {
-        await updateImageList(tx, roomId, "Room", imageUpdates);
+      if (files.length > 0) {
+        await uploadImages(roomId, files, "Room", "rooms");
       }
-    });
 
-    if (files.length > 0) {
-      await uploadImages(roomId, files, "Room", "rooms");
+      const fullRoom = await prisma.room.findUnique({
+        where: { id: roomId },
+        include: roomInclude(null),
+      });
+
+      const roomWithImages = await attachImages({
+        entity: fullRoom,
+        type: "Room",
+      });
+
+      return RoomDTO.fromModel(roomWithImages);
+    } catch (e) {
+      console.error(e);
     }
-
-    const fullRoom = await prisma.room.findUnique({
-      where: { id: roomId },
-      include: roomInclude(null),
-    });
-
-    const roomWithImages = await attachImages({
-      entity: fullRoom,
-      type: "Room",
-    });
-
-    return RoomDTO.fromModel(roomWithImages);
   },
 
   delete: async (id) => {
@@ -293,6 +321,7 @@ const RoomService = {
     const rooms = await prisma.room.findMany({
       where: { service_id },
       include: roomInclude(travelerId),
+      orderBy: { updated_at: "desc" },
     });
     rooms.sort((a, b) => {
       const isAvailableA = a.status === "AVAILABLE";
