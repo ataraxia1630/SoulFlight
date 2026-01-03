@@ -5,7 +5,6 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ClassIcon from "@mui/icons-material/Class";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
-import DashboardIcon from "@mui/icons-material/Dashboard";
 // import GroupIcon from "@mui/icons-material/Group";
 // import PaymentIcon from "@mui/icons-material/Payment";
 import RoomServiceIcon from "@mui/icons-material/RoomService";
@@ -37,11 +36,6 @@ const ProviderSidebar = ({ open, onToggle }) => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("md"));
 
   const menuItems = [
-    {
-      text: t("sidebar.dashboard"),
-      icon: <DashboardIcon />,
-      path: "/business/dashboard",
-    },
     {
       text: t("sidebar.register"),
       icon: <AppRegistrationIcon />,
