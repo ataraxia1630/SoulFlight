@@ -130,8 +130,12 @@ const BaseTabContent = ({ title, serviceAPI, columns, DetailDialog, currentTabId
     }
   };
 
-  const handleEdit = () => {
-    toast.info("Tính năng đang phát triển");
+  const handleEdit = (item) => {
+    if (currentTabId === "stay") {
+      navigate(`/business/services/stay/update/${item.id}`);
+    } else {
+      toast.info("Tính năng đang phát triển");
+    }
   };
 
   const handleRegisterService = () => {

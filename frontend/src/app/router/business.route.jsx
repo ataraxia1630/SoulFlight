@@ -1,6 +1,7 @@
 import PartnerRegistration from "@business/pages/PartnerRegistration";
 import RegistrationWizard from "@business/pages/PartnerRegistration/RegistrationWizard";
 import ReviewSubmitPage from "@business/pages/PartnerRegistration/ReviewSubmitPage";
+import RoomUpdatePage from "@business/pages/Service/Components/RoomUpdatePage";
 import ProviderServiceOverview from "@business/pages/ServiceOverview";
 import { Route } from "react-router-dom";
 import { FormDataProvider } from "@/features/business/context/FormDataContext";
@@ -45,6 +46,7 @@ const mainRoutes = (
     <Route path="business/service" element={<Services />} />
     <Route path="business/voucher" element={<Voucher />} />
     <Route path="business/service-overview" element={<ProviderServiceOverview />} />
+    <Route path="business/services/stay/update/:id" element={<RoomUpdatePage />} />
   </Route>
 );
 
