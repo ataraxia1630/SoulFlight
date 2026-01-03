@@ -11,6 +11,7 @@ import ServiceTypes from "@admin/pages/ServiceTypes";
 import Users from "@admin/pages/Users";
 import { Route } from "react-router-dom";
 import AdminHome from "@/features/admin/pages/Home";
+import AdminApplicationDetail from "../../features/admin/pages/PartnerRegistration/AdminApplicationDetail";
 import Voucher from "../../features/admin/pages/Voucher/Voucher";
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -18,6 +19,7 @@ const adminRoutes = (
   <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
     <Route path="admin/dashboard" element={<AdminHome />} />
     <Route path="admin/partner-registration" element={<PartnerRegistration />} />
+    <Route path="admin/applications/:applicationId" element={<AdminApplicationDetail />} />
     {/* add routes */}
     <Route path="admin/facilities" element={<Facilities />} />
     <Route path="admin/service_type" element={<ServiceTypes />} />

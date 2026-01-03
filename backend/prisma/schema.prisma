@@ -119,6 +119,7 @@ model Provider {
   reports_received       Report[]                @relation("ProviderReports")
   blockchain_wallet      String?                 @unique
   blockchainTransactions BlockchainTransaction[]
+  registrations          Registration[]
 }
 
 model Traveler {
@@ -373,6 +374,7 @@ model Registration {
   metadata          Json
   created_at        DateTime           @default(now())
   updated_at        DateTime           @updatedAt
+  provider          Provider           @relation(fields: [provider_id], references: [id])
   approvalHistories ApprovalHistory[]
 }
 
