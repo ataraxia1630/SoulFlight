@@ -96,14 +96,7 @@ const ProviderBookingController = {
   getProviderBookings: catchAsync(async (req, res) => {
     const providerId = req.user.id;
 
-    const { page = 1, limit = 10, status, from, to } = req.query;
-    const result = await BookingService.getBookingsByProvider(providerId, {
-      page: Number(page),
-      limit: Number(limit),
-      status,
-      from,
-      to,
-    });
+    const result = await BookingService.getBookingsByProvider(providerId);
 
     res.json(ApiResponse.success(result));
   }),
@@ -126,9 +119,8 @@ const ProviderBookingController = {
 
 // ========== ADMIN ==========
 const AdminBookingController = {
-  getAllBookings: catchAsync(async (req, res) => {
-    const filters = req.query;
-    const result = await BookingService.getAllBookingsAdmin(filters);
+  getAllBookings: catchAsync(async (_req, res) => {
+    const result = await BookingService.getAllBookingsAdmin();
     res.json(ApiResponse.success(result));
   }),
 

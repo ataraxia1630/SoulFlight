@@ -67,12 +67,17 @@ const PaymentService = {
       data: { payment_id: payment.id },
     });
 
+    const returnUrl =
+      process.env.NODE_ENV === "production"
+        ? process.env.VNP_RETURN_URL
+        : "http://localhost:1601/api/payment/vnpay/return";
+
     // Gọi strategy tương ứng để tạo payment URL
     const strategy = PaymentFactory.getStrategy(method);
     const result = await strategy.createPayment({
       payment,
       bookings,
-      returnUrl: `${process.env.BACKEND_URL}/api/payments/vnpay/return`,
+      returnUrl: returnUrl,
     });
 
     // Attach paymentUrl vào payment object để DTO xử lý
