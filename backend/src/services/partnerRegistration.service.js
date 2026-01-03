@@ -60,7 +60,6 @@ const PartnerRegistrationService = {
       },
     });
 
-    console.log("Created registration:", registration);
     return registration;
   },
 
@@ -198,9 +197,7 @@ const PartnerRegistrationService = {
 
   // ========== ADMIN APIs ==========
 
-  getAllApplicants: async (filters = {}) => {
-    const { status, page = 1, limit = 20 } = filters;
-
+  getAllApplicants: async (status) => {
     const where = {
       status: {
         not: RegistrationStatus.DRAFT,
@@ -210,34 +207,19 @@ const PartnerRegistrationService = {
     if (status) {
       where.status = status;
     }
-
-    const skip = (page - 1) * limit;
-
-    const [applicants, total] = await Promise.all([
+    const [applicants] = await Promise.all([
       prisma.registration.findMany({
         where,
         include: {
           approvalHistories: {
             orderBy: { created_at: "desc" },
-            take: 3,
           },
+          provider: { include: { user: true } },
         },
         orderBy: { created_at: "desc" },
-        skip,
-        take: limit,
       }),
-      prisma.registration.count({ where }),
     ]);
-
-    return {
-      applicants,
-      pagination: {
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-      },
-    };
+    return applicants;
   },
 
   getApplicantById: async (registration_id) => {
@@ -247,6 +229,7 @@ const PartnerRegistrationService = {
         approvalHistories: {
           orderBy: { created_at: "desc" },
         },
+        provider: { include: { user: true } },
       },
     });
 
