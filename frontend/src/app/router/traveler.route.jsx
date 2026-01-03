@@ -3,6 +3,7 @@ import TravelerHome from "@/features/traveler/pages/Home";
 import BookingHistory from "../../features/traveler/pages/Booking/BookingHistory";
 import CartPage from "../../features/traveler/pages/Cart/CartPage";
 import CheckoutPage from "../../features/traveler/pages/Checkout/CheckoutPage";
+import PaymentResultPage from "../../features/traveler/pages/Checkout/PaymentResultPage";
 import Journal from "../../features/traveler/pages/Journal";
 import JournalDetailPage from "../../features/traveler/pages/Journal/JournalDetailPage";
 import JournalEditorPage from "../../features/traveler/pages/Journal/JournalEditorPage";
@@ -18,8 +19,6 @@ import WalletPage from "../../features/traveler/pages/Wallet/WalletPage";
 import Wishlist from "../../features/traveler/pages/Wishlist";
 import { createAuthRoutes } from "./auth.route";
 import ProtectedRoute from "./ProtectedRoute";
-
-// import PaymentResultPage from '../../features/traveler/pages/Checkout/PaymentResultPage';
 
 const USER_TYPE = "traveler";
 
@@ -38,7 +37,7 @@ const mainRoutes = (
     <Route path="/checkout" element={<CheckoutPage />} />
     <Route path="/booking/history" element={<BookingHistory />} />
     <Route path="/wallet" element={<WalletPage />} />
-    {/* <Route path="/payment/result" element={<PaymentResultPage />} /> */}
+    <Route path="/payment/result" element={<PaymentResultPage />} />
     <Route path="place" element={<ExplorePlace />} />
     <Route path="place/:id" element={<PlaceDetailsPage />} />
     <Route path="/journal" element={<Journal />} />

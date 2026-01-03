@@ -16,7 +16,7 @@ export const bookingAPI = {
 
   getMyBookings: async (params) => {
     try {
-      const response = await api.get(API_BASE_URL + "/my", { params });
+      const response = await api.get(`${API_BASE_URL}/my`, { params });
       console.log("Fetched my bookings:", response.data);
       return response.data;
     } catch (error) {
@@ -66,5 +66,78 @@ export const bookingAPI = {
     return await api.post(`${API_BASE_URL}/my/${bookingId}/cancel`, {
       reason,
     });
+  },
+
+  getProviderBookings: () => {
+    try {
+      const response = api.get(`${API_BASE_URL}/provider`);
+      console.log("Fetched provider bookings:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching provider bookings:", error);
+      throw new Error(error.response?.data?.message || error);
+    }
+  },
+
+  getProviderBookingDetail: (id) => {
+    try {
+      const response = api.get(`${API_BASE_URL}/provider/${id}`);
+      console.log("Fetched provider booking detail:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching provider booking detail:", error);
+      throw new Error(error.response?.data?.message || error);
+    }
+  },
+
+  updateBookingStatus: (id, status, note) => {
+    try {
+      const response = api.patch(`${API_BASE_URL}/provider/${id}/status`, {
+        status,
+        note,
+      });
+      console.log("Updated booking status:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error updating booking status:", error);
+      throw new Error(error.response?.data?.message || error);
+    }
+  },
+
+  // === ADMIN ===
+  getAdminBookings: () => {
+    try {
+      const response = api.get(`${API_BASE_URL}/admin`);
+      console.log("Fetched admin bookings:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching admin bookings:", error);
+      throw new Error(error.response?.data?.message || error);
+    }
+  },
+
+  getAdminBookingDetail: (id) => {
+    try {
+      const response = api.get(`${API_BASE_URL}/admin/${id}`);
+      console.log("Fetched admin booking detail:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching admin booking detail:", error);
+      throw new Error(error.response?.data?.message || error);
+    }
+  },
+
+  adminForceUpdateStatus: (id, status, note) => {
+    try {
+      const response = api.patch(`${API_BASE_URL}/admin/${id}/status`, {
+        status,
+        note,
+      });
+      console.log("Admin updated booking status:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error admin updating booking status:", error);
+      throw new Error(error.response?.data?.message || error);
+    }
   },
 };

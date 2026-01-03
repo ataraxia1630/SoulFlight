@@ -4,7 +4,9 @@ const qs = require("qs");
 const prisma = require("../../../configs/prisma");
 
 class VNPayStrategy extends BasePaymentStrategy {
-  async createPayment({ payment, bookings }) {
+  async createPayment({ payment, bookings, returnUrl }) {
+    const finalReturnUrl = returnUrl || process.env.VNP_RETURN_URL;
+
     const vnp_Params = {
       vnp_Version: "2.1.0",
       vnp_Command: "pay",
@@ -16,7 +18,7 @@ class VNPayStrategy extends BasePaymentStrategy {
       vnp_Locale: "vn",
       vnp_OrderInfo: `Thanh toan ${bookings.length} booking`,
       vnp_OrderType: "other",
-      vnp_ReturnUrl: process.env.VNP_RETURN_URL,
+      vnp_ReturnUrl: finalReturnUrl,
       vnp_TxnRef: payment.id,
     };
 
