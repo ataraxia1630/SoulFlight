@@ -3,11 +3,12 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import CategoryIcon from "@mui/icons-material/Category";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import DashboardIcon from "@mui/icons-material/Dashboard";
+import ClassIcon from "@mui/icons-material/Class";
+import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
+// import DashboardIcon from "@mui/icons-material/Dashboard";
 import HandymanIcon from "@mui/icons-material/Handyman";
 // import PaymentIcon from "@mui/icons-material/Payment";
 import PersonIcon from "@mui/icons-material/Person";
-// import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import PlaceIcon from "@mui/icons-material/Place";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import ReportIcon from "@mui/icons-material/Report";
@@ -42,11 +43,6 @@ const AdminSidebar = ({ open, onToggle }) => {
 
   const menuItems = [
     {
-      text: t("sidebar.dashboard"),
-      icon: <DashboardIcon />,
-      path: "/admin/dashboard",
-    },
-    {
       text: t("sidebar.review_service"),
       icon: <RateReviewIcon />,
       path: "/admin/partner-registration",
@@ -72,7 +68,12 @@ const AdminSidebar = ({ open, onToggle }) => {
       path: "/admin/user",
     },
     {
-      text: t("sidebar.service"),
+      text: "Tổng quan dịch vụ",
+      icon: <ClassIcon />,
+      path: "/admin/service_overview",
+    },
+    {
+      text: "Chi tiết dịch vụ",
       icon: <RoomServiceIcon />,
       path: "/admin/service",
     },
@@ -86,11 +87,12 @@ const AdminSidebar = ({ open, onToggle }) => {
       icon: <PlaceIcon />,
       path: "/admin/place",
     },
-    // {
-    //   text: t("sidebar.voucher"),
-    //   icon: <ConfirmationNumberIcon />,
-    //   path: "/admin/voucher",
-    // },
+    {
+      text: t("sidebar.voucher"),
+      icon: <ConfirmationNumberIcon />,
+      path: "/admin/voucher",
+    },
+
     // {
     //   text: t("sidebar.payment"),
     //   icon: <PaymentIcon />,

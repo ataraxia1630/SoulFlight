@@ -10,6 +10,7 @@ const ServiceService = {
         Provider: { include: { user: true } },
         Type: true,
       },
+      orderBy: { updated_at: "desc" },
     });
     return ServiceDTO.fromList(services);
   },
@@ -21,6 +22,7 @@ const ServiceService = {
         Provider: { include: { user: true } },
         Type: true,
       },
+      orderBy: { updated_at: "desc" },
     });
     if (!service) {
       throw new AppError(
@@ -41,6 +43,7 @@ const ServiceService = {
         Provider: { include: { user: true } },
         Type: true,
       },
+      orderBy: { updated_at: "desc" },
     });
     return ServiceDTO.fromList(services);
   },

@@ -4,6 +4,7 @@ import Place from "@admin/pages/Place";
 import PlaceDetail from "@admin/pages/Place/Components/PlaceDetail";
 import PlaceForm from "@admin/pages/Place/Components/PlaceForm";
 import Report from "@admin/pages/Report";
+import ServiceOverview from "@admin/pages/ServiceOverview";
 import Services from "@admin/pages/Services";
 import ServiceTags from "@admin/pages/ServiceTags";
 import ServiceTypes from "@admin/pages/ServiceTypes";
@@ -29,6 +30,7 @@ const adminRoutes = (
     <Route path="admin/place/edit/:id" element={<PlaceForm />} />
     <Route path="admin/place/:id" element={<PlaceDetail />} />
     <Route path="admin/voucher" element={<Voucher />} />
+    <Route path="admin/service_overview" element={<ServiceOverview />} />
   </Route>
 );
 
