@@ -68,9 +68,9 @@ export const bookingAPI = {
     });
   },
 
-  getProviderBookings: () => {
+  getProviderBookings: async () => {
     try {
-      const response = api.get(`${API_BASE_URL}/provider`);
+      const response = await api.get(`${API_BASE_URL}/provider`);
       console.log("Fetched provider bookings:", response.data);
       return response.data;
     } catch (error) {
@@ -79,9 +79,9 @@ export const bookingAPI = {
     }
   },
 
-  getProviderBookingDetail: (id) => {
+  getProviderBookingDetail: async (id) => {
     try {
-      const response = api.get(`${API_BASE_URL}/provider/${id}`);
+      const response = await api.get(`${API_BASE_URL}/provider/${id}`);
       console.log("Fetched provider booking detail:", response.data);
       return response.data;
     } catch (error) {
@@ -90,9 +90,9 @@ export const bookingAPI = {
     }
   },
 
-  updateBookingStatus: (id, status, note) => {
+  updateBookingStatus: async (id, status, note) => {
     try {
-      const response = api.patch(`${API_BASE_URL}/provider/${id}/status`, {
+      const response = await api.patch(`${API_BASE_URL}/provider/${id}/status`, {
         status,
         note,
       });
@@ -105,9 +105,9 @@ export const bookingAPI = {
   },
 
   // === ADMIN ===
-  getAdminBookings: () => {
+  getAdminBookings: async () => {
     try {
-      const response = api.get(`${API_BASE_URL}/admin`);
+      const response = await api.get(`${API_BASE_URL}/admin`);
       console.log("Fetched admin bookings:", response.data);
       return response.data;
     } catch (error) {
@@ -116,9 +116,9 @@ export const bookingAPI = {
     }
   },
 
-  getAdminBookingDetail: (id) => {
+  getAdminBookingDetail: async (id) => {
     try {
-      const response = api.get(`${API_BASE_URL}/admin/${id}`);
+      const response = await api.get(`${API_BASE_URL}/admin/${id}`);
       console.log("Fetched admin booking detail:", response.data);
       return response.data;
     } catch (error) {
@@ -127,9 +127,9 @@ export const bookingAPI = {
     }
   },
 
-  adminForceUpdateStatus: (id, status, note) => {
+  adminForceUpdateStatus: async (id, status, note) => {
     try {
-      const response = api.patch(`${API_BASE_URL}/admin/${id}/status`, {
+      const response = await api.patch(`${API_BASE_URL}/admin/${id}/status`, {
         status,
         note,
       });

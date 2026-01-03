@@ -96,9 +96,9 @@ const ProviderBookingController = {
   getProviderBookings: catchAsync(async (req, res) => {
     const providerId = req.user.id;
 
-    const result = await BookingService.getBookingsByProvider(providerId);
+    const bookings = await BookingService.getBookingsByProvider(providerId);
 
-    res.json(ApiResponse.success(result));
+    res.json(ApiResponse.success(BookingDTO.fromList(bookings)));
   }),
 
   getProviderBookingDetail: catchAsync(async (req, res) => {
@@ -120,8 +120,8 @@ const ProviderBookingController = {
 // ========== ADMIN ==========
 const AdminBookingController = {
   getAllBookings: catchAsync(async (_req, res) => {
-    const result = await BookingService.getAllBookingsAdmin();
-    res.json(ApiResponse.success(result));
+    const bookings = await BookingService.getAllBookingsAdmin();
+    res.json(ApiResponse.success(BookingDTO.fromList(bookings)));
   }),
 
   getBookingDetail: catchAsync(async (req, res) => {
