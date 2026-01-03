@@ -19,6 +19,11 @@ import {
 } from "@mui/material";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+const getNestedValue = (obj, path) => {
+  if (!path || !obj) return null;
+  return path.split(".").reduce((acc, part) => (acc?.acc[part] ? acc[part] : null), obj);
+};
+
 export default function CustomTable({ columns, data, onView, onEdit, onDelete }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -54,7 +59,10 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
     const normalizedSearch = normalizeText(searchTerm);
 
     return data.filter((row) =>
-      searchableFields.some((field) => normalizeText(row[field]).includes(normalizedSearch)),
+      searchableFields.some((field) => {
+        const value = getNestedValue(row, field);
+        return normalizeText(value).includes(normalizedSearch);
+      }),
     );
   }, [data, searchTerm, searchableFields, normalizeText]);
 
@@ -236,7 +244,9 @@ export default function CustomTable({ columns, data, onView, onEdit, onDelete })
                       );
                     }
 
-                    const value = column.id === "index" ? globalIndex : row[column.id];
+                    const value =
+                      column.id === "index" ? globalIndex : getNestedValue(row, column.id);
+
                     const content = column.render ? column.render(value, row, globalIndex) : value;
 
                     return (

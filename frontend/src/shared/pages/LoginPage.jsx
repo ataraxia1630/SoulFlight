@@ -21,7 +21,7 @@ const LoginPage = () => {
       showAlert("Đăng nhập thành công!", "success");
       setTimeout(() => {
         setLoading(false);
-        if (role === "ADMIN") navigate("/admin/dashboard");
+        if (role === "ADMIN") navigate("/admin/partner-registration");
         else if (role === "PROVIDER") navigate("/business/dashboard");
         else navigate("/");
       }, 2000);
