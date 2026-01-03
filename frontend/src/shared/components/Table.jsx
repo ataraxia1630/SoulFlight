@@ -20,8 +20,11 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 const getNestedValue = (obj, path) => {
-  if (!path || !obj) return null;
-  return path.split(".").reduce((acc, part) => (acc?.acc[part] ? acc[part] : null), obj);
+  if (!obj || !path) return undefined;
+
+  return path
+    .split(".")
+    .reduce((acc, part) => (acc?.[part] !== undefined ? acc[part] : undefined), obj);
 };
 
 export default function CustomTable({ columns, data, onView, onEdit, onDelete }) {
