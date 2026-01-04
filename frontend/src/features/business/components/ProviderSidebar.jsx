@@ -70,7 +70,7 @@ const ProviderSidebar = ({ open, onToggle }) => {
     {
       text: t("sidebar.report"),
       icon: <BarChartIcon />,
-      path: "/business/report",
+      path: "/business/statistic",
     },
   ];
 
