@@ -14,6 +14,7 @@ import AdminHome from "@/features/admin/pages/Home";
 import AdminApplicationDetail from "../../features/admin/pages/PartnerRegistration/AdminApplicationDetail";
 import Voucher from "../../features/admin/pages/Voucher/Voucher";
 import Booking from "../../shared/pages/Booking/Booking";
+import Statistic from "../../shared/pages/Statistic/Statistic";
 import ProtectedRoute from "./ProtectedRoute";
 
 const adminRoutes = (
@@ -35,6 +36,7 @@ const adminRoutes = (
     <Route path="admin/voucher" element={<Voucher />} />
     <Route path="admin/service_overview" element={<ServiceOverview />} />
     <Route path="admin/booking" element={<Booking userRole="ADMIN" />} />
+    <Route path="admin/statistic" element={<Statistic userRole="ADMIN" />} />
   </Route>
 );
 
