@@ -1,5 +1,5 @@
 import { Box, Container, Tab, Tabs, useTheme } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import SearchService from "@/shared/services/search.service";
 import ErrorState from "../components/explore/ErrorState";
@@ -24,31 +24,39 @@ export default function ExplorePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const filterParams = {
-    keyword: searchParamsUrl.get("keyword") || state?.searchParams?.keyword || "",
-    location: searchParamsUrl.get("location") || state?.searchParams?.location || "",
-    priceMin: searchParamsUrl.get("priceMin") || state?.searchParams?.priceMin || "",
-    priceMax: searchParamsUrl.get("priceMax") || state?.searchParams?.priceMax || "",
-    guests: searchParamsUrl.get("guests") || state?.searchParams?.guests || "1",
-    type: searchParamsUrl.get("type") || "ALL",
-  };
+  const urlKeyword = searchParamsUrl.get("keyword");
+  const urlLocation = searchParamsUrl.get("location");
+  const urlPriceMin = searchParamsUrl.get("priceMin");
+  const urlPriceMax = searchParamsUrl.get("priceMax");
+  const urlGuests = searchParamsUrl.get("guests");
 
-  const searchParamsString = searchParamsUrl.toString();
+  const hasUrlSearch = Boolean(
+    urlKeyword || urlLocation || urlPriceMin || urlPriceMax || (urlGuests && urlGuests !== "1"),
+  );
 
-  const [currentTab, setCurrentTab] = useState(filterParams.type);
+  const keyword = urlKeyword || state?.searchParams?.keyword || "";
+  const location = urlLocation || state?.searchParams?.location || "";
+  const priceMin = urlPriceMin || state?.searchParams?.priceMin || "";
+  const priceMax = urlPriceMax || state?.searchParams?.priceMax || "";
+  const guests = urlGuests || state?.searchParams?.guests || "1";
+
+  const typeParam = searchParamsUrl.get("type") || "ALL";
+
+  const [currentTab, setCurrentTab] = useState(typeParam);
 
   useEffect(() => {
-    setCurrentTab(searchParamsUrl.get("type") || "ALL");
-  }, [searchParamsUrl]);
+    setCurrentTab(typeParam);
+  }, [typeParam]);
 
   const handleTabChange = (_event, newValue) => {
     setCurrentTab(newValue);
+
     const newParams = {
-      keyword: filterParams.keyword,
-      location: filterParams.location,
-      priceMin: filterParams.priceMin,
-      priceMax: filterParams.priceMax,
-      guests: filterParams.guests,
+      keyword,
+      location,
+      priceMin,
+      priceMax,
+      guests,
       type: newValue,
     };
 
@@ -63,35 +71,38 @@ export default function ExplorePage() {
     setSearchParamsUrl(newParams, { replace: true });
   };
 
-  const filteredServices = servicesData.filter((service) => {
-    if (currentTab === "ALL") return true;
-    let typeValue = "";
-    if (service.type) {
-      if (typeof service.type === "object") {
-        typeValue = service.type.id || service.type.name;
-      } else {
-        typeValue = service.type;
+  const filteredServices = useMemo(() => {
+    if (currentTab === "ALL") return servicesData;
+
+    return servicesData.filter((service) => {
+      let typeValue = "";
+      if (service.type) {
+        if (typeof service.type === "object") {
+          typeValue = service.type.id || service.type.name || service.type.code;
+        } else {
+          typeValue = service.type;
+        }
       }
-    }
-    return typeValue?.toString().toUpperCase() === currentTab;
-  });
+      return typeValue?.toString().toUpperCase() === currentTab;
+    });
+  }, [servicesData, currentTab]);
 
   useEffect(() => {
     const initData = async () => {
       setLoading(true);
       try {
-        if (state?.results?.services && filterParams.type === "ALL" && !searchParamsString) {
+        if (state?.results?.services && !hasUrlSearch) {
           setServicesData(state.results.services);
           setLoading(false);
           return;
         }
 
         const payload = {
-          keyword: filterParams.keyword,
-          location: filterParams.location,
-          priceMin: filterParams.priceMin ? Number(filterParams.priceMin) : undefined,
-          priceMax: filterParams.priceMax ? Number(filterParams.priceMax) : undefined,
-          guests: Number(filterParams.guests),
+          keyword,
+          location,
+          priceMin: priceMin ? Number(priceMin) : undefined,
+          priceMax: priceMax ? Number(priceMax) : undefined,
+          guests: Number(guests),
           mode: "text",
         };
 
@@ -107,25 +118,16 @@ export default function ExplorePage() {
     };
 
     initData();
-  }, [
-    state,
-    searchParamsString,
-    filterParams.keyword,
-    filterParams.location,
-    filterParams.priceMin,
-    filterParams.priceMax,
-    filterParams.guests,
-    filterParams.type,
-  ]);
+  }, [keyword, location, priceMin, priceMax, guests, state, hasUrlSearch]);
 
   return (
     <Box sx={{ minHeight: "100vh" }}>
       <Container>
         <ExploreHeader
-          location={filterParams.location}
-          priceMin={filterParams.priceMin}
-          priceMax={filterParams.priceMax}
-          guests={filterParams.guests}
+          location={location}
+          priceMin={priceMin}
+          priceMax={priceMax}
+          guests={guests}
           totalResults={filteredServices.length}
           theme={theme}
         />
