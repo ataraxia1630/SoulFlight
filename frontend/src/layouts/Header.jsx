@@ -123,7 +123,7 @@ const Header = ({ drawerWidth = 0, onToggleSidebar, showMenuIcon = false }) => {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const navItems = ["home", "explore", "trips", "news", "contact"];
+  const navItems = ["home", "explore", "place"];
   const user = useAuthStore((state) => state.user);
   const navigate = useNavigate();
 

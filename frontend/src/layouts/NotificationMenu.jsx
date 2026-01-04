@@ -55,8 +55,7 @@ const NotificationMenu = () => {
 
       if (type === "REPORT_CREATED") {
         navigate(`/admin/report`);
-      }
-      if (type === ("REPORT_RESOLVED" || "SYSTEM_INFO" || "BOOKING_CREATED" || "REVIEW_CREATED")) {
+      } else {
         navigate(`/notifications`);
       }
     } catch (error) {

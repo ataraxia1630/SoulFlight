@@ -113,7 +113,7 @@ export default function ServiceTagDialog({ open, onClose, onSave, editingItem, a
           margin="normal"
           required
           helperText={`Danh mục đầy đủ: ${
-            formData.serviceType ? `${formData.serviceType}/` + "/" : ""
+            formData.serviceType ? `${formData.serviceType}` + "/" : ""
           }${formData.categoryName}`}
         />
       </DialogContent>
