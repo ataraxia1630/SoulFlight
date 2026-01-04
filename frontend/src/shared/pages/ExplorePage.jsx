@@ -23,30 +23,48 @@ export default function ExplorePage() {
   const [servicesData, setServicesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [currentTab, setCurrentTab] = useState("ALL");
+
+  const filterParams = {
+    keyword: searchParamsUrl.get("keyword") || state?.searchParams?.keyword || "",
+    location: searchParamsUrl.get("location") || state?.searchParams?.location || "",
+    priceMin: searchParamsUrl.get("priceMin") || state?.searchParams?.priceMin || "",
+    priceMax: searchParamsUrl.get("priceMax") || state?.searchParams?.priceMax || "",
+    guests: searchParamsUrl.get("guests") || state?.searchParams?.guests || "1",
+    type: searchParamsUrl.get("type") || "ALL",
+  };
+
+  const searchParamsString = searchParamsUrl.toString();
+
+  const [currentTab, setCurrentTab] = useState(filterParams.type);
+
+  useEffect(() => {
+    setCurrentTab(searchParamsUrl.get("type") || "ALL");
+  }, [searchParamsUrl]);
 
   const handleTabChange = (_event, newValue) => {
     setCurrentTab(newValue);
+    const newParams = {
+      keyword: filterParams.keyword,
+      location: filterParams.location,
+      priceMin: filterParams.priceMin,
+      priceMax: filterParams.priceMax,
+      guests: filterParams.guests,
+      type: newValue,
+    };
 
-    setSearchParamsUrl(
-      (prev) => {
-        newValue === "ALL" ? prev.delete("type") : prev.set("type", newValue);
-        return prev;
-      },
-      { replace: true },
-    );
-  };
+    if (newValue === "ALL") delete newParams.type;
 
-  const filterParams = {
-    location: searchParamsUrl.get("location") || state?.searchParams?.location || "",
-    priceMin: searchParamsUrl.get("priceMin") || state?.searchParams?.priceMin || 0,
-    priceMax: searchParamsUrl.get("priceMax") || state?.searchParams?.priceMax || "",
-    guests: searchParamsUrl.get("guests") || state?.searchParams?.guests || "1",
+    Object.keys(newParams).forEach((key) => {
+      if (!newParams[key] || newParams[key] === "0") {
+        delete newParams[key];
+      }
+    });
+
+    setSearchParamsUrl(newParams, { replace: true });
   };
 
   const filteredServices = servicesData.filter((service) => {
     if (currentTab === "ALL") return true;
-
     let typeValue = "";
     if (service.type) {
       if (typeof service.type === "object") {
@@ -55,7 +73,6 @@ export default function ExplorePage() {
         typeValue = service.type;
       }
     }
-
     return typeValue?.toString().toUpperCase() === currentTab;
   });
 
@@ -63,18 +80,18 @@ export default function ExplorePage() {
     const initData = async () => {
       setLoading(true);
       try {
-        if (state?.results?.services) {
+        if (state?.results?.services && filterParams.type === "ALL" && !searchParamsString) {
           setServicesData(state.results.services);
           setLoading(false);
           return;
         }
 
         const payload = {
-          keyword: searchParamsUrl.get("keyword") || "",
+          keyword: filterParams.keyword,
           location: filterParams.location,
-          priceMin: filterParams.priceMin,
-          priceMax: filterParams.priceMax,
-          guests: filterParams.guests,
+          priceMin: filterParams.priceMin ? Number(filterParams.priceMin) : undefined,
+          priceMax: filterParams.priceMax ? Number(filterParams.priceMax) : undefined,
+          guests: Number(filterParams.guests),
           mode: "text",
         };
 
@@ -92,11 +109,13 @@ export default function ExplorePage() {
     initData();
   }, [
     state,
-    searchParamsUrl,
+    searchParamsString,
+    filterParams.keyword,
     filterParams.location,
     filterParams.priceMin,
     filterParams.priceMax,
     filterParams.guests,
+    filterParams.type,
   ]);
 
   return (

@@ -2,7 +2,6 @@ import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import BookIcon from "@mui/icons-material/Book";
 import CardTravelIcon from "@mui/icons-material/CardTravel";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import PlaceIcon from "@mui/icons-material/Place";
 import StarsIcon from "@mui/icons-material/Stars";
 import TimeToLeaveIcon from "@mui/icons-material/TimeToLeave";
 import {
@@ -43,11 +42,6 @@ const LeftSidebar = () => {
       text: "Dịch vụ yêu thích",
       path: "/love-service",
       icon: <StarsIcon />,
-    },
-    {
-      text: "Địa điểm du lịch",
-      path: "/place",
-      icon: <PlaceIcon />,
     },
     {
       text: "Lịch sử booking",
