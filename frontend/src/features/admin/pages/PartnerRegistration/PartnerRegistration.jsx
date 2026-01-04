@@ -1,98 +1,258 @@
-import { Box, Stack } from "@mui/material";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import {
+  Box,
+  Button,
+  Container,
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import InfoCard from "@/shared/components/InfoCard";
 import CustomTable from "@/shared/components/Table";
-import columnConfig from "./Table/columnsConfig";
+import PartnerRegistrationAPI from "../../../../shared/services/partnerRegistration.service";
 
-const mockData = [
+const STATUS_COLORS = {
+  PENDING: "#EAB308",
+  INFO_REQUIRED: "#4F46E5",
+  APPROVED: "#1ABFC3",
+  REJECTED: "#EA4335",
+};
+
+const STATUS_LABELS = {
+  PENDING: "Pending",
+  INFO_REQUIRED: "Info Required",
+  APPROVED: "Approved",
+  REJECTED: "Rejected",
+};
+
+const getStatusChip = (status) => {
+  const color = STATUS_COLORS[status] || "#6B7280";
+  const label = STATUS_LABELS[status] || status;
+
+  return (
+    <Box
+      sx={{
+        display: "inline-block",
+        px: 2,
+        py: 0.5,
+        borderRadius: 1,
+        bgcolor: `${color}20`,
+        color: color,
+        fontWeight: 600,
+        fontSize: "0.875rem",
+      }}
+    >
+      {label}
+    </Box>
+  );
+};
+
+const columnConfig = [
   {
-    id: "#PR-90123",
-    provider: "Công ty cổ phần dịch vụ ABC",
-    service: "3 services",
-    submitDate: "18/10/2025",
-    status: "Pending",
+    id: "index",
+    label: "STT",
+    width: "8%",
+    header_align: "center",
+    cell_align: "center",
+    render: (index) => index + 1,
   },
   {
-    id: "#PR-90124",
-    provider: "Công ty cổ phần dịch vụ XYZ",
-    service: "1 services",
-    submitDate: "18/10/2025",
-    status: "Approved",
+    id: "id",
+    label: "APPLICANT ID",
+    width: "15%",
+    header_align: "left",
+    cell_align: "left",
+    bold: true,
+    render: (value) => value.slice(0, 8),
   },
   {
-    id: "#PR-90125",
-    provider: "TNHH Giải pháp GHH",
-    service: "1 services",
-    submitDate: "18/10/2025",
-    status: "Approved",
+    id: "provider_name",
+    label: "PROVIDER",
+    width: "20%",
+    header_align: "left",
+    cell_align: "left",
   },
   {
-    id: "#PR-90127",
-    provider: "Chuỗi khách sạn QAS",
-    service: "3 services",
-    submitDate: "18/10/2025",
-    status: "Pending",
+    id: "service_count",
+    label: "SERVICES",
+    width: "12%",
+    header_align: "center",
+    cell_align: "center",
+    render: (value) => `${value} service${value > 1 ? "s" : ""}`,
   },
   {
-    id: "#PR-90133",
-    provider: "Hình như có gì đó sai sai",
-    service: "0 services",
-    submitDate: "18/10/2025",
-    status: "Rejected",
+    id: "created_at",
+    label: "SUBMIT DATE",
+    width: "15%",
+    header_align: "center",
+    cell_align: "center",
+    render: (value) => new Date(value).toLocaleDateString(),
   },
   {
-    id: "#PR-90127b",
-    provider: "Công viên sinh thái",
-    service: "11 services",
-    submitDate: "18/10/2025",
-    status: "Pending",
+    id: "status",
+    label: "STATUS",
+    width: "15%",
+    header_align: "center",
+    cell_align: "center",
+    render: (value) => getStatusChip(value),
   },
   {
-    id: "#PR-90223",
-    provider: "Tour du lịch Cả nhà cùng vui",
-    service: "5 services",
-    submitDate: "18/10/2025",
-    status: "Info_Required",
-  },
-  {
-    id: "#PR-90233",
-    provider: "Trà sữa Ohayo",
-    service: "3 services",
-    submitDate: "18/10/2025",
-    status: "Approved",
-  },
-  {
-    id: "#PR-90235",
-    provider: "Vietnam Airline",
-    service: "1 services",
-    submitDate: "18/10/2025",
-    status: "Info_Required",
-  },
-  {
-    id: "#PR-90323",
-    provider: "Cơm tấm 234/98/12",
-    service: "1 services",
-    submitDate: "18/10/2025",
-    status: "Pending",
+    id: "actions",
+    label: "ACTIONS",
+    width: "10%",
+    header_align: "center",
+    cell_align: "center",
   },
 ];
 
 export default function PartnerRegistration() {
+  const navigate = useNavigate();
+  const [applicants, setApplicants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    pending: 0,
+    approved: 0,
+    info_required: 0,
+    rejected: 0,
+  });
+  const [filters, setFilters] = useState({
+    status: "",
+  });
+
+  useEffect(() => {
+    const fetchApplicants = async () => {
+      setLoading(true);
+      try {
+        const response = await PartnerRegistrationAPI.getAllApplicants({
+          ...filters,
+        });
+
+        const transformedData = response.data.map((app) => {
+          const services = Array.isArray(app.metadata) ? app.metadata : [app.metadata];
+          return {
+            ...app,
+            service_count: services.length,
+            provider_name: app.provider?.user?.name || "—",
+            actions: (
+              <Button
+                startIcon={<VisibilityIcon />}
+                size="small"
+                onClick={() => navigate(`/admin/applications/${app.id}`)}
+              >
+                Review
+              </Button>
+            ),
+          };
+        });
+
+        setApplicants(transformedData);
+      } catch (error) {
+        console.error("Failed to fetch applicants:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchStats = async () => {
+      try {
+        const [pending, approved, info_required, rejected] = await Promise.all([
+          PartnerRegistrationAPI.getAllApplicants({
+            status: "PENDING",
+          }),
+          PartnerRegistrationAPI.getAllApplicants({
+            status: "APPROVED",
+          }),
+          PartnerRegistrationAPI.getAllApplicants({
+            status: "INFO_REQUIRED",
+          }),
+          PartnerRegistrationAPI.getAllApplicants({
+            status: "REJECTED",
+          }),
+        ]);
+
+        setStats({
+          pending: pending.data.length,
+          approved: approved.data.length,
+          info_required: info_required.data.length,
+          rejected: rejected.data.length,
+        });
+      } catch (error) {
+        console.error("Failed to fetch stats:", error);
+      }
+    };
+
+    fetchApplicants();
+    fetchStats();
+  }, [filters, navigate]);
+
+  const handleFilterChange = (key, value) => {
+    setFilters({ ...filters, [key]: value });
+  };
+
   return (
-    <Box sx={{ width: "100%", p: { xs: 2, sm: 3 } }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={4}>
-        <InfoCard title="Pending Approval" content="4 applicants" highlightColor="#EAB308" />
-        <InfoCard title="Approved" content="128 applicants" highlightColor="#1ABFC3" />
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Typography variant="h4" fontWeight={600} mb={4}>
+        Partner Applications
+      </Typography>
 
-        <InfoCard
-          title="Requires Additional Info"
-          content="12 applicants"
-          highlightColor="#4F46E5"
-        />
+      <Grid container spacing={3} mb={4}>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <InfoCard
+            title="Pending Approval"
+            content={`${stats.pending} applicants`}
+            highlightColor={STATUS_COLORS.PENDING}
+          />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <InfoCard
+            title="Approved"
+            content={`${stats.approved} applicants`}
+            highlightColor={STATUS_COLORS.APPROVED}
+          />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <InfoCard
+            title="Info Required"
+            content={`${stats.info_required} applicants`}
+            highlightColor={STATUS_COLORS.INFO_REQUIRED}
+          />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+          <InfoCard
+            title="Rejected"
+            content={`${stats.rejected} applicants`}
+            highlightColor={STATUS_COLORS.REJECTED}
+          />
+        </Grid>
+      </Grid>
 
-        <InfoCard title="Rejected" content="56 applicants" highlightColor="#EA4335" />
-      </Stack>
-      <CustomTable columns={columnConfig} data={mockData} />
-      <Box></Box>
-    </Box>
+      <Paper sx={{ p: 3, mb: 3 }}>
+        <Stack direction="row" spacing={2} mb={3}>
+          <FormControl size="small" sx={{ minWidth: 200 }}>
+            <InputLabel>Status</InputLabel>
+            <Select
+              value={filters.status}
+              label="Status"
+              onChange={(e) => handleFilterChange("status", e.target.value)}
+            >
+              <MenuItem value="">All Status</MenuItem>
+              <MenuItem value="PENDING">Pending</MenuItem>
+              <MenuItem value="INFO_REQUIRED">Info Required</MenuItem>
+              <MenuItem value="APPROVED">Approved</MenuItem>
+              <MenuItem value="REJECTED">Rejected</MenuItem>
+            </Select>
+          </FormControl>
+        </Stack>
+
+        <CustomTable columns={columnConfig} data={applicants} loading={loading} />
+      </Paper>
+    </Container>
   );
 }

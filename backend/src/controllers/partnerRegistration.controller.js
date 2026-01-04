@@ -49,20 +49,27 @@ const PartnerRegistrationController = {
     const { applicant_id: registration_id } = req.params;
     const { metadata } = req.body;
     await PartnerRegistrationService.updateApplicant(registration_id, provider_id, metadata);
-    res.status(200).json(ApiResponse.success(true, "Applicant updated successfully", null));
+    res.status(200).json(ApiResponse.success());
   }),
 
-  getAllApplicants: catchAsync(async (_req, res, _next) => {
-    const applicants = await PartnerRegistrationService.getAllApplicants();
-    res
-      .status(200)
-      .json(ApiResponse.success(true, "All applicants retrieved successfully", applicants));
+  getAllApplicants: catchAsync(async (req, res, _next) => {
+    const { status } = req.query;
+    const applicants = await PartnerRegistrationService.getAllApplicants(status);
+    console.log("Applicants fetched in controller:", applicants);
+    res.status(200).json(ApiResponse.success(applicants));
+  }),
+
+  getApplicantById: catchAsync(async (req, res, _next) => {
+    const { applicant_id } = req.params;
+    const applicant = await PartnerRegistrationService.getApplicantById(applicant_id);
+    res.status(200).json(ApiResponse.success(applicant));
   }),
 
   reviewApplicant: catchAsync(async (req, res, _next) => {
-    const { registration_id, status, admin_feedback } = req.body;
-    await PartnerRegistrationService.reviewApplicant(registration_id, status, admin_feedback);
-    res.status(200).json(ApiResponse.success(true, "Applicant reviewed successfully", null));
+    const { applicant_id } = req.params;
+    const { status, admin_feedback } = req.body;
+    await PartnerRegistrationService.reviewApplicant(applicant_id, status, admin_feedback);
+    res.status(200).json(ApiResponse.success());
   }),
 };
 

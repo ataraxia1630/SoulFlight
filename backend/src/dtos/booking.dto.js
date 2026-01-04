@@ -2,7 +2,7 @@ class BookingItemDTO {
   constructor(item) {
     this.id = item.id;
     this.type = item.item_type;
-    this.name = item.details?.name || item.itemName || "Dịch vụ";
+    this.name = item.item_name || item.details?.name || item.itemName || "Dịch vụ";
     this.quantity = item.quantity;
     this.unitPrice = parseFloat(item.unit_price) || parseFloat(item.unitPrice);
     this.totalPrice = parseFloat(item.total_price) || parseFloat(item.totalAmount);
@@ -10,7 +10,6 @@ class BookingItemDTO {
     this.checkoutDate = item.checkout_date;
     this.visitDate = item.visit_date;
     this.image = item.details?.image || null;
-    this.serviceId = item.details?.service_id || null;
   }
 
   static fromModel(item) {

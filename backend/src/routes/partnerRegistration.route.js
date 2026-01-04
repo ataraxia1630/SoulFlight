@@ -21,6 +21,8 @@ router.put("/applicants/:applicant_id", PartnerRegistrationController.updateAppl
 
 router.get("/applicants/all", PartnerRegistrationController.getAllApplicants);
 
+router.get("/applicants/:applicant_id", PartnerRegistrationController.getApplicantById);
+
 router.post("/applicants/:applicant_id/review", PartnerRegistrationController.reviewApplicant);
 
 module.exports = router;

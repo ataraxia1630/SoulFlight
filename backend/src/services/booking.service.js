@@ -499,11 +499,6 @@ const BookingService = {
 
       // Restore availability
       await BookingService.updateAvailability(tx, booking.items, "increment");
-
-      // TODO: Trigger refund if paid
-      if (booking.status === "PAID" && booking.payment_id) {
-        // await PaymentService.initiateRefund(booking.payment_id);
-      }
     });
   },
 
@@ -1052,14 +1047,8 @@ const BookingService = {
     });
   },
 
-  getBookingsByProvider: async (providerId, filters) => {
+  getBookingsByProvider: async (providerId) => {
     const where = { provider_id: providerId };
-    if (filters.status) where.status = filters.status;
-    if (filters.from || filters.to) {
-      where.booking_date = {};
-      if (filters.from) where.booking_date.gte = new Date(filters.from);
-      if (filters.to) where.booking_date.lte = new Date(filters.to);
-    }
 
     const [bookings] = await Promise.all([
       prisma.booking.findMany({
@@ -1068,6 +1057,8 @@ const BookingService = {
           traveler: { include: { user: true } },
           items: true,
           payment: true,
+          service: true,
+          provider: { include: { user: true } },
         },
         orderBy: { booking_date: "desc" },
       }),
@@ -1077,6 +1068,7 @@ const BookingService = {
       bookings.map((booking) => BookingService.enrichBookingItems(booking)),
     );
 
+    console.log("Bookings for provider:", enrichedBookings);
     return enrichedBookings;
   },
 
@@ -1085,6 +1077,7 @@ const BookingService = {
       where: { id: bookingId, provider_id: providerId },
       include: {
         traveler: { include: { user: true } },
+        provider: { include: { user: true } },
         items: true,
         payment: true,
         voucher: true,
@@ -1156,20 +1149,15 @@ const BookingService = {
     return updatedBooking;
   },
 
-  getAllBookingsAdmin: async (filters) => {
-    const where = {};
-    if (filters.status) where.status = filters.status;
-    if (filters.providerId) where.provider_id = Number(filters.providerId);
-    if (filters.travelerId) where.traveler_id = Number(filters.travelerId);
-
+  getAllBookingsAdmin: async () => {
     const [bookings] = await Promise.all([
       prisma.booking.findMany({
-        where,
         include: {
           traveler: { include: { user: true } },
           provider: { include: { user: true } },
           items: true,
           payment: true,
+          service: true,
         },
         orderBy: { created_at: "desc" },
       }),
@@ -1182,7 +1170,7 @@ const BookingService = {
   },
 
   getBookingDetailAdmin: async (bookingId) => {
-    const booking = await prisma.booking.findUnique({
+    const booking = await prisma.booking.findFirst({
       where: { id: bookingId },
       include: {
         traveler: { include: { user: true } },
@@ -1190,7 +1178,6 @@ const BookingService = {
         items: true,
         payment: true,
         voucher: true,
-        reviews: true,
       },
     });
 

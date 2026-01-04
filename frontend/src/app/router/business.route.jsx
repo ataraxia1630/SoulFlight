@@ -12,6 +12,8 @@ import ProviderDraftsPage from "../../features/business/pages/Applicants/Provide
 import Services from "../../features/business/pages/Service/Service";
 import Voucher from "../../features/business/pages/Voucher/Voucher";
 import PartnerRegistrationLayout from "../../layouts/PartnerRegistrationLayout";
+import Booking from "../../shared/pages/Booking/Booking";
+import Statistic from "../../shared/pages/Statistic/Statistic";
 import { createAuthRoutes } from "./auth.route";
 import ProtectedRoute from "./ProtectedRoute";
 
@@ -45,6 +47,8 @@ const mainRoutes = (
     {/* add routes */}
     <Route path="business/service" element={<Services />} />
     <Route path="business/voucher" element={<Voucher />} />
+    <Route path="business/booking" element={<Booking userRole="PROVIDER" />} />
+    <Route path="business/statistic" element={<Statistic userRole="PROVIDER" />} />
     <Route path="business/service-overview" element={<ProviderServiceOverview />} />
     <Route path="business/services/stay/update/:id" element={<RoomUpdatePage />} />
   </Route>

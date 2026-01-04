@@ -87,8 +87,6 @@ router.patch(
 );
 
 // === ADMIN ROUTES ===
-router.use(requiredRoles("ADMIN"));
-
 router.get("/admin", AdminBookingController.getAllBookings);
 router.get("/admin/:bookingId", AdminBookingController.getBookingDetail);
 router.patch(

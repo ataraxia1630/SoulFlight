@@ -6,7 +6,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ClassIcon from "@mui/icons-material/Class";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 // import GroupIcon from "@mui/icons-material/Group";
-// import PaymentIcon from "@mui/icons-material/Payment";
+import PaymentIcon from "@mui/icons-material/Payment";
 import RoomServiceIcon from "@mui/icons-material/RoomService";
 import {
   Box,
@@ -57,11 +57,11 @@ const ProviderSidebar = ({ open, onToggle }) => {
       path: "/business/voucher",
     },
     // { text: t("sidebar.staff"), icon: <GroupIcon />, path: "/business/staff" },
-    // {
-    //   text: t("sidebar.payment"),
-    //   icon: <PaymentIcon />,
-    //   path: "/business/payment",
-    // },
+    {
+      text: "Danh sách booking",
+      icon: <PaymentIcon />,
+      path: "/business/booking",
+    },
     // {
     //   text: t("sidebar.assessment"),
     //   icon: <AssessmentIcon />,
@@ -70,7 +70,7 @@ const ProviderSidebar = ({ open, onToggle }) => {
     {
       text: t("sidebar.report"),
       icon: <BarChartIcon />,
-      path: "/business/report",
+      path: "/business/statistic",
     },
   ];
 

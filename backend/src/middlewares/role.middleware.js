@@ -7,7 +7,7 @@ const restrictTo = (...allowedRoles) => {
       return next(
         new AppError(
           ERROR_CODES.UNAUTHORIZED.statusCode,
-          "You are not authenticated",
+          "Vui lòng đăng nhập lại để thực hiện hành động này.",
           ERROR_CODES.UNAUTHORIZED.code,
         ),
       );
@@ -15,11 +15,7 @@ const restrictTo = (...allowedRoles) => {
 
     if (!allowedRoles.includes(req.user?.role)) {
       return next(
-        new AppError(
-          ERROR_CODES.FORBIDDEN.statusCode,
-          "You do not have permission to perform this action",
-          ERROR_CODES.FORBIDDEN.code,
-        ),
+        new AppError(409, "Bạn không có quyền thực hiện hành động này.", "FORBIDDEN_ACTION"),
       );
     }
 

@@ -7,7 +7,7 @@ import ClassIcon from "@mui/icons-material/Class";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 // import DashboardIcon from "@mui/icons-material/Dashboard";
 import HandymanIcon from "@mui/icons-material/Handyman";
-// import PaymentIcon from "@mui/icons-material/Payment";
+import PaymentIcon from "@mui/icons-material/Payment";
 import PersonIcon from "@mui/icons-material/Person";
 import PlaceIcon from "@mui/icons-material/Place";
 import RateReviewIcon from "@mui/icons-material/RateReview";
@@ -93,11 +93,11 @@ const AdminSidebar = ({ open, onToggle }) => {
       path: "/admin/voucher",
     },
 
-    // {
-    //   text: t("sidebar.payment"),
-    //   icon: <PaymentIcon />,
-    //   path: "/admin/payment",
-    // },
+    {
+      text: "Quản lý booking",
+      icon: <PaymentIcon />,
+      path: "/admin/booking",
+    },
     // {
     //   text: t("sidebar.assessment"),
     //   icon: <AssessmentIcon />,

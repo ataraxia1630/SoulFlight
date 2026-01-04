@@ -24,7 +24,7 @@ const PaymentController = {
 
   handleVNPayReturn: catchAsync(async (req, res) => {
     const result = await PaymentService.handlePaymentReturn(req.query, "VNPAY");
-
+    console.log("🔥 Payment Result:", result);
     const frontendUrl = `${process.env.FRONTEND_URL}/payment/result?success=${
       result.success
     }&paymentId=${result.paymentId}&message=${encodeURIComponent(result.message)}`;
