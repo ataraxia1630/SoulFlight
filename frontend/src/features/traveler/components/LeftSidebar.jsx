@@ -51,11 +51,6 @@ const LeftSidebar = () => {
       icon: <StarsIcon />,
     },
     {
-      text: "Địa điểm du lịch",
-      path: "/place",
-      icon: <PlaceIcon />,
-    },
-    {
       text: "Lịch sử booking",
       path: "/booking/history",
       icon: <TimeToLeaveIcon />,

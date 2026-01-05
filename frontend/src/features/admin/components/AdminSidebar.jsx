@@ -63,11 +63,6 @@ const AdminSidebar = ({ open, onToggle }) => {
       path: "/admin/tag",
     },
     {
-      text: "Người dùng",
-      icon: <PersonIcon />,
-      path: "/admin/user",
-    },
-    {
       text: "Tổng quan dịch vụ",
       icon: <ClassIcon />,
       path: "/admin/service_overview",
@@ -76,11 +71,6 @@ const AdminSidebar = ({ open, onToggle }) => {
       text: "Chi tiết dịch vụ",
       icon: <RoomServiceIcon />,
       path: "/admin/service",
-    },
-    {
-      text: "Tố cáo",
-      icon: <ReportIcon />,
-      path: "/admin/report",
     },
     {
       text: "Địa điểm du lịch",
@@ -98,15 +88,20 @@ const AdminSidebar = ({ open, onToggle }) => {
       icon: <PaymentIcon />,
       path: "/admin/booking",
     },
-    // {
-    //   text: t("sidebar.assessment"),
-    //   icon: <AssessmentIcon />,
-    //   path: "/admin/assessment",
-    // },
     {
       text: t("sidebar.report"),
       icon: <BarChartIcon />,
       path: "/admin/statistic",
+    },
+    {
+      text: "Tố cáo",
+      icon: <ReportIcon />,
+      path: "/admin/report",
+    },
+    {
+      text: "Người dùng",
+      icon: <PersonIcon />,
+      path: "/admin/user",
     },
   ];
 
