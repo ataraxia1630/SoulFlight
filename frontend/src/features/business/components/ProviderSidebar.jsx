@@ -5,6 +5,7 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ClassIcon from "@mui/icons-material/Class";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
+import CurrencyBitcoinIcon from "@mui/icons-material/CurrencyBitcoin";
 // import GroupIcon from "@mui/icons-material/Group";
 import PaymentIcon from "@mui/icons-material/Payment";
 import RoomServiceIcon from "@mui/icons-material/RoomService";
@@ -37,6 +38,11 @@ const ProviderSidebar = ({ open, onToggle }) => {
 
   const menuItems = [
     {
+      text: "Danh sách booking",
+      icon: <PaymentIcon />,
+      path: "/business/booking",
+    },
+    {
       text: t("sidebar.register"),
       icon: <AppRegistrationIcon />,
       path: "/business/partner-registration",
@@ -57,20 +63,21 @@ const ProviderSidebar = ({ open, onToggle }) => {
       path: "/business/voucher",
     },
     // { text: t("sidebar.staff"), icon: <GroupIcon />, path: "/business/staff" },
-    {
-      text: "Danh sách booking",
-      icon: <PaymentIcon />,
-      path: "/business/booking",
-    },
+
     // {
     //   text: t("sidebar.assessment"),
     //   icon: <AssessmentIcon />,
     //   path: "/business/assessment",
     // },
     {
-      text: t("sidebar.report"),
+      text: "Thống kê",
       icon: <BarChartIcon />,
       path: "/business/statistic",
+    },
+    {
+      text: "Ví doanh nghiệp",
+      path: "business/wallet",
+      icon: <CurrencyBitcoinIcon />,
     },
   ];
 

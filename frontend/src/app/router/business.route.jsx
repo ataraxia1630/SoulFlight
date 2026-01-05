@@ -6,6 +6,7 @@ import ProviderServiceOverview from "@business/pages/ServiceOverview";
 import { Route } from "react-router-dom";
 import { FormDataProvider } from "@/features/business/context/FormDataContext";
 import BusinessHome from "@/features/business/pages/Home";
+import WalletPage from "@/shared/pages/Wallet/WalletPage";
 import ProviderApplicationDetail from "../../features/business/pages/Applicants/ProviderApplicationDetail";
 import ProviderApplicationsPage from "../../features/business/pages/Applicants/ProviderApplicationPage";
 import ProviderDraftsPage from "../../features/business/pages/Applicants/ProviderDraftPage";
@@ -48,6 +49,7 @@ const mainRoutes = (
     <Route path="business/service" element={<Services />} />
     <Route path="business/voucher" element={<Voucher />} />
     <Route path="business/booking" element={<Booking userRole="PROVIDER" />} />
+    <Route path="business/wallet" element={<WalletPage />} />
     <Route path="business/statistic" element={<Statistic userRole="PROVIDER" />} />
     <Route path="business/service-overview" element={<ProviderServiceOverview />} />
     <Route path="business/services/stay/update/:id" element={<RoomUpdatePage />} />

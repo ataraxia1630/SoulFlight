@@ -21,6 +21,9 @@ const PaymentService = {
         traveler_id: travelerId,
         status: "PENDING",
       },
+      include: {
+        provider: true,
+      },
     });
 
     if (bookings.length === 0) {
@@ -74,16 +77,22 @@ const PaymentService = {
 
     // Gọi strategy tương ứng để tạo payment URL
     const strategy = PaymentFactory.getStrategy(method);
-    const result = await strategy.createPayment({
+    const strategyResult = await strategy.createPayment({
       payment,
       bookings,
       returnUrl: returnUrl,
     });
 
+    console.log("\n📤 Strategy Result:");
+    console.log(strategyResult);
+
     // Attach paymentUrl vào payment object để DTO xử lý
-    payment.paymentUrl = result.paymentUrl;
+    payment.paymentUrl = strategyResult.paymentUrl;
     console.log("Created payment:", payment);
 
+    if (method === "BLOCKCHAIN") {
+      return strategyResult;
+    }
     return payment;
   },
 

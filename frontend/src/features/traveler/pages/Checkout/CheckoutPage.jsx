@@ -13,10 +13,12 @@ import {
   Stepper,
   Typography,
 } from "@mui/material";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Countdown from "react-countdown";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import LoadingState from "../../../../shared/components/LoadingState";
+import WalletConnect from "../../../../shared/components/WalletConnect";
+import useWallet from "../../../../shared/hooks/useWallet";
 import blockchainService from "../../../../shared/services/blockchain.service";
 import { bookingAPI } from "../../../../shared/services/booking.service";
 import { paymentAPI } from "../../../../shared/services/payment.service";
@@ -28,6 +30,17 @@ import PaymentMethodSelector from "../../components/Checkout/PaymentMethodSelect
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+
+  const {
+    walletConnected,
+    walletAddress,
+    walletBalance,
+    loading: walletLoading,
+    error: walletError,
+    connectWallet,
+    refreshBalance,
+    setError: _setWalletError,
+  } = useWallet();
 
   const bookingIds = useMemo(() => {
     const param = searchParams.get("bookingIds");
@@ -56,33 +69,7 @@ const CheckoutPage = () => {
 
   const [paymentMethod, setPaymentMethod] = useState("VNPAY");
 
-  const [walletConnected, setWalletConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState("");
-  const [walletBalance, setWalletBalance] = useState({ tpt: 0, vnd: 0 });
-  const [_blockchainDialogOpen, setBlockchainDialogOpen] = useState(false);
-  const [_blockchainTxHash, setBlockchainTxHash] = useState("");
-
   const steps = ["Thông tin liên hệ", "Phương thức thanh toán", "Xác nhận & Thanh toán"];
-
-  const checkWalletConnection = useCallback(async () => {
-    try {
-      if (typeof window.ethereum !== "undefined") {
-        const accounts = await window.ethereum.request({
-          method: "eth_accounts",
-        });
-
-        if (accounts.length > 0) {
-          const address = accounts[0];
-          const balance = await blockchainService.getBalance(address);
-          setWalletAddress(address);
-          setWalletBalance(balance);
-          setWalletConnected(true);
-        }
-      }
-    } catch (err) {
-      console.error("Check wallet error:", err);
-    }
-  }, []);
 
   useEffect(() => {
     if (bookingIds.length === 0) {
@@ -111,27 +98,6 @@ const CheckoutPage = () => {
     fetchBookings();
   }, [bookingIds]);
 
-  useEffect(() => {
-    const handleAccountChanged = (accounts) => {
-      if (accounts.length === 0) {
-        setWalletConnected(false);
-        setWalletAddress("");
-        setWalletBalance({ tpt: 0, vnd: 0 });
-      } else {
-        checkWalletConnection();
-      }
-    };
-
-    const handleNetworkChanged = () => {
-      window.location.reload();
-    };
-
-    checkWalletConnection();
-
-    blockchainService.onAccountChanged(handleAccountChanged);
-    blockchainService.onNetworkChanged(handleNetworkChanged);
-  }, [checkWalletConnection]);
-
   const totalAmountVND = useMemo(() => {
     return bookings.reduce((total, booking) => {
       return total + (booking.finalAmount || booking.totalAmount || 0);
@@ -143,16 +109,11 @@ const CheckoutPage = () => {
 
   const handleConnectWallet = async () => {
     try {
-      setSubmitting(true);
-      const result = await blockchainService.connectWallet();
-      setWalletAddress(result.address);
-      setWalletBalance(result.balance);
-      setWalletConnected(true);
-      alert("Ví đã được kết nối thành công!");
+      await connectWallet();
+      toast.success("Kết nối ví thành công");
     } catch (err) {
       setError(err.message || "Không thể kết nối ví");
-    } finally {
-      setSubmitting(false);
+      toast.error(err.message || "Không thể kết nối ví");
     }
   };
 
@@ -203,8 +164,10 @@ const CheckoutPage = () => {
       });
 
       const paymentResult = await paymentAPI.createPayment(bookingIds, paymentMethod);
+      console.log("\n💡 Payment Result:", paymentResult);
 
-      const payment = paymentResult.data.payment;
+      const payment = paymentResult.data.strategyResult;
+      console.log("\n💳 Payment Created:", payment);
 
       if (paymentMethod === "BLOCKCHAIN") {
         // Blockchain payment flow
@@ -213,8 +176,11 @@ const CheckoutPage = () => {
         }
 
         const paymentData = payment.paymentData;
-        console.log("walletBalance", walletBalance);
-        console.log("paymentData", paymentData);
+        console.log("\n🔷 Blockchain Payment Data:", paymentData);
+
+        console.log("\n💰 Checking balance...");
+        console.log("├─ Required:", paymentData.totalTPT, "TPT");
+        console.log("└─ Available:", walletBalance.tpt, "TPT");
 
         // Check balance
         if (walletBalance.tpt < paymentData.totalTPT) {
@@ -225,18 +191,14 @@ const CheckoutPage = () => {
           );
         }
 
-        // Show blockchain dialog
-        setBlockchainDialogOpen(true);
-
         // Execute blockchain payment
+        console.log("\n🚀 Executing blockchain payment...");
         const txResult = await blockchainService.payBooking(paymentData);
-
-        setBlockchainTxHash(txResult.transactionHash);
-
+        console.log("✅ Transaction successful:", txResult.transactionHash);
         // Navigate to success page
         setTimeout(() => {
           navigate(
-            `/payment/success?paymentId=${payment.id}&txHash=${txResult.transactionHash}&method=blockchain`,
+            `/payment/result?paymentId=${payment.id}&success=true&txHash=${txResult.transactionHash}&method=blockchain`,
           );
         }, 2000);
       } else {
@@ -244,13 +206,12 @@ const CheckoutPage = () => {
         if (payment.paymentUrl) {
           window.location.href = payment.paymentUrl;
         } else {
-          navigate(`/payment/success?paymentId=${payment.id}&success=true`);
+          navigate(`/payment/result?paymentId=${payment.id}&success=true`);
         }
       }
     } catch (err) {
       setError(err.message || "Thanh toán thất bại");
       toast.error(err.message || "Thanh toán thất bại");
-      setBlockchainDialogOpen(false);
     } finally {
       setSubmitting(false);
     }
@@ -326,25 +287,33 @@ const CheckoutPage = () => {
                     onChange={setPaymentMethod}
                   />
                   {paymentMethod === "BLOCKCHAIN" && (
-                    <Paper variant="outlined" sx={{ p: 3, mt: 3 }}>
-                      <Typography variant="h6" gutterBottom>
-                        Blockchain Wallet
-                      </Typography>
+                    <Box mt={3}>
+                      <WalletConnect
+                        walletConnected={walletConnected}
+                        walletAddress={walletAddress}
+                        walletBalance={walletBalance}
+                        loading={walletLoading}
+                        error={walletError}
+                        onConnect={handleConnectWallet}
+                        onRefresh={refreshBalance}
+                        showDisconnect={false}
+                        compact={true}
+                      />
 
                       {!walletConnected ? (
-                        <Box textAlign="center" py={3}>
-                          <Typography variant="body1" color="text.secondary" gutterBottom>
-                            Kết nối ví MetaMask để thanh toán bằng TPT
-                          </Typography>
-                          <Button
-                            variant="contained"
-                            onClick={handleConnectWallet}
-                            disabled={submitting}
-                            sx={{ mt: 2 }}
-                          >
-                            Kết nối MetaMask
-                          </Button>
-                        </Box>
+                        <Alert
+                          severity={walletBalance.tpt >= totalTPT ? "success" : "warning"}
+                          sx={{ mt: 2 }}
+                        >
+                          {walletBalance.tpt >= totalTPT ? (
+                            <>Số dư đủ để thanh toán</>
+                          ) : (
+                            <>
+                              Số dư không đủ. Cần thêm {(totalTPT - walletBalance.tpt).toFixed(2)}{" "}
+                              TPT
+                            </>
+                          )}
+                        </Alert>
                       ) : (
                         <Box>
                           <Typography variant="body2" color="text.secondary">
@@ -380,7 +349,7 @@ const CheckoutPage = () => {
                           </Alert>
                         </Box>
                       )}
-                    </Paper>
+                    </Box>
                   )}
                 </>
               )}
@@ -448,7 +417,8 @@ const CheckoutPage = () => {
                       submitting ||
                       !contactInfo.fullName ||
                       !contactInfo.phone ||
-                      !guestInfo.fullName
+                      !guestInfo.fullName ||
+                      (paymentMethod === "BLOCKCHAIN" && !walletConnected)
                     }
                   >
                     {submitting ? (
@@ -467,7 +437,9 @@ const CheckoutPage = () => {
                     disabled={
                       (activeStep === 0 &&
                         (!contactInfo.fullName || !contactInfo.phone || !guestInfo.fullName)) ||
-                      (paymentMethod === "BLOCKCHAIN" && walletBalance.tpt < totalTPT)
+                      (activeStep === 1 &&
+                        paymentMethod === "BLOCKCHAIN" &&
+                        (!walletConnected || walletBalance.tpt < totalTPT))
                     }
                   >
                     Tiếp tục

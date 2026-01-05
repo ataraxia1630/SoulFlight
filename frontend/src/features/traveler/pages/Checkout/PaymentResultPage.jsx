@@ -89,11 +89,11 @@ const PaymentResultPage = () => {
   };
 
   const handleViewBookings = () => {
-    navigate("/user/bookings");
+    navigate("/booking/history");
   };
 
   const handleRetry = () => {
-    navigate("/user/bookings");
+    navigate("/booking/history");
   };
 
   return (
