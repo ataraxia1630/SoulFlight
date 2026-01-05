@@ -11,7 +11,6 @@ router.get("/vnpay/return", PaymentController.handleVNPayReturn);
 router.get("/vnpay/ipn", PaymentController.handleVNPayIPN);
 
 router.use(authorize);
-router.use(requiredRoles("TRAVELER"));
 
 router.post("/", validate(createPaymentSchema), PaymentController.createPayment);
 router.get("/", PaymentController.getPayments);
@@ -29,26 +28,11 @@ blockchainRouter.post(
 
 blockchainRouter.get("/balance/:walletAddress", authorize, PaymentController.getWalletBalance);
 
-blockchainRouter.post(
-  "/connect",
-  authorize,
-  requiredRoles("TRAVELER"),
-  PaymentController.connectWallet,
-);
+blockchainRouter.post("/connect", authorize, PaymentController.connectWallet);
 
-blockchainRouter.post(
-  "/disconnect",
-  authorize,
-  requiredRoles("TRAVELER"),
-  PaymentController.disconnectWallet,
-);
+blockchainRouter.post("/disconnect", authorize, PaymentController.disconnectWallet);
 
-blockchainRouter.get(
-  "/transactions",
-  authorize,
-  requiredRoles("TRAVELER"),
-  PaymentController.getBlockchainTransactions,
-);
+blockchainRouter.get("/transactions", authorize, PaymentController.getBlockchainTransactions);
 
 blockchainRouter.get("/verify/:txHash", authorize, PaymentController.verifyTransaction);
 

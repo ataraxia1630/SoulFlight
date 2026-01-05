@@ -46,8 +46,12 @@ class BlockchainStrategy extends BasePaymentStrategy {
       },
     });
 
-    // Return data for frontend to execute transaction
     return {
+      paymentId: payment.id,
+      method: payment.method,
+      status: payment.status,
+      amount: Number(payment.amount),
+
       paymentData: {
         paymentId: payment.id,
         customerAddress: traveler.blockchain_wallet,
@@ -59,6 +63,7 @@ class BlockchainStrategy extends BasePaymentStrategy {
         customerBalance: paymentData.customerBalance,
         contractAddress: process.env.TRAVELPAY_CONTRACT_ADDRESS,
       },
+
       requiresUserAction: true, // Signal frontend cần user ký transaction
     };
   }

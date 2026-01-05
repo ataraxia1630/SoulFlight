@@ -3,9 +3,17 @@ const prisma = require("../configs/prisma");
 const AppError = require("../utils/AppError");
 const crypto = require("crypto");
 
-// ABI của TravelPayToken contract
+// ABI đầy đủ của TravelPayToken contract
 const TRAVELPAY_ABI = [
+  "function name() view returns (string)",
+  "function symbol() view returns (string)",
+  "function decimals() view returns (uint8)",
+  "function totalSupply() view returns (uint256)",
   "function balanceOf(address) view returns (uint256)",
+  "function transfer(address to, uint256 amount) returns (bool)",
+  "function allowance(address owner, address spender) view returns (uint256)",
+  "function approve(address spender, uint256 amount) returns (bool)",
+  "function transferFrom(address from, address to, uint256 amount) returns (bool)",
   "function payBooking(bytes32 bookingId, address provider, uint256 amount) returns (bool)",
   "function refundBooking(bytes32 bookingId, address provider) returns (bool)",
   "function getBookingPayment(bytes32 bookingId) view returns (address customer, uint256 amount, uint256 timestamp, bool completed, bool refunded)",
@@ -14,16 +22,45 @@ const TRAVELPAY_ABI = [
   "event BookingPaid(bytes32 indexed bookingId, address indexed customer, uint256 amount)",
   "event BookingRefunded(bytes32 indexed bookingId, address indexed customer, uint256 amount)",
   "event CashbackPaid(address indexed customer, uint256 amount)",
+  "event FeeCollected(address indexed from, uint256 amount)",
 ];
 
 class BlockchainService {
   constructor() {
+    // Validate environment variables
+    if (!process.env.BLOCKCHAIN_RPC_URL) {
+      throw new Error("BLOCKCHAIN_RPC_URL is not set in environment variables");
+    }
+    if (!process.env.TRAVELPAY_CONTRACT_ADDRESS) {
+      throw new Error("TRAVELPAY_CONTRACT_ADDRESS is not set in environment variables");
+    }
+
     this.provider = new ethers.JsonRpcProvider(process.env.BLOCKCHAIN_RPC_URL);
     this.contractAddress = process.env.TRAVELPAY_CONTRACT_ADDRESS;
 
-    // Admin wallet để gọi refund
+    // Admin wallet để gửi refund
     if (process.env.ADMIN_PRIVATE_KEY) {
       this.adminWallet = new ethers.Wallet(process.env.ADMIN_PRIVATE_KEY, this.provider);
+      console.log("✅ Admin wallet initialized:", this.adminWallet.address);
+    } else {
+      console.warn("⚠️  ADMIN_PRIVATE_KEY not set - refund functionality will be limited");
+    }
+
+    // Test connection
+    this.testConnection();
+  }
+
+  async testConnection() {
+    try {
+      const network = await this.provider.getNetwork();
+      console.log("✅ Connected to blockchain network:", network.chainId.toString());
+
+      const contract = this.getContract();
+      const name = await contract.name();
+      const symbol = await contract.symbol();
+      console.log(`✅ Contract connected: ${name} (${symbol}) at ${this.contractAddress}`);
+    } catch (error) {
+      console.error("❌ Blockchain connection failed:", error.message);
     }
   }
 
@@ -50,6 +87,9 @@ class BlockchainService {
   // Tạo payment data cho frontend
   async createPayment(bookingIds, customerWallet) {
     try {
+      console.log("📝 Creating blockchain payment for bookings:", bookingIds);
+      console.log("👤 Customer wallet:", customerWallet);
+
       // Lấy thông tin bookings
       const bookings = await prisma.booking.findMany({
         where: { id: { in: bookingIds } },
@@ -68,10 +108,14 @@ class BlockchainService {
       // Convert sang TPT
       const totalTPT = this.vndToTPT(totalVND);
 
+      console.log(`💰 Total: ${totalVND} VND = ${totalTPT} TPT`);
+
       // Kiểm tra balance của customer
       const contract = this.getContract();
       const balance = await contract.balanceOf(customerWallet);
       const balanceTPT = Number(ethers.formatEther(balance));
+
+      console.log(`💼 Customer balance: ${balanceTPT.toFixed(2)} TPT`);
 
       if (balanceTPT < totalTPT) {
         throw new AppError(
@@ -91,6 +135,9 @@ class BlockchainService {
       // Generate blockchain booking ID
       const blockchainBookingId = this.generateBlockchainBookingId(bookingIds);
 
+      console.log("🔑 Blockchain Booking ID:", blockchainBookingId);
+      console.log("✅ Payment data created successfully");
+
       return {
         totalVND,
         totalTPT,
@@ -103,6 +150,7 @@ class BlockchainService {
         customerBalance: balanceTPT,
       };
     } catch (error) {
+      console.error("❌ Create payment error:", error);
       throw new AppError(500, error.message || "Failed to create blockchain payment");
     }
   }
@@ -110,7 +158,12 @@ class BlockchainService {
   // Execute payment sau khi user đã ký transaction
   async executePayment(paymentId, transactionHash) {
     try {
+      console.log("\n🚀 Executing blockchain payment...");
+      console.log("├─ Payment ID:", paymentId);
+      console.log("└─ Transaction Hash:", transactionHash);
+
       // Đợi transaction được confirm
+      console.log("⏳ Waiting for transaction confirmation...");
       const receipt = await this.provider.waitForTransaction(transactionHash, 1);
 
       if (!receipt) {
@@ -121,10 +174,19 @@ class BlockchainService {
         throw new AppError(400, "Transaction failed on blockchain");
       }
 
+      console.log("✅ Transaction confirmed in block:", receipt.blockNumber);
+
       // Lấy payment info
       const payment = await prisma.payment.findUnique({
         where: { id: paymentId },
-        include: { bookings: true },
+        include: {
+          bookings: {
+            include: {
+              provider: true,
+              traveler: true,
+            },
+          },
+        },
       });
 
       if (!payment) {
@@ -143,6 +205,8 @@ class BlockchainService {
         })
         .filter((log) => log !== null);
 
+      console.log("📋 Events found:", logs.map((l) => l.name).join(", "));
+
       const bookingPaidEvent = logs.find((log) => log.name === "BookingPaid");
 
       if (!bookingPaidEvent) {
@@ -153,6 +217,11 @@ class BlockchainService {
       const eventBookingId = bookingPaidEvent.args.bookingId;
       const eventCustomer = bookingPaidEvent.args.customer;
       const eventAmount = ethers.formatEther(bookingPaidEvent.args.amount);
+
+      console.log("\n📦 Event Data:");
+      console.log("├─ Booking ID:", eventBookingId);
+      console.log("├─ Customer:", eventCustomer);
+      console.log("└─ Amount:", eventAmount, "TPT");
 
       // Lưu blockchain transaction
       const blockchainTx = await prisma.blockchainTransaction.create({
@@ -173,6 +242,8 @@ class BlockchainService {
         },
       });
 
+      console.log("💾 Blockchain transaction saved:", blockchainTx.id);
+
       // Update payment
       await prisma.payment.update({
         where: { id: paymentId },
@@ -185,11 +256,16 @@ class BlockchainService {
         },
       });
 
+      console.log("✅ Payment status updated to SUCCESS");
+
       // Update bookings
       await prisma.booking.updateMany({
         where: { payment_id: paymentId },
         data: { status: "PAID" },
       });
+
+      console.log("✅ Bookings status updated to PAID");
+      console.log("\n🎉 Payment execution completed successfully!\n");
 
       return {
         success: true,
@@ -197,20 +273,26 @@ class BlockchainService {
         blockchainTx,
       };
     } catch (error) {
+      console.error("\n❌ Payment execution failed:", error);
+
       // Lưu failed transaction
-      await prisma.blockchainTransaction.create({
-        data: {
-          tx_hash: transactionHash,
-          from_address: "",
-          to_address: "",
-          amount_tpt: 0,
-          amount_vnd: 0,
-          tx_type: "PAYMENT",
-          status: "FAILED",
-          error_message: error.message,
-          payment_id: paymentId,
-        },
-      });
+      try {
+        await prisma.blockchainTransaction.create({
+          data: {
+            tx_hash: transactionHash,
+            from_address: "",
+            to_address: "",
+            amount_tpt: 0,
+            amount_vnd: 0,
+            tx_type: "PAYMENT",
+            status: "FAILED",
+            error_message: error.message,
+            payment_id: paymentId,
+          },
+        });
+      } catch (dbError) {
+        console.error("Failed to save error transaction:", dbError);
+      }
 
       throw new AppError(500, error.message || "Failed to execute blockchain payment");
     }
@@ -223,11 +305,17 @@ class BlockchainService {
         throw new AppError(500, "Admin wallet not configured");
       }
 
+      console.log("\n🔄 Processing refund...");
+      console.log("└─ Payment ID:", paymentId);
+
       const payment = await prisma.payment.findUnique({
         where: { id: paymentId },
         include: {
           bookings: {
-            include: { provider: true },
+            include: {
+              provider: true,
+              traveler: true,
+            },
           },
         },
       });
@@ -247,12 +335,17 @@ class BlockchainService {
 
       // Gọi smart contract refund
       const contract = this.getContract(this.adminWallet);
+      console.log("📞 Calling refundBooking on smart contract...");
+
       const tx = await contract.refundBooking(
         payment.blockchain_booking_id,
         provider.blockchain_wallet,
       );
 
+      console.log("⏳ Waiting for refund transaction...");
       const receipt = await tx.wait();
+
+      console.log("✅ Refund confirmed in block:", receipt.blockNumber);
 
       // Lưu refund transaction
       await prisma.blockchainTransaction.create({
@@ -282,8 +375,11 @@ class BlockchainService {
         data: { status: "REFUNDED" },
       });
 
+      console.log("🎉 Refund completed successfully!\n");
+
       return { success: true, transactionHash: receipt.hash };
     } catch (error) {
+      console.error("❌ Refund failed:", error);
       throw new AppError(500, error.message || "Failed to refund blockchain payment");
     }
   }
@@ -293,11 +389,14 @@ class BlockchainService {
     try {
       const contract = this.getContract();
       const balance = await contract.balanceOf(walletAddress);
+      const tptBalance = Number(ethers.formatEther(balance));
+
       return {
-        tpt: ethers.formatEther(balance),
-        vnd: Number(ethers.formatEther(balance)) * 1000,
+        tpt: tptBalance,
+        vnd: tptBalance * 1000,
       };
-    } catch (_error) {
+    } catch (error) {
+      console.error("Get balance error:", error);
       throw new AppError(500, "Failed to get balance");
     }
   }
@@ -310,11 +409,13 @@ class BlockchainService {
         return { exists: false };
       }
 
+      const confirmations = (await this.provider.getBlockNumber()) - receipt.blockNumber;
+
       return {
         exists: true,
         status: receipt.status === 1 ? "SUCCESS" : "FAILED",
         blockNumber: receipt.blockNumber,
-        confirmations: await receipt.confirmations(),
+        confirmations: confirmations,
       };
     } catch (error) {
       return { exists: false, error: error.message };
