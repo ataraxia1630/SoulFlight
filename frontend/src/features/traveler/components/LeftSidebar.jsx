@@ -2,6 +2,7 @@ import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import BookIcon from "@mui/icons-material/Book";
 import CardTravelIcon from "@mui/icons-material/CardTravel";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import CurrencyBitcoinIcon from "@mui/icons-material/CurrencyBitcoin";
 import PlaceIcon from "@mui/icons-material/Place";
 import StarsIcon from "@mui/icons-material/Stars";
 import TimeToLeaveIcon from "@mui/icons-material/TimeToLeave";
@@ -33,6 +34,11 @@ const LeftSidebar = () => {
   const gradientId = useId();
 
   const menuItems = [
+    {
+      text: "Ví của tôi",
+      path: "/wallet",
+      icon: <CurrencyBitcoinIcon />,
+    },
     {
       text: "Nhật ký hành trình",
       path: "/journal",

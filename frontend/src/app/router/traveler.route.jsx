@@ -1,5 +1,6 @@
 import { Route } from "react-router-dom";
 import TravelerHome from "@/features/traveler/pages/Home";
+import WalletPage from "@/shared/pages/Wallet/WalletPage";
 import BookingHistory from "../../features/traveler/pages/Booking/BookingHistory";
 import CartPage from "../../features/traveler/pages/Cart/CartPage";
 import CheckoutPage from "../../features/traveler/pages/Checkout/CheckoutPage";
@@ -15,7 +16,6 @@ import MenuDetail from "../../features/traveler/pages/ServiceDetail/MenuDetail";
 import RoomDetail from "../../features/traveler/pages/ServiceDetail/RoomDetail";
 import TicketDetail from "../../features/traveler/pages/ServiceDetail/TicketDetail";
 import TourDetail from "../../features/traveler/pages/ServiceDetail/TourDetail";
-import WalletPage from "../../features/traveler/pages/Wallet/WalletPage";
 import Wishlist from "../../features/traveler/pages/Wishlist";
 import { createAuthRoutes } from "./auth.route";
 import ProtectedRoute from "./ProtectedRoute";
